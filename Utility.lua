@@ -31,7 +31,7 @@ function CEPGP_initialise()
 	if CEPGP_keyword == nil then
 		CEPGP_keyword = "!need";
 	end
-	for k, v in pairs(bossNameIndex) do
+	for k, v in pairs(CEPGP_EncounterInfo.Bosses) do
 		if not EPVALS[k] or not tonumber(EPVALS[k]) then -- An expected number is missing
 			if k == "Silithid Royalty" then
 				EPVALS[k] = EPVALS["Vem"];
@@ -197,11 +197,14 @@ function CEPGP_initialise()
 		for i, t in ipairs(bossNames) do
 			for _, entity in pairs(t) do
 				local boss = entity:GetText();
-				for name, v in pairs(L) do
+				if L[boss] then
+					entity:SetText(L[boss]);
+				end
+				--[[for name, v in pairs(L) do
 					if v == boss and v ~= name then
 						entity:SetText(name);
 					end
-				end
+				end]]
 			end
 		end
 		local kids = {_G["CEPGP_frame"]:GetChildren()};
@@ -1200,6 +1203,7 @@ end
 
 function CEPGP_tSort(t, index)
 	if not t then return; end
+	if #t == 1 then return t; end
 	local t2 = {};
 	table.insert(t2, t[1]);
 	table.remove(t, 1);

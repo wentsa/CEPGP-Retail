@@ -475,11 +475,11 @@ function CEPGP_UpdateVersionScrollBar()
 		for i = 1, CEPGP_ntgetn(tempTable) do
 			_G["versionButton" .. i]:Show();
 			for x = 1, GetNumGroupMembers() do
-				if tempTable[x][1] == GetRaidRosterInfo(i) then
-					name = tempTable[x][1];
-					version = tempTable[x][2];
-					class = tempTable[x][3];
-					classFile = tempTable[x][4];
+				if tempTable[i][1] == GetRaidRosterInfo(x) then
+					name = tempTable[i][1];
+					version = tempTable[i][2];
+					class = tempTable[i][3];
+					classFile = tempTable[i][4];
 				--	print(name);
 				--	print(class);
 					local colour = RAID_CLASS_COLORS[classFile];
