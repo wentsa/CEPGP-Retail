@@ -843,7 +843,7 @@ function CEPGP_addToStandby(player)
 		[4] = rankIndex,
 		[5] = EP,
 		[6] = GP,
-		[7] = math.floor((tonumber(EP)/tonumber(GP))*100)/100,
+		[7] = math.floor((tonumber(EP)*100/tonumber(GP)))/100,
 		[8] = classFile
 	};
 	CEPGP_standbyRoster = CEPGP_tSort(CEPGP_standbyRoster, 1);

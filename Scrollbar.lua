@@ -13,7 +13,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 				[4] = CEPGP_roster[name][4], --RankIndex
 				[5] = EP,
 				[6] = GP,
-				[7] = math.floor((tonumber(EP)/tonumber(GP))*100)/100,
+				[7] = math.floor((tonumber(EP)*100/tonumber(GP)))/100,
 				[8] = CEPGP_itemsTable[name][1] or "noitem",
 				[9] = CEPGP_itemsTable[name][2] or "noitem",
 				[10] = CEPGP_roster[name][7], --className in English
@@ -35,7 +35,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 					[4] = rankIndex,
 					[5] = EP,
 					[6] = GP,
-					[7] = math.floor((tonumber(EP)/tonumber(GP))*100)/100,
+					[7] = math.floor((tonumber(EP)*100/tonumber(GP)))/100,
 					[8] = CEPGP_itemsTable[name][1] or "noitem",
 					[9] = CEPGP_itemsTable[name][2] or "noitem",
 					[10] = classFile,
@@ -718,7 +718,7 @@ function CEPGP_UpdateStandbyScrollBar()
 			[4] = CEPGP_standbyRoster[i][4], --rankIndex
 			[5] = EP, --EP
 			[6] = GP, --GP
-			[7] = math.floor((tonumber(EP)/tonumber(GP))*100)/100,
+			[7] = math.floor((tonumber(EP)*100/tonumber(GP)))/100,
 			[8] = CEPGP_standbyRoster[i][8], --ClassFile
 			[9] = online --Online
 		};
