@@ -33,12 +33,12 @@ function CEPGP_initialise()
 	end
 	for k, v in pairs(CEPGP_EncounterInfo.Bosses) do
 		if not EPVALS[k] or not tonumber(EPVALS[k]) then -- An expected number is missing
-			if k == "Silithid Royalty" then
-				EPVALS[k] = EPVALS["Vem"];
-			elseif k == "Twin Emperors" then
-				EPVALS[k] = EPVALS["Emperor Vek'nilash"];
-			elseif k == "The Four Horsemen" then
-				EPVALS[k] = EPVALS["Highlord Mograine"];
+			if k == "The Silithid Royalty" then
+				EPVALS[k] = EPVALS["Silithid Royalty"] or CEPGP_EncounterInfo.Bosses["The Silithid Royalty"];
+				
+			elseif k == "The Twin Emperors" then
+				EPVALS[k] = EPVALS["Twin Emperors"] or CEPGP_EncounterInfo.Bosses["Twin Emperors"];
+				
 			else
 				EPVALS[k] = v;
 			end
@@ -68,21 +68,6 @@ function CEPGP_initialise()
 	AUTOEP["Lady Blaumeux"] = nil;
 	EPVALS["Sir Zeliek"] = nil;
 	AUTOEP["Sir Zeliek"] = nil;
-	
-	--	Reorganising the override index to the new format
-	for k, v in pairs(OVERRIDE_INDEX) do
-		if string.find(k, "item:") then
-			local args = CEPGP_split(k, ":");
-			if tonumber(args[10]) then
-				local id = CEPGP_getItemID(CEPGP_getItemString(k));
-				local link = CEPGP_getItemLink(id);
-				if link then
-					OVERRIDE_INDEX[link] = v;
-					OVERRIDE_INDEX[k] = nil;
-				end
-			end
-		end
-	end
 	
 	local channels = {
 		[1] = L["Party"],
@@ -220,6 +205,21 @@ function CEPGP_initialise()
 				end
 			end
 			setChildText(child);
+		end
+		
+		--	Reorganising the override index to the new format
+		for k, v in pairs(OVERRIDE_INDEX) do
+			if string.find(k, "item:") then
+				local args = CEPGP_split(k, ":");
+				if tonumber(args[10]) then
+					local id = CEPGP_getItemID(CEPGP_getItemString(k));
+					local link = CEPGP_getItemLink(id);
+					if link then
+						OVERRIDE_INDEX[link] = v;
+						OVERRIDE_INDEX[k] = nil;
+					end
+				end
+			end
 		end
 	end);
 	C_Timer.After(6, function()

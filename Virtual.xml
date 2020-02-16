@@ -813,14 +813,8 @@
 					return;
 				elseif EPVALS[name] ~= tonumber(value) then
 					value = tonumber(value);
-					if name == "The Edge of Madness" then
-						EPVALS["Gri'lek"] = value;
-						EPVALS["Hazza'rah"] = value;
-						EPVALS["Renataki"] = value;
-						EPVALS["Wushoolay"] = value;
-					else
-						EPVALS[name] = value;
-					end
+					EPVALS[name] = value;
+					
 					local tName = _G["CEPGP_options_" .. name .. "_val"]:GetText();
 					CEPGP_print(L["Updated EP award for "] .. tName);
 				end

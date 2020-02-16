@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.9.release";
+CEPGP_VERSION = "1.12.10.beta-1";
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -82,8 +82,8 @@ CEPGP_PR_sort = true;
 
 CEPGP = {};
 CEPGP_Info = {
-	Version = "1.12.9",
-	Build = "release",
+	Version = "1.12.10",
+	Build = "Beta 1",
 	IgnoreUpdates = false,
 	LastImport = time(),
 	LastUpdate = GetTime(),
