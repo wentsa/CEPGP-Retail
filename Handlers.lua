@@ -271,9 +271,30 @@ function CEPGP_handleCombat(name)
 		local plurals = name == "The Four Horsemen" or name == "Silithid Royalty" or name == "Twin Emperors";
 		local message = format(L["%s " .. (plurals and "have" or "has") .. " been defeated! %d EP has been awarded to the raid"], localName, EP);
 		local callback = function()
-			CEPGP_AddRaidEP(EP, message, localName);
-			if STANDBYEP and tonumber(STANDBYPERCENT) > 0 then
-				CEPGP_addStandbyEP(EP*(tonumber(STANDBYPERCENT)/100), localName);
+			local success, failMsg = pcall(handleEncounter, event, arg1, arg5);
+			
+			local function awardEP(localName, EP, message)
+				CEPGP_AddRaidEP(EP, message, localName);
+			end
+			
+			local success, failMsg = pcall(awardEP, localName, EP, message);
+			
+			if not success then
+				CEPGP_print("Failed to award raid EP for " .. name, true);
+				CEPGP_print(failMsg);
+			end
+			
+			local function awardStandbyEP(localName, EP)
+				if STANDBYEP and tonumber(STANDBYPERCENT) > 0 then
+					CEPGP_addStandbyEP(EP*(tonumber(STANDBYPERCENT)/100), localName);
+				end
+			end
+			
+			success, failMsg = pcall(awardStandbyEP, localName, EP);
+			
+			if not success then
+				CEPGP_print("Failed to award standby EP for " .. name, true);
+				CEPGP_print(failMsg);
 			end
 		end
 		

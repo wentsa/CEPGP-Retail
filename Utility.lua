@@ -70,10 +70,10 @@ function CEPGP_initialise()
 	AUTOEP["Sir Zeliek"] = nil;
 	
 	local channels = {
-		[1] = L["Party"],
-		[2] = L["Raid"],
-		[3] = L["Guild"],
-		[4] = L["Officer"],
+		[1] = "Party",
+		[2] = "Raid",
+		[3] = "Guild",
+		[4] = "Officer"
 	};
 	
 	if not CEPGP_tContains(channels, CHANNEL) then
@@ -2007,10 +2007,10 @@ end
 
 function CEPGP_getReportChannel(channel)
 	local channels = {
-		[1] = L["Party"],
-		[2] = L["Raid"],
-		[3] = L["Guild"],
-		[4] = L["Officer"],
+		[1] = "Party",
+		[2] = "Raid",
+		[3] = "Guild",
+		[4] = "Officer"
 	};
 	for k, v in ipairs(channels) do
 		if string.upper(channel) == v then

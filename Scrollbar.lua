@@ -284,7 +284,7 @@ function CEPGP_UpdateGuildScrollBar()
 	for name, v in pairs(CEPGP_roster) do
 		local index = CEPGP_getIndex(name, v[1]);
 		local EP, GP = CEPGP_getEPGP(name, index)
-		tempTable[v[1]] = {
+		tempTable[v[1]] = {	-- Guild Roster Index
 			[1] = name,
 			[2] = v[2], --Class
 			[3] = v[3], --Rank
