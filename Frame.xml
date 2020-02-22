@@ -1267,6 +1267,13 @@
 									<OnLoad>
 										CEPGP_options_gp_base_edit:SetAutoFocus(false);
 									</OnLoad>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+										GameTooltip:SetText("Sets the GP that all players start at and the minimum GP that players can reach.\nNote: This change will not take effect until the player's GP is modified.");
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
 									<OnEnterPressed>
 										CEPGP_options_gp_base_edit:ClearFocus();
 									</OnEnterPressed>
@@ -1288,16 +1295,6 @@
 										elseif BASEGP ~= tonumber(value) then
 											BASEGP = tonumber(value);
 											CEPGP_print("Updated base GP");
-										end
-										CEPGP_updateGuild();
-										if CanEditOfficerNote() then
-											for i = 1, GetNumGuildMembers() do
-												local name, rank, rankIndex, _, class = GetGuildRosterInfo(i);
-												local EP, GP = CEPGP_getEPGP(name, i);
-												if BASEGP > GP then
-													GuildRosterSetOfficerNote(i, EP .. "," .. BASEGP);
-												end
-											end
 										end
 									</OnEditFocusLost>
 								</Scripts>
