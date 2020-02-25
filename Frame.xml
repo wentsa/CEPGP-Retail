@@ -1089,6 +1089,7 @@
 												return;
 											else
 												CEPGP_keyword = value;
+												CEPGP.Loot.Keywork = value;
 												CEPGP_print("Loot keyword updated");
 											end
 										end
@@ -1109,6 +1110,7 @@
 								<Scripts>
 									<OnClick>
 										CEPGP_loot_GUI = self:GetChecked();
+										CEPGP.Loot.GUI.Enabled = self:GetChecked();
 										if CEPGP_loot_GUI then
 											CEPGP_print("Loot GUI enabled");
 											_G["CEPGP_options_keyword"]:Hide();
@@ -1180,6 +1182,7 @@
 											self:SetText(tostring(COEF));
 										elseif COEF ~= tonumber(value) then
 											COEF = tonumber(value);
+											CEPGP.GP.Base = tonumber(value);
 											CEPGP_print("Updated base coefficient");
 										end
 									</OnEditFocusLost>
@@ -1217,6 +1220,7 @@
 											self:SetText(tostring(MOD_COEF));
 										elseif MOD_COEF ~= tonumber(value) then
 											MOD_COEF = tonumber(value);
+											CEPGP.GP.Multiplier = tonumber(value);
 											CEPGP_print("Updated mod coefficient");
 										end
 									</OnEditFocusLost>
@@ -1247,6 +1251,7 @@
 											self:SetText(tostring(MOD));
 										elseif MOD ~= tonumber(value) then
 											MOD = tonumber(value);
+											CEPGP.GP.Mod = tonumber(value);
 											CEPGP_print("Updated GP modifier");
 										end
 									</OnEditFocusLost>
@@ -1294,6 +1299,7 @@
 											self:SetText(tostring(BASEGP));
 										elseif BASEGP ~= tonumber(value) then
 											BASEGP = tonumber(value);
+											CEPGP.GP.Base = tonumber(value);
 											CEPGP_print("Updated base GP");
 										end
 									</OnEditFocusLost>
@@ -1314,9 +1320,11 @@
 									<OnClick>
 										if self:GetChecked() then
 											CEPGP_minGPDecayFactor = true;
+											CEPGP.GP.DecayFactor = true;
 											CEPGP_print("Now subtracting minimum GP from calculation when decaying guild EPGP standings.");
 										else
 											CEPGP_minGPDecayFactor = false;
+											CEPGP.GP.DecayFactor = false;
 											CEPGP_print("No longer subtracting minimum GP from calculation when decaying guild EPGP standings.");
 										end
 									</OnClick>
@@ -1798,8 +1806,10 @@
 									<OnClick>
 										if self:GetChecked() then
 											STANDBYEP = true;
+											CEPGP.Standby.Enabled = true;
 										else
 											STANDBYEP = false;
+											CEPGP.Standby.Enabled = false;
 										end
 									</OnClick>
 									<OnEnter>
@@ -1842,6 +1852,7 @@
 											end
 										elseif STANDBYPERCENT ~= tonumber(value) then
 											STANDBYPERCENT = tonumber(value);
+											CEPGP.Standby.Percent = tonumber(value);
 											CEPGP_print("Standby EP percent updated");
 										end
 									</OnEditFocusLost>
@@ -1865,11 +1876,13 @@
 									<OnClick>
 										if self:GetChecked() then
 											CEPGP_standby_share = true;
+											CEPGP.Standby.Share = true;
 											for _, t in pairs(CEPGP_standbyRoster) do
 												CEPGP_SendAddonMsg("StandbyListAdd;"..t[1]..";"..t[2]..";"..t[3]..";"..t[4]..";"..t[5]..";"..t[6]..";"..t[8], "RAID");
 											end
 										else
 											CEPGP_standby_share = false;
+											CEPGP.Standby.Share = false;
 										end
 									</OnClick>
 									<OnEnter>
@@ -1906,8 +1919,10 @@
 									<OnClick>
 										if self:GetChecked() then
 											STANDBYOFFLINE = true;
+											CEPGP.Standby.Offline = true;
 										else
 											STANDBYOFFLINE = false;
+											CEPGP.Standby.Offline = false;
 										end
 									</OnClick>
 									<OnEnter>
@@ -1944,8 +1959,10 @@
 									<OnClick>
 										if self:GetChecked() then
 											CEPGP_standby_accept_whispers = true;
+											CEPGP.Standby.AcceptWhispers = true;
 										else
 											CEPGP_standby_accept_whispers = false;
+											CEPGP.Standby.AcceptWhispers = false;
 										end
 									</OnClick>
 									<OnEnter>
@@ -1981,6 +1998,7 @@
 											self:SetText(CEPGP_standby_whisper_msg);
 										elseif CEPGP_standby_whisper_msg ~= msg then
 											CEPGP_standby_whisper_msg = msg;
+											CEPGP.Standby.Keyword = msg;
 											CEPGP_print("Whisper message for standby EP updated");
 										end
 									</OnEditFocusLost>
@@ -2015,6 +2033,8 @@
 											CEPGP_options_standby_ep_manual_check:SetChecked(false);
 											CEPGP_standby_manual = false;
 											CEPGP_standby_byrank = true;
+											CEPGP.Standby.Manual = false;
+											CEPGP.Standby.ByRank = true;
 											CEPGP_options_standby_ep_list_button:Hide();
 											CEPGP_options_standby_ep_message_val:Hide();
 											CEPGP_options_standby_ep_whisper_message:Hide();
@@ -2055,6 +2075,8 @@
 											CEPGP_options_standby_ep_byrank_check:SetChecked(false);
 											CEPGP_standby_manual = true;
 											CEPGP_standby_byrank = false;
+											CEPGP.Standby.Manual = true;
+											CEPGP.Standby.ByRank = false;
 											CEPGP_options_standby_ep_list_button:Show();
 											CEPGP_options_standby_ep_message_val:Show();
 											CEPGP_options_standby_ep_whisper_message:Show();

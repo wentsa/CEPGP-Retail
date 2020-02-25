@@ -125,7 +125,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 	
 	if event == "ADDON_LOADED" and arg1 == "CEPGP" then --arg1 = addon name
 		--	Translating from old structure to new
-		CEPGP = {
+		--[[CEPGP = {
 			Attendance = CEPGP_raid_logs,
 			Backups = RECORDS,
 			Channel = CHANNEL,
@@ -141,6 +141,8 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 			},
 			GP = {
 				Base = COEF,
+				DecayFactor = CEPGP_minGPDecayFactor,
+				Min = BASEGP,
 				Mod = MOD,
 				Multiplier = MOD_COEF,
 				SlotWeights = SLOTWEIGHTS,
@@ -152,6 +154,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 				Keyword = CEPGP_keyword,
 				MinThreshold = CEPGP_minEP,
 				RaidVisibility = CEPGP_raid_wide_dist,
+				ShowPass = CEPGP_show_passes,
 				SuppressResponses = CEPGP_suppress_announcements,
 				GUI = {
 					Buttons = CEPGP_response_buttons,
@@ -171,7 +174,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 				Roster = CEPGP_standbyRoster,
 				Share = CEPGP_standby_share,
 			}
-		}
+		}]]
 		CEPGP_initialise();
 		return;
 		

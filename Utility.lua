@@ -78,9 +78,15 @@ function CEPGP_initialise()
 	
 	if not CEPGP_tContains(channels, CHANNEL) then
 		CHANNEL = channels[3];
+		C_Timer.After(5, function()
+			CEPGP_print("Your reporting channel has changed, please make sure it is set to the correct setting!");
+		end);
 	end
 	if not CEPGP_tContains(channels, CEPGP_lootChannel) then
 		CEPGP_lootChannel = channels[2];
+		C_Timer.After(5, function()
+			CEPGP_print("Your loot reporting channel has changed, please make sure it is set to the correct setting!");
+		end);
 	end
 	
 	-- Localize boss names on the config UI
