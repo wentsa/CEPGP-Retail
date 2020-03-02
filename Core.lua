@@ -134,6 +134,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 			Overrides = OVERRIDE_INDEX,
 			Sync = {ALLOW_FORCED_SYNC, CEPGP_force_sync_rank},
 			Traffic = TRAFFIC,
+			VerboseLogging = false,
 			EP = {
 				AutoAward = AUTOEP,
 				BossEP = EPVALS,

@@ -195,12 +195,16 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 			
 			
 			
+			CEPGP_SendAddonMsg(target..";impresponse;Reporting;", lane);
 			CEPGP_SendAddonMsg(target..";impresponse;CHANNEL;"..CHANNEL, lane);
 			CEPGP_SendAddonMsg(target..";impresponse;CEPGP_lootChannel;"..CEPGP_lootChannel, lane);
 			CEPGP_SendAddonMsg(target..";impresponse;CEPGP_min_threshold;"..CEPGP_min_threshold, lane);
+			CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
+			
 			
 			
 				--	GP Options Page 1	--
+			CEPGP_SendAddonMsg(target..";impresponse;GP;", lane);	
 			CEPGP_SendAddonMsg(target..";impresponse;MOD;"..MOD, lane);
 			CEPGP_SendAddonMsg(target..";impresponse;COEF;"..COEF, lane);
 			CEPGP_SendAddonMsg(target..";impresponse;MOD_COEF;"..MOD_COEF, lane);
@@ -212,131 +216,155 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 			else
 				CEPGP_SendAddonMsg(target..";impresponse;BASEGPFACTOR;false", lane);
 			end
+			CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
 			
-				--	Loot GUI Options	--
-			if CEPGP_loot_GUI then
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_loot_GUI;true", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_loot_GUI;false", lane);
-			end
-			for index, v in ipairs(CEPGP_response_buttons) do
-				if v[1] then
-					CEPGP_SendAddonMsg(target..";impresponse;LOOTGUIBUTTON;"..index..";true;"..v[2]..";"..v[3]);
+			C_Timer.After(1, function()
+					--	Loot GUI Options	--
+				CEPGP_SendAddonMsg(target..";impresponse;GUI;", lane);
+				if CEPGP_loot_GUI then
+					CEPGP_SendAddonMsg(target..";impresponse;CEPGP_loot_GUI;true", lane);
 				else
-					CEPGP_SendAddonMsg(target..";impresponse;LOOTGUIBUTTON;"..index..";false;"..v[2]..";"..v[3]);
+					CEPGP_SendAddonMsg(target..";impresponse;CEPGP_loot_GUI;false", lane);
 				end
-			end
-			CEPGP_SendAddonMsg(target..";impresponse;LOOTGUIBUTTONTIMEOUT;"..CEPGP_response_time);
-			
-				--	Slot Weights	--
-			for k, v in pairs(SLOTWEIGHTS) do
-				CEPGP_SendAddonMsg(target..";impresponse;SLOTWEIGHTS;"..k..";"..v, lane);
-			end
-			if CEPGP_standby_byrank then --Implies result for both byrank and manual standby designation
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYBYRANK;1", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYBYRANK;0", lane);
-			end
-			
-				--	Standby EP	--		
-			if STANDBYEP then
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYEP;1", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYEP;0", lane);
-			end
-			if STANDBYOFFLINE then
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYOFFLINE;1", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYOFFLINE;0", lane);
-			end
-			if CEPGP_standby_share then
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYSHARE;true", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYSHARE;false", lane);
-			end
-			CEPGP_SendAddonMsg(target..";impresponse;STANDBYPERCENT;"..STANDBYPERCENT, lane);
-			if CEPGP_standby_accept_whispers then
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYALLOWWHISPERS;1", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;STANDBYALLOWWHISPERS;0", lane);
-			end
-			for k, v in pairs(STANDBYRANKS) do
-				if STANDBYRANKS[k][2] then
-					CEPGP_SendAddonMsg(target..";impresponse;STANDBYRANKS;"..k..";1", lane);
-				else
-					CEPGP_SendAddonMsg(target..";impresponse;STANDBYRANKS;"..k..";0", lane);
+				for index, v in ipairs(CEPGP_response_buttons) do
+					if v[1] then
+						CEPGP_SendAddonMsg(target..";impresponse;LOOTGUIBUTTON;"..index..";true;"..v[2]..";"..v[3]);
+					else
+						CEPGP_SendAddonMsg(target..";impresponse;LOOTGUIBUTTON;"..index..";false;"..v[2]..";"..v[3]);
+					end
 				end
-			end
+				CEPGP_SendAddonMsg(target..";impresponse;LOOTGUIBUTTONTIMEOUT;"..CEPGP_response_time);
+				CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
+				
+				C_Timer.After(1, function()
+						--	Slot Weights	--
+					CEPGP_SendAddonMsg(target..";impresponse;SlotWeights;", lane);
+					for k, v in pairs(SLOTWEIGHTS) do
+						CEPGP_SendAddonMsg(target..";impresponse;SLOTWEIGHTS;"..k..";"..v, lane);
+					end
+					CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
 			
+					C_Timer.After(1, function()
+							--	Standby EP	--
+						CEPGP_SendAddonMsg(target..";impresponse;Standby;", lane);
+						if CEPGP_standby_byrank then --Implies result for both byrank and manual standby designation
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYBYRANK;1", lane);
+						else
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYBYRANK;0", lane);
+						end
+						if STANDBYEP then
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYEP;1", lane);
+						else
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYEP;0", lane);
+						end
+						if STANDBYOFFLINE then
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYOFFLINE;1", lane);
+						else
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYOFFLINE;0", lane);
+						end
+						if CEPGP_standby_share then
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYSHARE;true", lane);
+						else
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYSHARE;false", lane);
+						end
+						CEPGP_SendAddonMsg(target..";impresponse;STANDBYPERCENT;"..STANDBYPERCENT, lane);
+						if CEPGP_standby_accept_whispers then
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYALLOWWHISPERS;1", lane);
+						else
+							CEPGP_SendAddonMsg(target..";impresponse;STANDBYALLOWWHISPERS;0", lane);
+						end
+						for k, v in pairs(STANDBYRANKS) do
+							if STANDBYRANKS[k][2] then
+								CEPGP_SendAddonMsg(target..";impresponse;STANDBYRANKS;"..k..";1", lane);
+							else
+								CEPGP_SendAddonMsg(target..";impresponse;STANDBYRANKS;"..k..";0", lane);
+							end
+						end
+						CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
 			
-				--	Boss EP Settings	--
-			for k, v in pairs(EPVALS) do
-				CEPGP_SendAddonMsg(target..";impresponse;EPVALS;"..k..";"..v, lane);
-			end
-			for k, v in pairs(AUTOEP) do
-				if AUTOEP[k] then
-					CEPGP_SendAddonMsg(target..";impresponse;AUTOEP;"..k..";1", lane);
-				else
-					CEPGP_SendAddonMsg(target..";impresponse;AUTOEP;"..k..";0", lane);
-				end
-			end
-			local temp = {};
-			for k, v in pairs(OVERRIDE_INDEX) do
-				temp[#temp+1] = {k, v};
-				--CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..k..";"..v, lane);
-			end
-			
-			local i = 1;
-			CEPGP_print("Sending overrides");
-			C_Timer.NewTicker(0.01, function()
-				CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..temp[i][1]..";"..temp[i][2], lane);
-				i = i + 1;
-				if i == #temp then
-					CEPGP_print("Overrides sent!");
-				end
-			end, #temp);
-				--	Page 2	--
-			if CEPGP_auto_pass then
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_auto_pass;true", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_auto_pass;false", lane);
-			end
-			if CEPGP_raid_wide_dist then
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_raid_wide_dist;true", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_raid_wide_dist;false", lane);
-			end
-			if CEPGP_gp_tooltips then
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_gp_tooltips;true", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_gp_tooltips;false", lane)
-			end
-			if CEPGP_suppress_announcements then
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_suppress_announcements;true", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_suppress_announcements;false", lane)
-			end
-			
-			if CEPGP_minEP[1] then
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_minEP;true;" .. CEPGP_minEP[2], lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_minEP;false;" .. CEPGP_minEP[2], lane);	
-			end
-			
-			if CEPGP_show_passes then
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_show_passes;true", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_show_passes;false", lane)
-			end
-			if CEPGP_PR_sort then
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_PR_sort;true", lane);
-			else
-				CEPGP_SendAddonMsg(target..";impresponse;CEPGP_PR_sort;false", lane)
-			end
-			
-			CEPGP_SendAddonMsg(target..";impresponse;COMPLETE;", lane);
-			
-			CEPGP_Info.LastImport = time();
+						C_Timer.After(1, function()
+								--	Boss EP Settings	--
+							CEPGP_SendAddonMsg(target..";impresponse;EP;", lane);
+							for k, v in pairs(EPVALS) do
+								CEPGP_SendAddonMsg(target..";impresponse;EPVALS;"..k..";"..v, lane);
+							end
+							for k, v in pairs(AUTOEP) do
+								if AUTOEP[k] then
+									CEPGP_SendAddonMsg(target..";impresponse;AUTOEP;"..k..";1", lane);
+								else
+									CEPGP_SendAddonMsg(target..";impresponse;AUTOEP;"..k..";0", lane);
+								end
+							end
+							CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
+							
+							
+							C_Timer.After(1, function()
+								CEPGP_SendAddonMsg(target..";impresponse;Overrides;", lane);
+								local temp = {};
+								for k, v in pairs(OVERRIDE_INDEX) do
+									temp[#temp+1] = {k, v};
+									--CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..k..";"..v, lane);
+								end
+								
+								local i = 1;
+								C_Timer.NewTicker(0.01, function()
+									CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..temp[i][1]..";"..temp[i][2], lane);
+									i = i + 1;
+									
+									if i == #temp then
+										CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
+										C_Timer.After(1, function()
+												--	Page 2	--
+											CEPGP_SendAddonMsg(target..";impresponse;Misc;", lane);
+											if CEPGP_auto_pass then
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_auto_pass;true", lane);
+											else
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_auto_pass;false", lane);
+											end
+											if CEPGP_raid_wide_dist then
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_raid_wide_dist;true", lane);
+											else
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_raid_wide_dist;false", lane);
+											end
+											if CEPGP_gp_tooltips then
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_gp_tooltips;true", lane);
+											else
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_gp_tooltips;false", lane)
+											end
+											if CEPGP_suppress_announcements then
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_suppress_announcements;true", lane);
+											else
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_suppress_announcements;false", lane)
+											end
+											if CEPGP_minEP[1] then
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_minEP;true;" .. CEPGP_minEP[2], lane);
+											else
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_minEP;false;" .. CEPGP_minEP[2], lane);	
+											end
+											
+											if CEPGP_show_passes then
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_show_passes;true", lane);
+											else
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_show_passes;false", lane)
+											end
+											if CEPGP_PR_sort then
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_PR_sort;true", lane);
+											else
+												CEPGP_SendAddonMsg(target..";impresponse;CEPGP_PR_sort;false", lane)
+											end
+											CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
+											
+											CEPGP_SendAddonMsg(target..";impresponse;COMPLETE;", lane);
+											
+											CEPGP_Info.LastImport = time();
+										end);										
+									end
+								end, #temp);
+							end);
+						end);
+					end);
+				end);
+			end);
 		end);
 	
 	if not success then
@@ -359,6 +387,41 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 		if option == "SYNCHRONISING" then
 			CEPGP_print(sender .. " is synchronising your settings with theirs");
 		end		
+		
+		if CEPGP.VerboseLogging then
+			if option == "Reporting" then
+				CEPGP_print("Importing reporting channels..");
+			end
+			if option == "GP" then
+				CEPGP_print("Importing GP configuration..");
+			end
+			if option == "SlotWeights" then
+				CEPGP_print("Importing slot weights..");
+			end
+			if option == "GUI" then
+				CEPGP_print("Importing loot GUI configuration..");
+			end
+			if option == "Standby" then
+				CEPGP_print("Importing standby settings..");
+			end
+			if option == "Misc" then
+				CEPGP_print("Importing miscellaneous settings..");
+			end
+			if option == "EP" then
+				CEPGP_print("Importing boss EP settings..");
+			end
+			if option == "Overrides" then
+				CEPGP_print("Importing overrides..");
+			end
+			if option == "Done" then
+				CEPGP_print("Done.");
+			end
+		end
+		
+		if option == "Overrides" then
+			OVERRIDE_INDEX = {};
+			CEPGP.Overrides = {};
+		end
 		
 		if option == "CEPGP_loot_GUI" then
 			if args[4] == "true" then
@@ -434,6 +497,17 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 							OVERRIDE_INDEX[link] = val;
 							CEPGP.Overrides[link] = val;
 						end
+						if OVERRIDE_INDEX[name] then
+							OVERRIDE_INDEX[name] = nil;
+							CEPGP.Overrides[link] = nil;
+						end
+					else
+						local id = CEPGP_getItemID(CEPGP_getItemString(item));
+						local link = CEPGP_getItemLink(id);
+						local name = GetItemInfo(id);
+						
+						OVERRIDE_INDEX[link] = val;
+						CEPGP.Overrides[link] = val;
 						if OVERRIDE_INDEX[name] then
 							OVERRIDE_INDEX[name] = nil;
 							CEPGP.Overrides[link] = nil;
