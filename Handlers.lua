@@ -23,9 +23,8 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 				if CEPGP_roster[arg2] then
 					local index = CEPGP_getIndex(arg2, CEPGP_roster[arg2][1]);
 					EP, GP = CEPGP_getEPGP(arg2, index);
-					if CEPGP_minEP[1] and CEPGP_minEP[2] > EP then
+					if CEPGP.Loot.MinReq[1] and CEPGP.Loot.MinReq[2] > tonumber(EP) then
 						CEPGP_print(arg2 .. " is interested in this item but doesn't have enough EP.");
-						return;
 					end
 					class = CEPGP_roster[arg2][2];
 					inGuild = true;
@@ -67,9 +66,8 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 			if CEPGP_roster[arg2] then
 				local index = CEPGP_getIndex(arg2, CEPGP_roster[arg2][1]);
 				EP, GP = CEPGP_getEPGP(arg2, index);
-				if CEPGP_minEP[1] and CEPGP_minEP[2] > EP then
+				if CEPGP.Loot.MinReq[1] and CEPGP.Loot.MinReq[2] > tonumber(EP) then
 					CEPGP_print(arg2 .. " is interested in this item but doesn't have enough EP.");
-					return;
 				end
 				class = CEPGP_roster[arg2][2];
 				inGuild = true;

@@ -2369,7 +2369,7 @@
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-								GameTooltip:SetText("Loot Master Feature\nRequire players to have a certain amount of EP before their loot responses are recognised.");
+								GameTooltip:SetText("Loot Master Feature\nIf enabled, shows when a player wants loot but has less than the required amount.");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
@@ -2452,13 +2452,6 @@
 							<OnEnterPressed>
 								self:ClearFocus();
 							</OnEnterPressed>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-								GameTooltip:SetText("Specify the minimum amount of EP that is required to request loot.");
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
 							<OnEditFocusLost>
 								local value = self:GetText();
 								if not tonumber(value) or tonumber(value) == CEPGP_minEP[2] then

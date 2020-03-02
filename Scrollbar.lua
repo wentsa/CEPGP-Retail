@@ -65,6 +65,26 @@ function CEPGP_UpdateLootScrollBar(sort)
 		end
 		local response = tempTable[i][11];
 		tempTable[i][11] = CEPGP_response_buttons[tonumber(response)][2];
+		local EPcolour;
+		if CEPGP.Loot.MinReq[1] and CEPGP.Loot.MinReq[2] > tonumber(tempTable[i][5]) then
+			EPcolour = {
+				r = 1,
+				g = 0,
+				b = 0
+			};
+		else
+			EPcolour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
+		end
+		
+		local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
+		if not colour then
+			colour = {
+				r = 1,
+				g = 1,
+				b = 1
+			};
+		end
+		
 		if tempTable[i][8] ~= "noitem" or tempTable[i][9] ~= "noitem" then
 			if tempTable[i][8] ~= "noitem" then
 				local id = tonumber(tempTable[i][8]);
@@ -75,14 +95,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 					item:ContinueOnItemLoad(function()
 						_, link, _, _, _, _, _, _, _, tex = GetItemInfo(id)
 						iString = CEPGP_getItemString(link);
-						local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
-						if not colour then
-							colour = {
-							r = 1,
-							g = 1,
-							b = 1
-						};
-						end
+						
 						_G["LootDistButton" .. i]:Show();
 						_G["LootDistButton" .. i]:SetAttribute("response", response);
 						_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
@@ -95,7 +108,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 						_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
 						_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
-						_G["LootDistButton" .. i .. "EP"]:SetTextColor(colour.r, colour.g, colour.b);
+						_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
 						_G["LootDistButton" .. i .. "GP"]:SetText(tempTable[i][6]);
 						_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
@@ -112,14 +125,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 					end);
 				else
 					iString = CEPGP_getItemString(link);
-					local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
-					if not colour then
-						colour = {
-						r = 1,
-						g = 1,
-						b = 1
-					};
-					end
+				
 					_G["LootDistButton" .. i]:Show();
 					_G["LootDistButton" .. i]:SetAttribute("response", response);
 					_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
@@ -132,7 +138,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 					_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
 					_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
-					_G["LootDistButton" .. i .. "EP"]:SetTextColor(colour.r, colour.g, colour.b);
+					_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
 					_G["LootDistButton" .. i .. "GP"]:SetText(tempTable[i][6]);
 					_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
@@ -161,14 +167,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 					item:ContinueOnItemLoad(function()
 						_, link, _, _, _, _, _, _, _, tex2 = GetItemInfo(id)
 						iString2 = CEPGP_getItemString(link);
-						local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
-						if not colour then
-							colour = {
-							r = 1,
-							g = 1,
-							b = 1
-						};
-						end
+						
 						_G["LootDistButton" .. i]:Show();
 						_G["LootDistButton" .. i]:SetAttribute("response", response);
 						_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
@@ -181,7 +180,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 						_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
 						_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
-						_G["LootDistButton" .. i .. "EP"]:SetTextColor(colour.r, colour.g, colour.b);
+						_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
 						_G["LootDistButton" .. i .. "GP"]:SetText(tempTable[i][6]);
 						_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
@@ -198,14 +197,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 					end);
 				else
 					iString2 = CEPGP_getItemString(link);
-					local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
-					if not colour then
-						colour = {
-						r = 1,
-						g = 1,
-						b = 1
-					};
-					end
+					
 					_G["LootDistButton" .. i]:Show();
 					_G["LootDistButton" .. i]:SetAttribute("response", response);
 					_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
@@ -218,7 +210,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 					_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
 					_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
-					_G["LootDistButton" .. i .. "EP"]:SetTextColor(colour.r, colour.g, colour.b);
+					_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
 					_G["LootDistButton" .. i .. "GP"]:SetText(tempTable[i][6]);
 					_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
@@ -238,14 +230,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 				_G["LootDistButton" .. i .. "Icon2"]:SetTexture(nil);
 			end
 		else --Recipient has no items in the corresponding slots
-			local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
-			if not colour then
-				colour = {
-				r = 1,
-				g = 1,
-				b = 1
-			};
-			end
+			
 			_G["LootDistButton" .. i]:Show();
 			_G["LootDistButton" .. i]:SetAttribute("response", response);
 			_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
@@ -258,7 +243,7 @@ function CEPGP_UpdateLootScrollBar(sort)
 			_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
 			_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
-			_G["LootDistButton" .. i .. "EP"]:SetTextColor(colour.r, colour.g, colour.b);
+			_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
 			_G["LootDistButton" .. i .. "GP"]:SetText(tempTable[i][6]);
 			_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
