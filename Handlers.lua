@@ -382,7 +382,8 @@ function CEPGP_handleLoot(event, arg1, arg2)
 						SendChatMessage("Awarded " .. _G["CEPGP_distribute_item_name"]:GetText() .. " to ".. CEPGP_distPlayer .. " for free", CHANNEL, CEPGP_LANGUAGE);
 						local index = CEPGP_roster[CEPGP_distPlayer][1];
 						local EP, GP = CEPGP_getEPGP(CEPGP_distPlayer, index);
-						TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+						CEPPG_addTraffic(CEPGP_distPlayer, UnitName("player"), "Given for Free", EP, EP, GP, GP, CEPGP_DistID, time());
+						--[[TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 							[1] = CEPGP_distPlayer,
 							[2] = UnitName("player"),
 							[3] = "Given for Free",
@@ -393,7 +394,7 @@ function CEPGP_handleLoot(event, arg1, arg2)
 							[8] = CEPGP_distItemLink,
 							[9] = time()
 						};
-						CEPGP_ShareTraffic(CEPGP_distPlayer, UnitName("player"), "Given for Free", EP, EP, GP, GP, CEPGP_DistID, time());
+						CEPGP_ShareTraffic(CEPGP_distPlayer, UnitName("player"), "Given for Free", EP, EP, GP, GP, CEPGP_DistID, time());]]
 					end
 					CEPGP_distPlayer = "";
 					CEPGP_distribute_popup:Hide();
@@ -405,7 +406,8 @@ function CEPGP_handleLoot(event, arg1, arg2)
 					CEPGP_toggleGPEdit(true);
 					CEPGP_button_options_loot_gui:Enable();
 					SendChatMessage(_G["CEPGP_distribute_item_name"]:GetText() .. " has been distributed without EPGP", CHANNEL, CEPGP_LANGUAGE);
-					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+					CEPGP_addTraffic("", UnitName("player"), "Manually Awarded", "", "", "", "", CEPGP_DistID, time());
+					--[[TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 						[1] = "",
 						[2] = UnitName("player"),
 						[3] = "Manually Awarded",
@@ -416,7 +418,7 @@ function CEPGP_handleLoot(event, arg1, arg2)
 						[8] = CEPGP_distItemLink,
 						[9] = time()
 					};
-					CEPGP_ShareTraffic("", UnitName("player"), "Manually Awarded", "", "", "", "", CEPGP_DistID, time());
+					CEPGP_ShareTraffic("", UnitName("player"), "Manually Awarded", "", "", "", "", CEPGP_DistID, time());]]
 					CEPGP_distribute_popup:Hide();
 					CEPGP_distribute:Hide();
 					_G["CEPGP_distributing_button"]:Hide();

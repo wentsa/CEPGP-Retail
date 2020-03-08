@@ -696,6 +696,8 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 		local GPB = args[7];
 		local GPA = args[8];
 		local itemID = args[9];
+		local id = args[10];
+		local GUID = args[11];
 		if itemID == "" then itemID = 0; end
 		local tStamp = args[10];
 		if not tStamp or tStamp == "" then
@@ -708,16 +710,31 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 				item:ContinueOnItemLoad(function()
 					itemLink = CEPGP_getItemLink(itemID);
 					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
-					[1] = player,
-					[2] = issuer,
-					[3] = action,
-					[4] = EPB,
-					[5] = EPA,
-					[6] = GPB,
-					[7] = GPA,
-					[8] = itemLink,
-					[9] = tStamp
-				};
+						[1] = player,
+						[2] = issuer,
+						[3] = action,
+						[4] = EPB,
+						[5] = EPA,
+						[6] = GPB,
+						[7] = GPA,
+						[8] = itemLink,
+						[9] = tStamp,
+						[10] = id,
+						[11] = GUID
+					};
+					--[[CEPGP.Traffic[#CEPGP.Traffic+1] = {
+						[1] = player,
+						[2] = issuer,
+						[3] = action,
+						[4] = EPB,
+						[5] = EPA,
+						[6] = GPB,
+						[7] = GPA,
+						[8] = itemLink,
+						[9] = tStamp,
+						[10] = id,
+						[11] = GUID
+					};]]
 				end);
 			elseif itemLink then
 				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
@@ -729,8 +746,23 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 					[6] = GPB,
 					[7] = GPA,
 					[8] = itemLink,
-					[9] = tStamp
+					[9] = tStamp,
+					[10] = id,
+					[11] = GUID
 				};
+				--[[CEPGP.Traffic[#CEPGP.Traffic+1] = {
+					[1] = player,
+					[2] = issuer,
+					[3] = action,
+					[4] = EPB,
+					[5] = EPA,
+					[6] = GPB,
+					[7] = GPA,
+					[8] = itemLink,
+					[9] = tStamp,
+					[10] = id,
+					[11] = GUID
+				};]]
 			end
 		else
 			TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
@@ -741,8 +773,24 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 				[5] = EPA,
 				[6] = GPB,
 				[7] = GPA,
-				[9] = tStamp
+				[8] = "",
+				[9] = tStamp,
+				[10] = id,
+				[11] = GUID
 			};
+			--[[CEPGP.Traffic[#CEPGP.Traffic+1] = {
+				[1] = player,
+				[2] = issuer,
+				[3] = action,
+				[4] = EPB,
+				[5] = EPA,
+				[6] = GPB,
+				[7] = GPA,
+				[8] = "",
+				[9] = tStamp,
+				[10] = id,
+				[11] = GUID
+			};]]
 		end
 		CEPGP_UpdateTrafficScrollBar();
 	end

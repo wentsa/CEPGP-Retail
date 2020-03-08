@@ -465,8 +465,6 @@ function CEPGP_UpdateVersionScrollBar()
 					version = tempTable[i][2];
 					class = tempTable[i][3];
 					classFile = tempTable[i][4];
-				--	print(name);
-				--	print(class);
 					local colour = RAID_CLASS_COLORS[classFile];
 					if not colour then
 						colour = {

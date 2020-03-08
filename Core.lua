@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.10.beta-2";
+CEPGP_VERSION = "1.12.10.beta-3";
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -83,7 +83,7 @@ CEPGP_PR_sort = true;
 CEPGP = {};
 CEPGP_Info = {
 	Version = "1.12.10",
-	Build = "Beta 2",
+	Build = "Beta 3",
 	IgnoreUpdates = false,
 	LastImport = time(),
 	LastUpdate = GetTime(),
@@ -337,7 +337,7 @@ function SlashCmdList.CEPGP(msg, editbox)
 	elseif strfind(msg, "debug") then
 		CEPGP_debuginfo:Show();
 	
-	else
+	else		
 		CEPGP_print("|cFF80FF80" .. msg .. "|r |cFFFF8080is not a valid request. Type /CEPGP to check addon usage|r", true);
 	end
 end
@@ -411,29 +411,34 @@ function CEPGP_AddRaidEP(amount, msg, encounter)
 	local function update()
 		if msg ~= "" and msg ~= nil or encounter then
 			if encounter then -- a boss was killed
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Add Raid EP +" .. amount .. " - " .. encounter, "", "", "", "", "", time()};
-				CEPGP_ShareTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount .. " - " .. encounter);
+				CEPGP_addTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount .. " - " .. encounter, "", "", "", "", "", time());
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Add Raid EP +" .. amount .. " - " .. encounter, "", "", "", "", "", time()};
+				--CEPGP_ShareTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount .. " - " .. encounter);
 				CEPGP_sendChatMessage(msg, CHANNEL);
 			else -- EP was manually given, could be either positive or negative, and a message was written
 				if tonumber(amount) <= 0 then
-					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Subtract Raid EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time()};
-					CEPGP_ShareTraffic("Raid", UnitName("player"), "Subtract Raid EP " .. amount .. " (" .. msg .. ")");
+					CEPGP_addTraffic("Raid", UnitName("player"), "Subtract Raid EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time());
+					--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Subtract Raid EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time()};
+					--CEPGP_ShareTraffic("Raid", UnitName("player"), "Subtract Raid EP " .. amount .. " (" .. msg .. ")");
 					CEPGP_sendChatMessage(amount .. " EP taken from all raid members (" .. msg .. ")", CHANNEL);
 				else
-					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Add Raid EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time()};
-					CEPGP_ShareTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount .. " (" .. msg .. ")");
+					CEPGP_addTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time());
+					--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Add Raid EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time()};
+					--CEPGP_ShareTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount .. " (" .. msg .. ")");
 					CEPGP_sendChatMessage(amount .. " EP awarded to all raid members (" .. msg .. ")", CHANNEL);
 				end
 			end
 		else -- no message was written
 			if tonumber(amount) <= 0 then
 				amount = string.sub(amount, 2, string.len(amount));
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Subtract Raid EP -" .. amount, "", "", "", "", "", time()};
-				CEPGP_ShareTraffic("Raid", UnitName("player"), "Subtract Raid EP -" .. amount);	
+				CEPGP_addTraffic("Raid", UnitName("player"), "Subtract Raid EP -" .. amount, "", "", "", "", "", time());
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Subtract Raid EP -" .. amount, "", "", "", "", "", time()};
+				--CEPGP_ShareTraffic("Raid", UnitName("player"), "Subtract Raid EP -" .. amount);	
 				CEPGP_sendChatMessage(amount .. " EP taken from all raid members", CHANNEL);
 			else
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Add Raid EP +" .. amount, "", "", "", "", "", time()};
-				CEPGP_ShareTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount);
+				CEPGP_addTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount, "", "", "", "", "", time());
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Raid", UnitName("player"), "Add Raid EP +" .. amount, "", "", "", "", "", time()};
+				--CEPGP_ShareTraffic("Raid", UnitName("player"), "Add Raid EP +" .. amount);
 				CEPGP_sendChatMessage(amount .. " EP awarded to all raid members", CHANNEL);
 			end
 		end
@@ -486,22 +491,26 @@ function CEPGP_addGuildEP(amount, msg)
 			amount = string.sub(amount, 2, string.len(amount));
 			if msg ~= "" and msg ~= nil then
 				CEPGP_sendChatMessage(amount .. " EP taken from all guild members (" .. msg .. ")", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Subtract Guild EP -" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time()};
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Subtract Guild EP -" .. amount .. " (" .. msg .. ")");
+				CEPGP_addTraffic("Guild", UnitName("player"), "Subtract Guild EP -" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time());
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Subtract Guild EP -" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time()};
+				--CEPGP_ShareTraffic("Guild", UnitName("player"), "Subtract Guild EP -" .. amount .. " (" .. msg .. ")");
 			else
 				CEPGP_sendChatMessage(amount .. " EP taken from all guild members", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Subtract Guild EP -" .. amount, "", "", "", "", "", time()};
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Subtract Guild EP -" .. amount);
+				CEPGP_addTraffic("Guild", UnitName("player"), "Subtract Guild EP -" .. amount, "", "", "", "", "", time());
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Subtract Guild EP -" .. amount, "", "", "", "", "", time()};
+				--CEPGP_ShareTraffic("Guild", UnitName("player"), "Subtract Guild EP -" .. amount);
 			end
 		else
 			if msg ~= "" and msg ~= nil then
 				CEPGP_sendChatMessage(amount .. " EP awarded to all guild members (" .. msg .. ")", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Add Guild EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time()};
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Add Guild EP +" .. amount .. " (" .. msg .. ")");
+				CEPGP_addTraffic("Guild", UnitName("player"), "Add Guild EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time());
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Add Guild EP +" .. amount .. " (" .. msg .. ")", "", "", "", "", "", time()};
+				--CEPGP_ShareTraffic("Guild", UnitName("player"), "Add Guild EP +" .. amount .. " (" .. msg .. ")");
 			else
 				CEPGP_sendChatMessage(amount .. " EP awarded to all guild members", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Add Guild EP +" .. amount, "", "", "", "", "", time()};
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Add Guild EP +" .. amount);
+				CEPGP_addTraffic("Guild", UnitName("player"), "Add Guild EP +" .. amount, "", "", "", "", "", time());
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Add Guild EP +" .. amount, "", "", "", "", "", time()};
+				--CEPGP_ShareTraffic("Guild", UnitName("player"), "Add Guild EP +" .. amount);
 			end
 		end
 		if _G["CEPGP_traffic"]:IsVisible() then
@@ -551,9 +560,11 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 	
 	local function update()
 		if tonumber(amount) > 0 then
-			TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Standby EP +" .. amount, "", "", "", "", "", time()};
+			CEPGP_addTraffic("Guild", UnitName("player"), "Standby EP +" .. amount, "", "", "", "", "", time());
+			--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Standby EP +" .. amount, "", "", "", "", "", time()};
 		elseif tonumber(amount) < 0 then
-			TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Standby EP " .. amount, "", "", "", "", "", time()};
+			CEPGP_addTraffic("Guild", UnitName("player"), "Standby EP " .. amount, "", "", "", "", "", time());
+			--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Standby EP " .. amount, "", "", "", "", "", time()};
 		end
 		if tonumber(amount) > 0 then
 			CEPGP_ShareTraffic("Guild", UnitName("player"), "Standby EP +" .. amount);
@@ -707,8 +718,9 @@ function CEPGP_addGP(player, amount, itemID, itemLink, msg, response)
 				amount = string.sub(amount, 2, string.len(amount));
 				if msg ~= "" and msg ~= nil then
 					CEPGP_sendChatMessage(amount .. " GP taken from " .. player .. " (" .. msg .. ")", CHANNEL);
-					CEPGP_ShareTraffic(player, UnitName("player"), "Subtract GP " .. amount .. " (" .. msg .. ")", EP, EP, GP - amount, GPB);
-					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+					CEPGP_addTraffic(player, UnitName("player"), "Subtract GP -" .. amount .. " (" .. msg .. ")", EP, EP, GPB, GP);
+					--CEPGP_ShareTraffic(player, UnitName("player"), "Subtract GP " .. amount .. " (" .. msg .. ")", EP, EP, GPB, GP, time());
+					--[[TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 						[1] = player,
 						[2] = UnitName("player"),
 						[3] = "Subtract GP " .. amount .. " (" .. msg .. ")",
@@ -717,10 +729,11 @@ function CEPGP_addGP(player, amount, itemID, itemLink, msg, response)
 						[6] = GPB,
 						[7] = GP,
 						[9] = time()
-					};
+					};]]
 				else
 					CEPGP_sendChatMessage(amount .. " GP taken from " .. player, CHANNEL);
-					CEPGP_ShareTraffic(player, UnitName("player"), "Subtract GP " .. amount, EP, EP, GP - amount, GPB);
+					CEPGP_addTraffic(player, UnitName("player"), "Subtract GP -" .. amount, EP, EP, GPB, GP);
+					--[[CEPGP_ShareTraffic(player, UnitName("player"), "Subtract GP " .. amount, EP, EP, GPB, GP);
 					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 						[1] = player,
 						[2] = UnitName("player"),
@@ -730,12 +743,13 @@ function CEPGP_addGP(player, amount, itemID, itemLink, msg, response)
 						[6] = GPB,
 						[7] = GP,
 						[9] = time()
-					};
+					};]]
 				end
 			else -- Number is positive
 				if msg ~= "" and msg ~= nil then
 					CEPGP_sendChatMessage(amount .. " GP added to " .. player .. " (" .. msg .. ")", CHANNEL);
-					CEPGP_ShareTraffic(player, UnitName("player"), "Add GP " .. amount .. " (" .. msg .. ")", EP, EP, GPB, GP);
+					CEPGP_addTraffic(player, UnitName("player"), "Add GP +" .. amount .. " (" .. msg .. ")", EP, EP, GPB, GP);
+					--[[CEPGP_ShareTraffic(player, UnitName("player"), "Add GP " .. amount .. " (" .. msg .. ")", EP, EP, GPB, GP);
 					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 						[1] = player,
 						[2] = UnitName("player"),
@@ -745,10 +759,11 @@ function CEPGP_addGP(player, amount, itemID, itemLink, msg, response)
 						[6] = GPB,
 						[7] = GP,
 						[9] = time()
-					};
+					};]]
 				else
 					CEPGP_sendChatMessage(amount .. " GP added to " .. player, CHANNEL);
-					CEPGP_ShareTraffic(player, UnitName("player"), "Add GP " .. amount, EP, EP, GPB, GP);
+					CEPGP_addTraffic(player, UnitName("player"), "Add GP +" .. amount, EP, EP, GPB, GP);
+					--[[CEPGP_ShareTraffic(player, UnitName("player"), "Add GP " .. amount, EP, EP, GPB, GP);
 					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 						[1] = player,
 						[2] = UnitName("player"),
@@ -758,7 +773,7 @@ function CEPGP_addGP(player, amount, itemID, itemLink, msg, response)
 						[6] = GPB,
 						[7] = GP,
 						[9] = time()
-					};
+					};]]
 				end
 			end
 		else -- If an item is associated with the message then the number cannot be negative
@@ -766,34 +781,11 @@ function CEPGP_addGP(player, amount, itemID, itemLink, msg, response)
 				_, itemLink = GetItemInfo(tonumber(itemID));
 			end
 			if response then
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
-					[1] = player,
-					[2] = UnitName("player"),
-					[3] = "Add GP " .. amount .. " (" .. response .. ")",
-					[4] = EP,
-					[5] = EP,
-					[6] = GPB,
-					[7] = GP,
-					[8] = itemLink,
-					[9] = time()
-					};
+				CEPGP_addTraffic(player, UnitName("player"), "Add GP " .. amount .. " (" .. response .. ")", EP, EP, GPB, GP, itemID);
+				--CEPGP_ShareTraffic(player, UnitName("player"), "Add GP " .. amount .. " (" .. response .. ")", EP, EP, GPB, GP, itemID);
 			else
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
-					[1] = player,
-					[2] = UnitName("player"),
-					[3] = "Add GP " .. amount,
-					[4] = EP,
-					[5] = EP,
-					[6] = GPB,
-					[7] = GP,
-					[8] = itemLink,
-					[9] = time()
-				};
-			end
-			if response then
-				CEPGP_ShareTraffic(player, UnitName("player"), "Add GP " .. amount .. " (" .. response .. ")", EP, EP, GPB, GP, itemID);
-			else
-				CEPGP_ShareTraffic(player, UnitName("player"), "Add GP " .. amount, EP, EP, GPB, GP, itemID);
+				CEPGP_addTraffic(player, UnitName("player"), "Add GP " .. amount, EP, EP, GPB, GP, itemID);
+				--CEPGP_ShareTraffic(player, UnitName("player"), "Add GP " .. amount, EP, EP, GPB, GP, itemID);
 			end
 		end
 		CEPGP_UpdateTrafficScrollBar();
@@ -827,7 +819,8 @@ function CEPGP_addEP(player, amount, msg)
 			if msg ~= "" and msg ~= nil then
 				amount = string.sub(amount, 2, string.len(amount));
 				CEPGP_sendChatMessage(amount .. " EP taken from " .. player .. " (" .. msg .. ")", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+				CEPGP_addTraffic(player, UnitName("player"), "Subtract EP -" .. amount .. " (" .. msg .. ")", EPB, EP, GP, GP);
+				--[[TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 					[1] = player,
 					[2] = UnitName("player"),
 					[3] = "Subtract EP " .. amount .. " (" .. msg .. ")",
@@ -837,11 +830,12 @@ function CEPGP_addEP(player, amount, msg)
 					[7] = GP,
 					[9] = time()
 				};
-				CEPGP_ShareTraffic(player, UnitName("player"), "Subtract EP -" .. amount .. " (" .. msg .. ")", EPB, EP, GP, GP);
+				CEPGP_ShareTraffic(player, UnitName("player"), "Subtract EP -" .. amount .. " (" .. msg .. ")", EPB, EP, GP, GP);]]
 			else
 				amount = string.sub(amount, 2, string.len(amount));
 				CEPGP_sendChatMessage(amount .. " EP taken from " .. player, CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+				CEPGP_addTraffic(player, UnitName("player"), "Subtract EP -" .. amount, EPB, EP, GP, GP);
+				--[[TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 					[1] = player,
 					[2] = UnitName("player"),
 					[3] = "Subtract EP -" .. amount,
@@ -851,12 +845,13 @@ function CEPGP_addEP(player, amount, msg)
 					[7] = GP,
 					[9] = time()
 				};
-				CEPGP_ShareTraffic(player, UnitName("player"), "Subtract EP -" .. amount, EPB, EP, GP, GP);
+				CEPGP_ShareTraffic(player, UnitName("player"), "Subtract EP -" .. amount, EPB, EP, GP, GP);]]
 			end
 		else
 			if msg ~= "" and msg ~= nil then
 				CEPGP_sendChatMessage(amount .. " EP added to " .. player .. " (" .. msg .. ")", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+				CEPGP_addTraffic(player, UnitName("player"), "Add EP +" .. amount .. " (" .. msg ..")", EPB, EP, GP, GP);
+				--[[TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 					[1] = player,
 					[2] = UnitName("player"),
 					[3] = "Add EP +" .. amount .. " (" .. msg .. ")",
@@ -866,10 +861,11 @@ function CEPGP_addEP(player, amount, msg)
 					[7] = GP,
 					[9] = time()
 				};
-				CEPGP_ShareTraffic(player, UnitName("player"), "Add EP +" .. amount .. " (" .. msg ..")", EPB, EP, GP, GP);
+				CEPGP_ShareTraffic(player, UnitName("player"), "Add EP +" .. amount .. " (" .. msg ..")", EPB, EP, GP, GP);]]
 			else
 				CEPGP_sendChatMessage(amount .. " EP added to " .. player, CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+				CEPGP_addTraffic(player, UnitName("player"), "Add EP +" .. amount, EPB, EP, GP, GP);
+				--[[TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
 					[1] = player,
 					[2] = UnitName("player"),
 					[3] = "Add EP +" .. amount,
@@ -879,7 +875,7 @@ function CEPGP_addEP(player, amount, msg)
 					[7] = GP,
 					[9] = time()
 				};
-				CEPGP_ShareTraffic(player, UnitName("player"), "Add EP " .. amount, EPB, EP, GP, GP);
+				CEPGP_ShareTraffic(player, UnitName("player"), "Add EP " .. amount, EPB, EP, GP, GP);]]
 			end
 		end
 		CEPGP_UpdateTrafficScrollBar();
@@ -899,22 +895,26 @@ function CEPGP_decay(amount, msg)
 			amount = string.sub(amount, 2, string.len(amount));
 			if msg ~= "" and msg ~= nil then
 				CEPGP_sendChatMessage("Guild EPGP inflated by " .. amount .. "% (" .. msg .. ")", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "% (" .. msg .. ")", "", "", "", "", "", time()}; 
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "% (" .. msg .. ")");
+				CEPGP_addTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "% (" .. msg .. ")");
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "% (" .. msg .. ")", "", "", "", "", "", time()}; 
+				--CEPGP_ShareTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "% (" .. msg .. ")");
 			else
 				CEPGP_sendChatMessage("Guild EPGP inflated by " .. amount .. "%", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "%", "", "", "", "", "", time()}; 
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "%");
+				CEPGP_addTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "%");
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "%", "", "", "", "", "", time()}; 
+				--CEPGP_ShareTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "%");
 			end
 		else
 			if msg ~= "" and msg ~= nil then
 				CEPGP_sendChatMessage("Guild EPGP decayed by " .. amount .. "% (" .. msg .. ")", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Decay EPGP -" .. amount .. "% (" .. msg .. ")", "", "", "", "", "", time()}; 
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. "% (" .. msg .. ")");
+				CEPGP_addTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. "% (" .. msg .. ")");
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Decay EPGP -" .. amount .. "% (" .. msg .. ")", "", "", "", "", "", time()}; 
+				--CEPGP_ShareTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. "% (" .. msg .. ")");
 			else
 				CEPGP_sendChatMessage("Guild EPGP decayed by " .. amount .. "%", CHANNEL);
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Decay EPGP -" .. amount .. "%", "", "", "", "", "", time()}; 
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. "%");
+				CEPGP_addTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. "%");
+				--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Decay EPGP -" .. amount .. "%", "", "", "", "", "", time()}; 
+				--CEPGP_ShareTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. "%");
 			end
 		end
 		if _G["CEPGP_traffic"]:IsVisible() then
@@ -967,12 +967,14 @@ function CEPGP_resetAll(msg)
 	
 	local function update()
 		if msg ~= "" and msg ~= nil then
-			TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Cleared EPGP standings (" .. msg .. ")", "", "", "", "", "", time()};
-			CEPGP_ShareTraffic("Guild", UnitName("player"), "Cleared EPGP standings (" .. msg .. ")");
+			CEPGP_addTraffic("Guild", UnitName("player"), "Cleared EPGP standings (" .. msg .. ")");
+			--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Cleared EPGP standings (" .. msg .. ")", "", "", "", "", "", time()};
+			--CEPGP_ShareTraffic("Guild", UnitName("player"), "Cleared EPGP standings (" .. msg .. ")");
 			CEPGP_sendChatMessage("All EPGP standings have been cleared! (" .. msg .. ")", CHANNEL);
 		else
-			TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Cleared EPGP standings", "", "", "", "", "", time()};
-			CEPGP_ShareTraffic("Guild", UnitName("player"), "Cleared EPGP standings");
+			CEPGP_addTraffic("Guild", UnitName("player"), "Cleared EPGP standings");
+			--TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Cleared EPGP standings", "", "", "", "", "", time()};
+			--CEPGP_ShareTraffic("Guild", UnitName("player"), "Cleared EPGP standings");
 			CEPGP_sendChatMessage("All EPGP standings have been cleared!", CHANNEL);
 		end
 		C_Timer.After(2, function()

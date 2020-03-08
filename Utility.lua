@@ -627,7 +627,7 @@ function CEPGP_rosterUpdate(event)
 			elseif CEPGP_mode == "raid" and _G["CEPGP_raid"]:IsVisible() then
 				CEPGP_UpdateRaidScrollBar();
 			end
-			if numGuild > 0 and _G["CEPGP_standby"]:IsVisible() then
+			if GetNumGuildMembers() > 0 and _G["CEPGP_standby"]:IsVisible() then
 				CEPGP_UpdateStandbyScrollBar();
 			end
 			
@@ -678,10 +678,10 @@ function CEPGP_rosterUpdate(event)
 					};
 				end
 			end
-			if i >= numGuild then
+			if i >= GetNumGuildMembers() then
 				update();
 			end
-		end, numGuild);
+		end, GetNumGuildMembers());
 		
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		if IsInRaid("player") then
@@ -1218,7 +1218,8 @@ function CEPGP_tSort(t, index)
 		for x = 1, tSize do
 			local t2Size = table.getn(t2);
 			for y = 1, t2Size do
-				if y < t2Size and t[1][index] ~= nil then
+				if y < t2Size and 
+				t[1][index] ~= nil then
 					if CEPGP_critReverse then
 						if (t[1][index] >= t2[y][index]) then
 							table.insert(t2, y, t[1]);
@@ -2201,4 +2202,88 @@ function CEPGP_addPlugin(plugin, iPanel, enabled, func)	-- Addon name, interface
 	_G[name .. "Options"]:SetScript('OnClick', function()
 		xpcall(function() InterfaceOptionsFrame_OpenToCategory(iPanel) end, geterrorhandler());
 	end);
+end
+
+function CEPGP_addTraffic(target, source, desc, EPB, EPA, GPB, GPA, itemID, tStamp)
+	
+	if not source == UnitName("player") then return; end
+	local id = time() + GetTime();
+	
+	EPB = EPB or "";
+	EPA = EPA or "";
+	GPB = GPB or "";
+	GPA = GPA or "";
+	itemID = itemID or "";
+	tStamp = tstamp or time();
+	
+	if CEPGP_itemExists(tonumber(itemID)) then
+		local itemLink = CEPGP_getItemLink(itemID);
+		if not itemLink then
+			local item = Item:CreateFromItemID(tonumber(itemID));
+			item:ContinueOnItemLoad(function()
+				itemLink = CEPGP_getItemLink(itemID);
+	
+				TRAFFIC[#TRAFFIC+1] = {
+					[1] = target,
+					[2] = source,
+					[3] = desc,
+					[4] = EPB,
+					[5] = EPA,
+					[6] = GPB,
+					[7] = GPA,
+					[8] = itemLink,
+					[9] = tStamp,
+					[10] = id,
+					[11] = UnitGUID("player")
+				};
+				
+			end);
+		elseif itemLink then
+			TRAFFIC[#TRAFFIC+1] = {
+				[1] = target,
+				[2] = source,
+				[3] = desc,
+				[4] = EPB,
+				[5] = EPA,
+				[6] = GPB,
+				[7] = GPA,
+				[8] = itemLink,
+				[9] = tStamp,
+				[10] = id,
+				[11] = UnitGUID("player")
+			};
+		end
+	else
+		TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+			[1] = player,
+			[2] = issuer,
+			[3] = action,
+			[4] = EPB,
+			[5] = EPA,
+			[6] = GPB,
+			[7] = GPA,
+			[8] = "",
+			[9] = tStamp,
+			[10] = id,
+			[11] = GUID
+		};
+	end
+	
+	--[[CEPGP.Traffic[#CEPGP.Traffic+1] = {
+		[1] = target,
+		[2] = source,
+		[3] = desc,
+		[4] = EPB,
+		[5] = EPA,
+		[6] = GPB,
+		[7] = GPA,
+		[8] = item,
+		[9] = tStamp,
+		[10] = id,
+		[11] = UnitGUID("player")
+	};]]
+	
+	if CanEditOfficerNote() then
+		CEPGP_SendAddonMsg("CEPGP_TRAFFIC;" .. target .. ";" .. source .. ";" .. desc .. ";" .. EPB .. ";" .. EPA .. ";" .. GPB .. ";" .. GPA .. ";" .. itemID .. ";" .. tStamp .. ";" .. id .. ";" .. UnitGUID("player"), "GUILD");
+	end
 end
