@@ -2365,11 +2365,15 @@ function CEPGP_importStandings()
 					EP = frags[i+1];
 					GP = frags[i+2];
 					index = CEPGP_getIndex(name);
-					local rankIndex = select(3, GetGuildRosterInfo(index));
-					if not CEPGP.Exclusions[rankIndex+1] then
-						output:SetText(output:GetText() .. "\nProcessing record: " .. name);
-						GuildRosterSetOfficerNote(index, EP .. "," .. GP);
-						CEPGP_import_progress_scrollframe:SetVerticalScroll(CEPGP_import_progress_scrollframe:GetVerticalScroll()+12);
+					if index == nil then
+						output:SetText(output:GetText() .. "\nSkipping record: " .. name);
+					else
+						local rankIndex = select(3, GetGuildRosterInfo(index));
+						if not CEPGP.Exclusions[rankIndex+1] then
+							output:SetText(output:GetText() .. "\nProcessing record: " .. name);
+							GuildRosterSetOfficerNote(index, EP .. "," .. GP);
+							CEPGP_import_progress_scrollframe:SetVerticalScroll(CEPGP_import_progress_scrollframe:GetVerticalScroll()+12);
+						end
 					end
 				end
 			end
