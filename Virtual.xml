@@ -28,14 +28,56 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Scripts>
-		<OnMouseDown>
-			CEPGP_frame:StartMoving()
-		</OnMouseDown>
-		<OnMouseUp>
-			CEPGP_frame:StopMovingOrSizing()
-		</OnMouseUp>
-	</Scripts>
+	</Frame>
+	
+	<Frame name="AltFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="550" y="21" />
+		</Size>
+		<Frames>
+			<Frame name="$parentMain">
+				<Size>
+					<AbsDimension x="150" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentAlt">
+				<Size>
+					<AbsDimension x="400" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentName" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 	</Frame>
 	
 	<Button name="LootDistButtonTemplate" virtual="true">
@@ -824,12 +866,9 @@
 				local L = CEPGP_Locale:GetLocale("CEPGP")
 
 				local name = strsub(self:GetName(), 15, strfind(self:GetName(), "_EP")-1);
-				local target = _G["CEPGP_options_" .. name .. "_val"];
-				if name == "The Edge of Madness" then
-					name = "Gri'lek"; --All bosses in the edge of madness will have the same value
-				end				
+				local target = _G["CEPGP_options_" .. name .. "_val"];		
 				self:SetText(tostring(EPVALS[name]));
-				self:SetPoint('LEFT', target, 'LEFT', 420, 0); --FontStrings justify to the left, so for the sake of structuring, it's better to set the relative anchor to left
+				--self:SetPoint('LEFT', target, 'LEFT', 420, 0); --FontStrings justify to the left, so for the sake of structuring, it's better to set the relative anchor to left
 			</OnShow>
 		</Scripts>
 	</EditBox>
@@ -889,12 +928,9 @@
 			</OnClick>
 			<OnShow>
 				local name = strsub(self:GetName(), 15, strfind(self:GetName(), "_auto_check")-1);
-				local target = _G["CEPGP_options_" .. name .. "_EP_value"];
-				if name == "The Edge of Madness" then
-					name = "Gri'lek"; --All bosses in the edge of madness will have the same value
-				end				
+				local target = _G["CEPGP_options_" .. name .. "_EP_value"];		
 				self:SetChecked(AUTOEP[name]);
-				self:SetPoint('LEFT', target, 'RIGHT', 15, 0);
+				--self:SetPoint('LEFT', target, 'RIGHT', 15, 0);
 			</OnShow>
 		</Scripts>
 	</CheckButton>
