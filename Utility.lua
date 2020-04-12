@@ -902,6 +902,12 @@ function CEPGP_rosterUpdate(event)
 				quit = true;
 				return;
 			end
+			if limit ~= GetNumGuildMembers() then
+				quit = true;
+				CEPGP_Info.Polling = false;
+				CEPGP_rosterUpdate("GUILD_ROSTER_UPDATE");
+				return;
+			end
 			i = i + 1;
 			local name, rank, rankIndex, _, class, _, _, _, online, _, classFileName = GetGuildRosterInfo(i);
 			if name then
@@ -1232,7 +1238,7 @@ function CEPGP_getIndex(name)
 	if not name then return; end
 	local index;
 	
-	if CEPGP_roster[name] then
+	if CEPGP_roster[name] and CEPGP_roster[name][1] <= GetNumGuildMembers() then
 		index = CEPGP_roster[name][1];
 	end
 	
@@ -1249,11 +1255,6 @@ function CEPGP_getIndex(name)
 			end
 		end
 	else	-- no index is supplied
-		if CEPGP_roster[name] then
-			if name == Ambiguate(GetGuildRosterInfo(CEPGP_roster[name][1]), "all") then
-				return CEPGP_roster[name][1];
-			end
-		end
 		for i = 1, GetNumGuildMembers() do
 			local temp = Ambiguate(GetGuildRosterInfo(i), "all");
 			if string.lower(temp) == string.lower(name) then
