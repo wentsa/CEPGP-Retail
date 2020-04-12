@@ -3002,7 +3002,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CEPGP_setCriteria(4, "Attendance");
+						CEPGP_setCriteria(12, "Attendance");
 					</OnClick>
 				</Scripts>
 			</Button>
