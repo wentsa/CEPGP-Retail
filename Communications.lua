@@ -232,6 +232,7 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 					end
 				end
 				CEPGP_SendAddonMsg(target..";impresponse;LOOTGUIBUTTONTIMEOUT;"..CEPGP_response_time);
+				CEPGP_SendAddonMsg(target..";impresponse;LootAnnounce;"..CEPGP.Loot.Announcement);
 				CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
 				
 				C_Timer.After(1, function()
@@ -703,7 +704,10 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 					CEPGP_PR_sort = false;
 					CEPGP.Loot.AutoSort = false;
 				end
-				
+			
+			elseif option == "LootAnnounce" then
+				CEPGP.Loot.Announcement = args[4];
+			
 			elseif option == "COMPLETE" then
 				CEPGP_print("Import complete");
 			end
