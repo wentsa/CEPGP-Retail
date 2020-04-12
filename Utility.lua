@@ -1709,6 +1709,7 @@ function CEPGP_getDebugInfo()
 	local info = "<details><summary>Debug Info</summary><br />\n";
 	info = info .. "Version: " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build .. "<br />\n";
 	info = info .. "Locale: " .. GetLocale() .. "<br />\n";
+	info = info .. "Poll Rate: " .. CEPGP.PollRate .. "<br />\n";
 	info = info .. "GP Formula: (" .. COEF .. "x(" .. MOD_COEF .. "^<sup>((ilvl/26)+(rarity-4))</sup>)xSlot Modifier)x" .. MOD .. "<br />";
 	info = info .. "Base GP: " .. BASEGP .. "<br />\n";
 	if CEPGP_minGPDecayFactor then
@@ -1742,13 +1743,6 @@ function CEPGP_getDebugInfo()
 	else
 		info = info .. "Standby EP Manual Delegation: False<br />\n";
 	end
-	
-	if CEPGP_loot_GUI then
-		info = info .. "GUI for Loot: True<br />\n";
-	else
-		info = info .. "GUI for Loot: False<br />\n";
-	end
-	info = info .. "Loot Response Keyphrase: " .. CEPGP_keyword .. "<br />\n";
 	info = info .. "Standby EP Whisper Keyphrase: " .. CEPGP_standby_whisper_msg .. "<br />\n";
 	if CEPGP_auto_pass then
 		info = info .. "Auto Pass on Ineligible Items: true<br />\n";
@@ -1797,6 +1791,20 @@ function CEPGP_getDebugInfo()
 		info = info .. k .. ": " .. v .. "<br />\n";
 	end
 	info = info .. "</details>\n";
+	info = info .. "<details><summary>Loot Button Configuration</summary>\n";
+	for i = 1, 4 do
+		info = info .. "Loot Button " .. i .. "<br />";
+		if CEPGP_response_buttons[i][1] then
+			info = info .. "State: Enabled<br />";
+		else
+			info = info .. "State: Disabled<br />";
+		end
+		info = info .. "Button Text: " .. CEPGP_response_buttons[i][2] .. "<br />";
+		info = info .. "Discount: " .. CEPGP_response_buttons[i][3] .. "%<br />";
+		info = info .. "Keyphrase Alternative: " .. CEPGP_response_buttons[i][4] .. "<br />";
+		info = info .. "<br />";
+	end
+	info = info .. "</details>";
 	info = info .. "<details><summary>Standby Guild Ranks</summary>\n";
 	for k, v in pairs(STANDBYRANKS) do
 		if v[1] ~= "" and v[1] ~= nil then
