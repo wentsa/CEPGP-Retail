@@ -7456,7 +7456,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="CEPGP_options_gp_base_decay_factor" inherits="GameFontNormal" text="Decay Ignores Base GP: ">
+						<FontString name="CEPGP_options_gp_base_decay_factor" inherits="GameFontNormal" text="Apply Decay-Free Threshold: ">
 							<Color r="1" g="1" b="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_options_gp_base">
@@ -7659,7 +7659,7 @@
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-								GameTooltip:SetText("Subtract base GP from the calculation when decaying guild EPGP standings.");
+								GameTooltip:SetText("When enabled, applies a 'Decay-Free Threshold' equal to the minimum GP.\n\nFor example: A player with 100GP, minimum GP of 25 and a decay rate of 10%.\nThis option disabled: GP will decay 10% of 100.\nThis option enabled: GP will decay 10% of 75.");
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();
