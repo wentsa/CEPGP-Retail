@@ -7626,11 +7626,13 @@
 								elseif 0 > tonumber(self:GetText()) then
 									CEPGP_print("Base GP must be a positive number", true);
 									self:SetText(tostring(BASEGP));
-								elseif BASEGP ~= tonumber(value) then
-									BASEGP = tonumber(value);
-									CEPGP.GP.Min = tonumber(value);
-									CEPGP_print("Updated base GP");
+								elseif BASEGP == tonumber(value) then
+									return;
 								end
+								
+								BASEGP = tonumber(value);
+								CEPGP.GP.Min = tonumber(value);
+								CEPGP_print("Updated base GP");
 							</OnEditFocusLost>
 						</Scripts>
 					</EditBox>
@@ -7963,7 +7965,7 @@
 				CEPGP_options_coef_edit:SetText(CEPGP.GP.Base);
 				CEPGP_options_coef_2_edit:SetText(CEPGP.GP.Multiplier);
 				CEPGP_options_mod_edit:SetText(CEPGP.GP.Mod);
-				CEPGP_options_gp_base_edit:SetText(CEPGP.GP.Min);
+				CEPGP_options_gp_base_edit:SetText(BASEGP);
 				CEPGP_options_gp_base_decay_check:SetChecked(CEPGP.GP.DecayFactor);
 				CEPGP_options_gp_tooltips_check:SetChecked(CEPGP.GP.Tooltips);
 				
