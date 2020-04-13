@@ -142,6 +142,7 @@ CEPGP = {
 		MinThreshold = CEPGP_min_threshold,
 		MinReq = CEPGP_minEP,
 		RaidVisibility = CEPGP_raid_wide_dist,
+		RaidWarning = false,
 		ShowPass = CEPGP_show_passes,
 		SuppressResponses = CEPGP_suppress_announcements,
 		GUI = {

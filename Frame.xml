@@ -7991,6 +7991,7 @@
 					</Anchors>
 				</FontString>
 				<FontString name="$parent_timer_text" inherits="GameFontNormal" text="Timeout Duration: " />
+				<FontString name="$parent_raid_warning_text" inherits="GameFontNormal" text="Raid Warning on Announcement: " />
 				<FontString name="$parent_announce_text" inherits="GameFontNormal" text="Announcement Message: " />
 				<FontString name="$parent_auto_pass" inherits="GameFontNormal" text="Auto Pass on Ineligible Items:" />
 				<FontString name="$parent_announcement_suppression" inherits="GameFontNormal" text="Suppress Loot Response Announcements: " />
@@ -8849,6 +8850,43 @@
 					</OnShow>
 				</Scripts>
 			</EditBox>
+			<CheckButton name="CEPGP_options_raid_warning_check" inherits="UIOptionsCheckButtonTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0" />
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="CEPGP_loot_options_raid_warning_text">
+						<Offset>
+							<AbsDimension x="5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if self:GetChecked() then
+							CEPGP.Loot.RaidWarning = true;
+							CEPGP_print("Will now send raid warning when announcing loot");
+						else
+							CEPGP.Loot.RaidWarning = false;
+							CEPGP_print("No longer sending raid warning when announcing loot");
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText("When announcing loot, a raid warning will be sent out indicating what item is being distributed.");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnShow>
+						if CEPGP.Loot.RaidWarning then
+							self:SetChecked(true);
+						else
+							self:SetChecked(false);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
 			<EditBox name="$parent_announce_edit" inherits="InputBoxTemplate" autofocus="false">
 				<Size>
 					<AbsDimension x="300" y="21" />
@@ -9168,7 +9206,8 @@
 		<Scripts>
 			<OnShow>
 				CEPGP_loot_options_timer_text:SetPoint("TOPLEFT", "CEPGP_loot_options_2", "BOTTOMLEFT", 0, 0);
-				CEPGP_loot_options_announce_text:SetPoint("TOPLEFT", "CEPGP_loot_options_timer_text", "BOTTOMLEFT", 0, -7);
+				CEPGP_loot_options_raid_warning_text:SetPoint("TOPLEFT", "CEPGP_loot_options_timer_text", "BOTTOMLEFT", 0, -7);
+				CEPGP_loot_options_announce_text:SetPoint("TOPLEFT", "CEPGP_loot_options_raid_warning_text", "BOTTOMLEFT", 0, -7);
 				CEPGP_loot_options_auto_pass:SetPoint("TOPLEFT", "CEPGP_loot_options_announce_text", "BOTTOMLEFT", 0, -7);
 				CEPGP_loot_options_announcement_suppression:SetPoint("TOPLEFT", "CEPGP_loot_options_auto_pass", "BOTTOMLEFT", 0, -7);
 				CEPGP_loot_options_min_EP_text:SetPoint("TOPLEFT", "CEPGP_loot_options_announcement_suppression", "BOTTOMLEFT", 0, -7);

@@ -105,9 +105,17 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		SendChatMessage("--------------------------", "RAID", CEPGP_LANGUAGE);
 		if rank > 0 then
 			if quantity > 1 then
-				SendChatMessage("NOW DISTRIBUTING: x" .. quantity .. " " .. link, "RAID", CEPGP_LANGUAGE);
+				if CEPGP.Loot.RaidWarning then
+					SendChatMessage("NOW DISTRIBUTING: x" .. quantity .. " " .. link, "RAID_WARNING", CEPGP_LANGUAGE);
+				else
+					SendChatMessage("NOW DISTRIBUTING: x" .. quantity .. " " .. link, "RAID", CEPGP_LANGUAGE);
+				end
 			else
-				SendChatMessage("NOW DISTRIBUTING: " .. link, "RAID", CEPGP_LANGUAGE);
+				if CEPGP.Loot.RaidWarning then
+					SendChatMessage("NOW DISTRIBUTING: " .. link, "RAID_WARNING", CEPGP_LANGUAGE);
+				else
+					SendChatMessage("NOW DISTRIBUTING: " .. link, "RAID", CEPGP_LANGUAGE);
+				end
 			end
 		else
 			if quantity > 1 then
