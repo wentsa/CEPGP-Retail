@@ -3588,6 +3588,23 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
+			<Button name="$parent_highlight" inherits="GameMenuButtonTemplate" text="Highlight Output">
+				<Size>
+					<AbsDimension x="150" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_export_csv">
+						<Offset>
+							<AbsDimension x="0" y="-5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CEPGP_export_dump:HighlightText();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Frame name="CEPGP_export_options">
 				<Size>
 					<AbsDimension x="200" y="240" />
