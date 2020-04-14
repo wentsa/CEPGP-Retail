@@ -132,7 +132,13 @@ function CEPGP_ListButton_OnClick(obj)
 	end
 	if obj == "CEPGP_standby_addRank_confirm" then
 		local function addRankToStandby()
+			local group = {};
 			local ranks = {};
+			
+			for i = 1, GetNumGroupMembers() do
+				local name = GetRaidRosterInfo(i);
+				table.insert(group, name);
+			end
 			for i = 1, 10 do
 				if _G["CEPGP_standby_addRank_" .. i .. "_check"]:GetChecked() then
 					ranks[i] = true;
@@ -143,7 +149,7 @@ function CEPGP_ListButton_OnClick(obj)
 			for i = 1, GetNumGuildMembers() do
 				local name, _, rIndex = GetGuildRosterInfo(i);
 				name = Ambiguate(name, "all");
-				if ranks[rIndex+1] and not CEPGP_tContains(CEPGP_standbyRoster, name) and name ~= UnitName("player") then
+				if ranks[rIndex+1] and not CEPGP_tContains(CEPGP_standbyRoster, name) and not CEPGP_tContains(group, name) and name ~= UnitName("player") then
 					local _, class, rank, _, oNote, _, classFile = CEPGP_getGuildInfo(name);
 					local EP,GP = CEPGP_getEPGP(name, i);
 					CEPGP_standbyRoster[#CEPGP_standbyRoster+1] = {
