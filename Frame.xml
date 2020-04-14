@@ -7700,9 +7700,11 @@
 							<OnClick>
 								if self:GetChecked() then
 									CEPGP_gp_tooltips = true;
+									CEPGP.GP.Tooltips = true;
 									CEPGP_print("Enabled GP values on tooltips.");
 								else
 									CEPGP_gp_tooltips = false;
+									CEPGP.GP.Tooltips = false;
 									CEPGP_print("Disabled GP values on tooltips");
 								end
 							</OnClick>
