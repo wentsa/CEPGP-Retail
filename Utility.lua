@@ -409,7 +409,7 @@ function CEPGP_initialise()
 		CEPGP.Standby.Share = CEPGP.Standby.Share or CEPGP_standby_share;
 		
 		CEPGP_initInterfaceOptions();
-		CEPGP_updateGuild();
+		--CEPGP_updateGuild();
 		GameTooltip:HookScript("OnTooltipSetItem", CEPGP_addGPTooltip);
 		hooksecurefunc("ChatFrame_OnHyperlinkShow", CEPGP_addGPHyperlink);	
 		

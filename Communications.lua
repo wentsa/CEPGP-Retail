@@ -317,15 +317,15 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 									local temp = {};
 									for k, v in pairs(OVERRIDE_INDEX) do
 										temp[#temp+1] = {k, v};
-										--CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..k..";"..v, lane);
+										CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..k..";"..v, lane);
 									end
 									
-									local i = 1;
+									local i = 0;
 									C_Timer.NewTicker(0.01, function()
+										i = i + 1;
 										if #OVERRIDE_INDEX > 0 then
 											CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..temp[i][1]..";"..temp[i][2], lane);
 										end
-										i = i + 1;
 										
 										if i >= #temp then
 											CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
