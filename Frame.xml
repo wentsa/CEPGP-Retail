@@ -8954,9 +8954,11 @@
 					<OnClick>
 						if self:GetChecked() then
 							CEPGP_auto_pass = true;
+							CEPGP.Loot.AutoPass = true;
 							CEPGP_print("Now passing on ineligible items.");
 						else
 							CEPGP_auto_pass = false;
+							CEPGP.Loot.AutoPass = false;
 							CEPGP_print("No longer passing on ineligible items.");
 						end
 					</OnClick>
@@ -8991,9 +8993,11 @@
 					<OnClick>
 						if self:GetChecked() then
 							CEPGP_suppress_announcements = true;
+							CEPGP.Loot.SuppressResponses = true;
 							CEPGP_print("Suppressing loot response announcements.");
 						else
 							CEPGP_suppress_announcements = false;
+							CEPGP.Loot.SuppressResponses = false;
 							CEPGP_print("Announcing all loot responses.");
 						end
 					</OnClick>
@@ -9028,10 +9032,12 @@
 					<OnClick>
 						if self:GetChecked() then
 							CEPGP_minEP[1] = true;
+							CEPGP.Loot.MinReq[1] = true;
 							CEPGP_print("Now requiring a minimum EP to request loot.");
 							CEPGP_loot_options_min_EP_amount:Show();
 						else
 							CEPGP_minEP[1] = false;
+							CEPGP.Loot.MinReq[1] = false;
 							CEPGP_print("No longer requiring a minimum EP to request loot.");
 							CEPGP_loot_options_min_EP_amount:Hide();
 						end
@@ -9068,6 +9074,7 @@
 							return;
 						end
 						CEPGP_minEP[2] = tonumber(self:GetText());
+						CEPGP.Loot.MinReq[2] = tonumber(self:GetText());
 						CEPGP_print("Players now require at least " .. CEPGP_minEP[2] .. " EP to request loot.");
 					</OnEditFocusLost>
 					<OnShow>
@@ -9090,9 +9097,11 @@
 					<OnClick>
 						if self:GetChecked() then
 							CEPGP_show_passes = true;
+							CEPGP.Loot.ShowPass = true;
 							CEPGP_print("Now showing pass responses in loot distribution");
 						else
 							CEPGP_show_passes = false;
+							CEPGP.Loot.ShowPass = false;
 							CEPGP_print("No longer showing pass responses in loot distribution");
 						end
 					</OnClick>
@@ -9120,9 +9129,11 @@
 					<OnClick>
 						if self:GetChecked() then
 							CEPGP_PR_sort = true;
+							CEPGP.Loot.AutoSort = true;
 							CEPGP_print("Automated sorting for loot distribution enabled");
 						else
 							CEPGP_PR_sort = false;
+							CEPGP.Loot.AutoSort = false;
 							CEPGP_print("Automated sorting for loot distribution disabled");
 						end
 					</OnClick>
@@ -9150,9 +9161,11 @@
 					<OnClick>
 						if self:GetChecked() then
 							CEPGP_raid_wide_dist = true;
+							CEPGP.Loot.RaidVisibility = true;
 							CEPGP_print("All raid members can now see item distribution window.");
 						else
 							CEPGP_raid_wide_dist = false;
+							CEPGP.Loot.RaidVisibility = false;
 							CEPGP_print("Only raid assists can now see the item distribution window.");
 							CEPGP_SendAddonMsg("RaidAssistLootClosed", "RAID");
 						end

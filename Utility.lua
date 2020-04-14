@@ -371,14 +371,14 @@ function CEPGP_initialise()
 		
 		CEPGP.Loot.GUI.Buttons = CEPGP.Loot.GUI.Buttons or CEPGP_response_buttons or {[1]={true, "Main Spec", 0, "Need"},[2]={false, "Off Spec", 0, "Greed"},[3]={false, "Disenchant", 0, "Disenchant"},[4]={false, "Minor Upgrade", 0, "Minor"},[5]={false, "", 0},[6]={false, "Pass", 100}};
 		for i = 1, 4 do
-			if CEPGP_response_buttons[i][2] == "" or not CEPGP_response_buttons[i][2]then
+			if CEPGP_response_buttons[i][2] == "" or not CEPGP_response_buttons[i][2] then
 				CEPGP_response_buttons[i][2] = i == 1 and "Main Spec" or i == 2 and "Off Spec" or i == 3 and "Disenchant" or i == 4 and "Minor Upgrade";
 			end
 			if CEPGP_response_buttons[i][4] == "" or not CEPGP_response_buttons[i][4] then
 				CEPGP_response_buttons[i][4] = i == 1 and "Need" or i == 2 and "Greed" or i == 3 and "Disenchant" or i == 4 and "Minor";
 			end
 			
-			if CEPGP.Loot.GUI.Buttons[i][2] == "" or not CEPGP.Loot.GUI.Buttons[i][2]then
+			if CEPGP.Loot.GUI.Buttons[i][2] == "" or not CEPGP.Loot.GUI.Buttons[i][2] then
 				CEPGP.Loot.GUI.Buttons[i][2] = i == 1 and "Main Spec" or i == 2 and "Off Spec" or i == 3 and "Disenchant" or i == 4 and "Minor Upgrade";
 			end
 			if CEPGP.Loot.GUI.Buttons[i][4] == "" or not CEPGP.Loot.GUI.Buttons[i][4] then
