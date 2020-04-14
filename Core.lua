@@ -707,7 +707,8 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 					local name = CEPGP_standbyRoster[i][1];
 					local main = CEPGP_getMain(name);
 					local index = CEPGP_getIndex(name);
-
+					local online = select(9, GetGuildRosterInfo(index));
+					
 					if online or STANDBYOFFLINE then
 						local EP,GP = CEPGP_getEPGP(name, index);
 						
