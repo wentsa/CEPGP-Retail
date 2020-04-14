@@ -188,6 +188,7 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 		end
 		local lane = "GUILD";
 		local target = sender;
+		CEPGP_print(sender .. " is importing settings from you");
 		local success, failMsg = pcall(function()
 			if args[1] == "?forceSync" then
 				target = "?forceSync";
@@ -710,6 +711,7 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 			
 			elseif option == "COMPLETE" then
 				CEPGP_print("Import complete");
+				CEPGP_Info.VerboseLogging = false;
 			end
 		end
 		

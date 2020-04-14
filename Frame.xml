@@ -1877,7 +1877,7 @@
 	
 	<Frame name="CEPGP_settings_import" frameStrata="DIALOG" enableMouse="true" parent="UIParent" hidden="true" movable="true" clampedToScreen="true">
 		<Size>
-			<AbsDimension x="300" y="175"/>
+			<AbsDimension x="300" y="215"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -1918,11 +1918,20 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="$parent_verbose_desc" inherits="GameFontNormal" text="Detailed Import Reporting:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<FontString name="CEPGP_settings_import_desc" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
-								<AbsDimension x="0" y="35"/>
+								<AbsDimension x="0" y="15"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1930,6 +1939,33 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<CheckButton name="$parent_verbose_check" inherits="UIOptionsCheckButtonTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0" />
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_verbose_desc">
+						<Offset>
+							<AbsDimension x="-5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CEPGP_Info.VerboseLogging = self:GetChecked();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText("Display status updates during the import process.");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnShow>
+						self:SetChecked(CEPGP_Info.VerboseLogging);
+					</OnShow>
+				</Scripts>
+			</CheckButton>
 			<EditBox name="CEPGP_settings_import_name" inherits="InputBoxTemplate">
 				<Size>
 					<AbsDimension x="100" y="20" />
@@ -1937,7 +1973,7 @@
 				<Anchors>
 					<Anchor point="CENTER">
 						<Offset>
-							<AbsDimension x="0" y="-15" />
+							<AbsDimension x="0" y="-30" />
 						</Offset>
 					</Anchor>
 				</Anchors>
