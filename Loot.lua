@@ -129,17 +129,19 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		else
 			SendChatMessage("GP Value: " .. gp, "RAID", CEPGP_LANGUAGE);
 		end
-		--SendChatMessage("Whisper me " .. CEPGP_keyword .. " for mainspec only", "RAID", CEPGP_LANGUAGE);
+
 		SendChatMessage(CEPGP.Loot.Announcement, "RAID", CEPGP_LANGUAGE);
-		SendChatMessage(CEPGP_response_buttons[1][4] .. " : " .. CEPGP_response_buttons[1][2], "RAID", CEPGP_LANGUAGE);
-		if CEPGP_response_buttons[2][1] then
-			SendChatMessage(CEPGP_response_buttons[2][4] .. " : " .. CEPGP_response_buttons[2][2], "RAID", CEPGP_LANGUAGE);
-		end
-		if CEPGP_response_buttons[3][1] then
-			SendChatMessage(CEPGP_response_buttons[3][4] .. " : " .. CEPGP_response_buttons[3][2], "RAID", CEPGP_LANGUAGE);
-		end
-		if CEPGP_response_buttons[4][1] then
-			SendChatMessage(CEPGP_response_buttons[4][4] .. " : " .. CEPGP_response_buttons[4][2], "RAID", CEPGP_LANGUAGE);
+		if not CEPGP.Loot.HideKeyphrases then
+			SendChatMessage(CEPGP_response_buttons[1][4] .. " : " .. CEPGP_response_buttons[1][2], "RAID", CEPGP_LANGUAGE);
+			if CEPGP_response_buttons[2][1] then
+				SendChatMessage(CEPGP_response_buttons[2][4] .. " : " .. CEPGP_response_buttons[2][2], "RAID", CEPGP_LANGUAGE);
+			end
+			if CEPGP_response_buttons[3][1] then
+				SendChatMessage(CEPGP_response_buttons[3][4] .. " : " .. CEPGP_response_buttons[3][2], "RAID", CEPGP_LANGUAGE);
+			end
+			if CEPGP_response_buttons[4][1] then
+				SendChatMessage(CEPGP_response_buttons[4][4] .. " : " .. CEPGP_response_buttons[4][2], "RAID", CEPGP_LANGUAGE);
+			end
 		end
 		SendChatMessage("--------------------------", "RAID", CEPGP_LANGUAGE);
 		

@@ -139,6 +139,7 @@ CEPGP = {
 		AutoPass = CEPGP_auto_pass,
 		AutoSort = CEPGP_PR_sort,
 		Keyword = CEPGP_keyword,
+		HideKeyphrases = false,
 		MinThreshold = CEPGP_min_threshold,
 		MinReq = CEPGP_minEP,
 		RaidVisibility = CEPGP_raid_wide_dist,

@@ -8048,6 +8048,7 @@
 				<FontString name="$parent_timer_text" inherits="GameFontNormal" text="Timeout Duration: " />
 				<FontString name="$parent_raid_warning_text" inherits="GameFontNormal" text="Raid Warning on Announcement: " />
 				<FontString name="$parent_announce_text" inherits="GameFontNormal" text="Announcement Message: " />
+				<FontString name="$parent_hide_response_text" inherits="GameFontNormal" text="Hide Keyphrase Alternatives in Loot Announcement: " />
 				<FontString name="$parent_auto_pass" inherits="GameFontNormal" text="Auto Pass on Ineligible Items:" />
 				<FontString name="$parent_announcement_suppression" inherits="GameFontNormal" text="Suppress Loot Response Announcements: " />
 				<FontString name="$parent_min_EP_text" inherits="GameFontNormal" text="Require Minimum EP for Loot: " />
@@ -8065,7 +8066,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-						<AbsDimension x="12.5" y="-50" />
+						<AbsDimension x="12.5" y="-30" />
 					</Anchor>
 				</Anchors>
 				<Layers>
@@ -8977,6 +8978,39 @@
 					</OnShow>
 				</Scripts>
 			</EditBox>
+			<CheckButton name="$parent_hide_response_check" inherits="UIOptionsCheckButtonTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0" />
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_hide_response_text">
+						<Offset>
+							<AbsDimension x="5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if self:GetChecked() then
+							CEPGP.Loot.HideKeyphrases = true;
+							CEPGP_print("Keyphrase alternatives will no longer be shown when announcing loot");
+						else
+							CEPGP.Loot.HideKeyphrases = false;
+							CEPGP_print("Keyphrase alternatives will now be shown when announcing loot");
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText("Prevents showing the keyphrase alternatives for each response in the loot announcement message.");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnShow>
+						self:SetChecked(CEPGP.Loot.HideKeyphrases);
+					</OnShow>
+				</Scripts>
+			</CheckButton>
 			<CheckButton name="CEPGP_options_auto_pass_check" inherits="UIOptionsCheckButtonTemplate">
 				<HitRectInsets>
 					<AbsInset left="0" right="0" top="0" bottom="0" />
@@ -9273,10 +9307,11 @@
 		</Frames>		
 		<Scripts>
 			<OnShow>
-				CEPGP_loot_options_timer_text:SetPoint("TOPLEFT", "CEPGP_loot_options_2", "BOTTOMLEFT", 0, 0);
+				CEPGP_loot_options_timer_text:SetPoint("TOPLEFT", "CEPGP_loot_options_2", "BOTTOMLEFT", 0, 10);
 				CEPGP_loot_options_raid_warning_text:SetPoint("TOPLEFT", "CEPGP_loot_options_timer_text", "BOTTOMLEFT", 0, -7);
 				CEPGP_loot_options_announce_text:SetPoint("TOPLEFT", "CEPGP_loot_options_raid_warning_text", "BOTTOMLEFT", 0, -7);
-				CEPGP_loot_options_auto_pass:SetPoint("TOPLEFT", "CEPGP_loot_options_announce_text", "BOTTOMLEFT", 0, -7);
+				CEPGP_loot_options_hide_response_text:SetPoint("TOPLEFT", "CEPGP_loot_options_announce_text", "BOTTOMLEFT", 0, -7);
+				CEPGP_loot_options_auto_pass:SetPoint("TOPLEFT", "CEPGP_loot_options_hide_response_text", "BOTTOMLEFT", 0, -7);
 				CEPGP_loot_options_announcement_suppression:SetPoint("TOPLEFT", "CEPGP_loot_options_auto_pass", "BOTTOMLEFT", 0, -7);
 				CEPGP_loot_options_min_EP_text:SetPoint("TOPLEFT", "CEPGP_loot_options_announcement_suppression", "BOTTOMLEFT", 0, -7);
 				CEPGP_loot_options_show_passes:SetPoint("TOPLEFT", "CEPGP_loot_options_min_EP_text", "BOTTOMLEFT", 0, -7);

@@ -1793,6 +1793,11 @@ function CEPGP_getDebugInfo()
 	else
 		info = info .. "Allow Force Sync: false, " .. GuildControlGetRankName(CEPGP_force_sync_rank) .. "<br />\n";
 	end
+	if CEPGP.Loot.HideKeyphrases then
+		info = info .. "Hide Keyphrase Alternatives: True<br />";
+	else
+		info = info .. "Hide Keyphrase Alternatives: False<br />";
+	end
 	info = info .. "<br /><details><summary>Auto EP</summary>\n";
 	for k, v in pairs(AUTOEP) do
 		if v then

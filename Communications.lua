@@ -233,6 +233,11 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 					end
 				end
 				CEPGP_SendAddonMsg(target..";impresponse;LOOTGUIBUTTONTIMEOUT;"..CEPGP_response_time);
+				if CEPGP.Loot.HideKeyphrases then
+					CEPGP_SendAddonMsg(target..";impresponse;LOOTHIDEKEYPHRASES;true");
+				else
+					CEPGP_SendAddonMsg(target..";impresponse;LOOTHIDEKEYPHRASES;false");
+				end
 				CEPGP_SendAddonMsg(target..";impresponse;LootAnnounce;"..CEPGP.Loot.Announcement);
 				CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
 				
@@ -488,6 +493,10 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 		
 		if option == "LOOTGUIBUTTONTIMEOUT" then
 			CEPGP_response_time = tonumber(args[4]);
+		end
+		
+		if option == "LOOTHIDEKEYPHRASES" then
+			CEPGP.Loot.HideKeyphrases = args[4] == "true";
 		end
 		
 		if option == "SLOTWEIGHTS" or option == "STANDBYRANKS" or option == "EPVALS" or option == "AUTOEP" or option == "OVERRIDE" or option == "STANDBYSHARE" or option == "altLinks" or option == "altSync" then
