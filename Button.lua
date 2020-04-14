@@ -63,7 +63,7 @@ function CEPGP_ListButton_OnClick(obj)
 																PlaySound(799);
 																HideUIPanel(CEPGP_context_popup);
 																if CEPGP_context_popup_EP_check:GetChecked() then
-																	CEPGP_addStandbyEP(tonumber(CEPGP_context_amount:GetText()), _, CEPGP_context_reason:GetText());
+																	CEPGP_addStandbyEP(tonumber(CEPGP_context_amount:GetText()), nil, CEPGP_context_reason:GetText());
 																end
 															end
 														end);
