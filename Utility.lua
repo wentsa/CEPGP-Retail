@@ -1433,21 +1433,36 @@ function CEPGP_updateOverride(id)
 	end
 end
 
-function CEPGP_tContains(t, val, bool)
+function CEPGP_tContains(t, val, isKey)
 	if not t then return; end
-	if bool == nil then
-		for _,value in pairs(t) do
-			if value == val then
-				return true;
-			end
-		end
-	elseif bool == true then
+	
+	if isKey then
 		for index,_ in pairs(t) do 
 			if index == val then
 				return true;
 			end
 		end
+	else
+		for _,value in pairs(t) do
+			if type(value) == "table" then	--	If the first tier of the table is a nested table
+				for k, v in pairs(value) do
+					if val == k then	--	The key can't be nil so no need to check
+						return true;
+					end
+					if v then	--	Need to make sure the nested value isn't nil
+						if val == v then
+							return true;
+						end
+					end
+				end
+			else
+				if value == val then	--	The first tier isn't nested, it's just a simple k, v pair
+					return true;
+				end
+			end
+		end
 	end
+	
 	return false;
 end
 
