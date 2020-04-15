@@ -298,10 +298,10 @@ function CEPGP_initialise()
 				Tooltips = false,
 			}
 		end
-		CEPGP.GP.Base = CEPGP.GP.Base or 4.83;
-		CEPGP.GP.Min = CEPGP.GP.Min or 1;
-		CEPGP.GP.Mod = CEPGP.GP.Mod or 1;
-		CEPGP.GP.Multiplier = CEPGP.GP.Multiplier or 2;
+		CEPGP.GP.Base = COEF or CEPGP.GP.Base or 4.83;
+		CEPGP.GP.Min = BASEGP or CEPGP.GP.Min or 1;
+		CEPGP.GP.Mod = MOD or CEPGP.GP.Mod or 1;
+		CEPGP.GP.Multiplier = MOD_COEF or CEPGP.GP.Multiplier or 2;
 		
 		local slotDefault = {
 			["2HWEAPON"] = 2,
