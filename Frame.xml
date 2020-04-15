@@ -4977,11 +4977,13 @@
 							CEPGP_interface_options_forced_sync_rank:Show();
 							CEPGP_interface_options_force_sync_button:Show();
 							ALLOW_FORCED_SYNC = true;
+							CEPGP.Sync[1] = true;
 							CEPGP_print("Enabled forced synchronisation");
 						else
 							CEPGP_interface_options_forced_sync_rank:Hide();
 							CEPGP_interface_options_force_sync_button:Hide();
 							ALLOW_FORCED_SYNC = false;
+							CEPGP.Sync[1] = false;
 							CEPGP_print("Disabled forced synchronisation");
 						end
 					</OnClick>
@@ -5130,7 +5132,7 @@
 				_G[frame .. "_poll_rate_text"]:SetPoint("BOTTOMLEFT", _G[frame.."_def_channel_text"], "TOPLEFT", 0, 20);
 				
 				_G[frame .. "_forced_sync_check"]:SetChecked(CEPGP.Sync[1]);
-				if _G[frame .. "_forced_sync_check"]:GetChecked() then
+				if CEPGP.Sync[1] then
 					_G[frame .. "_forced_sync_rank"]:Show();
 					_G[frame .. "_force_sync_button"]:Show();
 				else
