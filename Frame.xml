@@ -87,7 +87,6 @@
 					<OnClick>
 						InterfaceOptionsFrame_Show();
 						InterfaceOptionsFrame_OpenToCategory("Classic EPGP");
-						CEPGP_frame:Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
