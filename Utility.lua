@@ -1,6 +1,8 @@
 local L = CEPGP_Locale:GetLocale("CEPGP")
 
 function CEPGP_initialise()
+	UIDropDownMenu_Initialize(CEPGP_interface_options_forced_sync_rank, CEPGP_syncRankDropdown);
+	UIDropDownMenu_Initialize(CEPGP_interface_options_def_channel_dropdown, CEPGP_defChannelDropdown);
 	C_Timer.After(3, function()
 		_, _, _, CEPGP_ElvUI = GetAddOnInfo("ElvUI");
 		if not CEPGP_ElvUI then CEPGP_ElvUI = GetAddOnInfo("TukUI"); end
@@ -475,9 +477,6 @@ function CEPGP_initInterfaceOptions()
 	InterfaceOptions_AddCategory(panel.loot);
 	InterfaceOptions_AddCategory(panel.plugins);
 	InterfaceOptions_AddCategory(panel.standby);
-	
-	CEPGP_UIDropDownMenu_Initialize(CEPGP_interface_options_forced_sync_rank, CEPGP_syncRankDropdown);
-	CEPGP_UIDropDownMenu_Initialize(CEPGP_interface_options_def_channel_dropdown, CEPGP_defChannelDropdown);
 	
 	_G["CEPGP_interface_options_version"]:SetText("Classic EPGP Version " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build);
 end
