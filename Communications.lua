@@ -545,35 +545,46 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 				end
 			elseif option == "OVERRIDE" then
 				local item = field;
-				if string.find(item, "item:") then
-					local args = CEPGP_split(item, ":");
-					if tonumber(args[10]) then
-						local id = CEPGP_getItemID(CEPGP_getItemString(item));
-						local link = CEPGP_getItemLink(id);
-						local name = GetItemInfo(id);
+				local iString = CEPGP_getItemString(item);
+				if not iString then iString = item; end
+				if string.find(iString, "item:") then
+					local id = CEPGP_getItemID(iString);
+					local link = CEPGP_getItemLink(id);
+					local name = GetItemInfo(id);
+					
+					if name then
 						if link then
 							OVERRIDE_INDEX[link] = val;
 							CEPGP.Overrides[link] = val;
 						end
+						
 						if OVERRIDE_INDEX[name] then
 							OVERRIDE_INDEX[name] = nil;
-							CEPGP.Overrides[link] = nil;
+						end
+						
+						if CEPGP.Overrides[name] then
+							CEPGP.Overrides[name] = nil;
 						end
 					else
-						local id = CEPGP_getItemID(CEPGP_getItemString(item));
-						local link = CEPGP_getItemLink(id);
-						local name = GetItemInfo(id);
-						
-						if link then
-							OVERRIDE_INDEX[link] = val;
-							CEPGP.Overrides[link] = val;
-						end
-						
-						if OVERRIDE_INDEX[name] then
-							OVERRIDE_INDEX[name] = nil;
-							CEPGP.Overrides[link] = nil;
-						end
+						local item = Item:CreateFromItemID(tonumber(id));
+						item:ContinueOnItemLoad(function()
+							link = CEPGP_getItemLink(id);
+							name = GetItemInfo(id);
+							if link then
+								OVERRIDE_INDEX[link] = val;
+								CEPGP.Overrides[link] = val;
+							end
+							
+							if OVERRIDE_INDEX[name] then
+								OVERRIDE_INDEX[name] = nil;
+							end
+							
+							if CEPGP.Overrides[name] then
+								CEPGP.Overrides[name] = nil;
+							end							
+						end);
 					end
+					
 				else
 					OVERRIDE_INDEX[item] = val;
 					CEPGP.Overrides[item] = val;
