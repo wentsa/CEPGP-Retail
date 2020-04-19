@@ -1908,7 +1908,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="CEPGP_settings_import_header" inherits="GameFontNormal" text="Import Settings">
+				<FontString name="CEPGP_settings_import_header" inherits="GameFontNormal" text="Overwrite Settings">
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
@@ -1917,7 +1917,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parent_verbose_desc" inherits="GameFontNormal" text="Detailed Import Reporting:">
+				<FontString name="$parent_verbose_desc" inherits="GameFontNormal" text="Detailed Reporting:">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 							<Offset>
@@ -2032,7 +2032,7 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterForDrag("LeftButton");
-				CEPGP_settings_import_desc:SetText("Enter the name of the player\nyou would like to import settings from.\nself will overwrite all of your existing settings.\n\nPlayer must be in your guild or raid group");
+				CEPGP_settings_import_desc:SetText("Enter the name of the player\nyou would like to import settings from.\n|cFFFF0000This will overwrite all of your existing settings.|r\n\nPlayer must be in your guild or raid group");
 			</OnLoad>
 			<OnDragStart>
 				self:StartMoving();
@@ -4908,7 +4908,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parent_import" inherits="GameMenuButtonTemplate" text="Import Settings">
+			<Button name="$parent_import" inherits="GameMenuButtonTemplate" text="Overwrite Settings">
 				<Size>
 					<AbsDimension x="125" y="21" />
 				</Size>
@@ -4924,7 +4924,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText("Import CEPGP configuration from a guild member.");
+						GameTooltip:SetText("Import CEPGP configuration from a guild member, overwriting your own.");
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
