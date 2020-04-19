@@ -226,8 +226,17 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 	end
 	
 	if event == "ADDON_LOADED" and arg1 == "CEPGP" then --arg1 = addon name
-		CEPGP_initialise();
-		return;
+		local success, failMsg = pcall(function()
+			CEPGP_initialise();
+			return;
+		end);
+		
+		C_Timer.After(6, function()
+			if not success then
+				CEPGP_print("Addon failed to initialise!", true);
+				CEPGP_print(failMsg);
+			end
+		end);
 		
 	elseif event == "GUILD_ROSTER_UPDATE" or event == "GROUP_ROSTER_UPDATE" then
 		CEPGP_rosterUpdate(event);
