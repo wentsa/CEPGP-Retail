@@ -1759,7 +1759,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						CEPGP_UIDropDownMenu_Initialize(self, CEPGP_initRestoreDropdown);
+						UIDropDownMenu_Initialize(self, CEPGP_initRestoreDropdown);
 						UIDropDownMenu_SetWidth(self, 250);
 					</OnShow>
 				</Scripts>
@@ -1798,7 +1798,7 @@
 						local record = UIDropDownMenu_GetSelectedName(CEPGP_restoreDropdown);
 						RECORDS[record] = nil;
 						CEPGP_print("Deleted log: " .. record);
-						CEPGP_UIDropDownMenu_Initialize(self, CEPGP_initRestoreDropdown);
+						UIDropDownMenu_Initialize(self, CEPGP_initRestoreDropdown);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -2942,7 +2942,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						CEPGP_UIDropDownMenu_Initialize(self, CEPGP_attendanceDropdown);
+						UIDropDownMenu_Initialize(self, CEPGP_attendanceDropdown);
 						UIDropDownMenu_SetWidth(self, 140);
 					</OnShow>
 				</Scripts>
@@ -9271,7 +9271,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						CEPGP_UIDropDownMenu_Initialize(self, CEPGP_minThresholdDropdown);
+						UIDropDownMenu_Initialize(self, CEPGP_minThresholdDropdown);
 						UIDropDownMenu_SetWidth(self, 140);
 					</OnShow>
 					<OnEnter>
@@ -9293,7 +9293,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						CEPGP_UIDropDownMenu_Initialize(self, CEPGP_lootChannelDropdown);
+						UIDropDownMenu_Initialize(self, CEPGP_lootChannelDropdown);
 						UIDropDownMenu_SetWidth(self, 140);
 					</OnShow>
 					<OnEnter>

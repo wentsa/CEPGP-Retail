@@ -395,7 +395,7 @@ function SlashCmdList.CEPGP(msg, editbox)
 	elseif strfind(msg, "debug") then
 		CEPGP_debuginfo:Show();
 	
-	else		
+	else	
 		CEPGP_print("|cFF80FF80" .. msg .. "|r |cFFFF8080is not a valid request. Type /CEPGP to check addon usage|r", true);
 	end
 end
@@ -624,11 +624,6 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 	
 	local function callback()
 		local function update()
-			if tonumber(amount) > 0 then
-				CEPGP_addTraffic("Guild", UnitName("player"), "Standby EP +" .. amount, "", "", "", "", "", time());
-			elseif tonumber(amount) < 0 then
-				CEPGP_addTraffic("Guild", UnitName("player"), "Standby EP " .. amount, "", "", "", "", "", time());
-			end
 			if tonumber(amount) > 0 then
 				CEPGP_ShareTraffic("Guild", UnitName("player"), "Standby EP +" .. amount);
 			elseif tonumber(amount) < 0 then
