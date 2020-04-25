@@ -41,6 +41,16 @@ function CEPGP_ListButton_OnClick(obj)
 			CEPGP_print("This action cannot be undone. To proceed, press the delete button again.");
 			frame:SetAttribute("delete_confirm", "true");
 		end
+		return;
+	end
+	
+	if strfind(obj, "TrafficButton") and strfind(obj, "Share") then
+		local entry = tonumber(string.sub(obj, 14, string.find(obj, "Share")-1));
+		local ID, GUID = TRAFFIC[entry][10], TRAFFIC[entry][11];
+		if ID and GUID then
+			CEPGP_ShareTraffic(ID, GUID);
+		end
+		return;
 	end
 	
 	if obj == "CEPGP_options_standby_ep_award" then

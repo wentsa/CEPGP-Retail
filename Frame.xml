@@ -1821,8 +1821,10 @@
 							CEPGP_Info.IgnoreUpdates = false;
 							CEPGP_rosterUpdate("GUILD_ROSTER_UPDATE");
 							CEPGP_print("Guild EPGP standings have been restored from record [" .. name .. "]");
-							TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {"Guild", UnitName("player"), "Restored EPGP Standings from log [" .. name .. "]", "", "", "", "", "", time()};
-							CEPGP_ShareTraffic("Guild", UnitName("player"), "Restored EPGP Standings from log [" .. name .. "]");
+							CEPGP_addTraffic("Guild", UnitName("player"), "Restored EPGP Standings from log [" .. name .. "]");
+							if _G["CEPGP_traffic"]:IsVisible() then
+								CEPGP_UpdateTrafficScrollBar();
+							end
 						end
 						
 						CEPGP_Info.IgnoreUpdates = true;
@@ -2425,7 +2427,7 @@
 	
 	<Frame name="CEPGP_traffic" frameStrata="HIGH" enableMouse="true" parent="UIParent" hidden="true" movable="true" clampedToScreen="true">
 		<Size>
-			<AbsDimension x="800" y="480"/>
+			<AbsDimension x="950" y="480"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -2520,12 +2522,12 @@
 			</EditBox>
 			<Button name="CEPGP_traffic_clear" inherits="GameMenuButtonTemplate" text="Clear EPGP Traffic">
 				<Size>
-					<AbsDimension x="125" y="21" />
+					<AbsDimension x="150" y="21" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOM">
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="10" y="12" />
+							<AbsDimension x="-10" y="12" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2548,6 +2550,79 @@
 					</OnHide>
 				</Scripts>
 			</Button>
+			<Button name="CEPGP_traffic_share" inherits="GameMenuButtonTemplate" text="Share All Entries">
+				<Size>
+					<AbsDimension x="125" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="10" y="12" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						local success, failMsg = pcall(function()
+							local i = #TRAFFIC;
+							local limit = #TRAFFIC;
+							if CEPGP_Info.SharingTraffic then return; end
+							
+							CEPGP_Info.SharingTraffic = true;
+							CEPGP_SendAddonMsg("CEPGP_TRAFFICSyncStart;"..limit, "GUILD");
+							
+							CEPGP_print("Sharing all traffic logs, please wait.");
+							CEPGP_print("Estimated processing time: " .. limit * 0.01 .. " - " .. (limit * 0.01)*2 .. " seconds. This process will start in 10 seconds.");
+							local start = GetTime();
+							C_Timer.After(10, function()
+								C_Timer.NewTicker(0.01, function()
+									local ID, GUID;
+									local player, issuer, action, EPB, EPA, GPB, GPA, itemID, tStamp;
+									
+									if TRAFFIC[i][10] and TRAFFIC[i][11] then
+										ID, GUID = TRAFFIC[i][10], TRAFFIC[i][11];
+										if TRAFFIC[i][10] == ID and TRAFFIC[i][11] == GUID then
+											player = TRAFFIC[i][1];
+											issuer = TRAFFIC[i][2];
+											action = TRAFFIC[i][3];
+											EPB = TRAFFIC[i][4] or "";
+											EPA = TRAFFIC[i][5] or "";
+											GPB = TRAFFIC[i][6] or "";
+											GPA = TRAFFIC[i][7] or "";
+											itemID = CEPGP_getItemID(CEPGP_getItemString(TRAFFIC[i][8])) or "";
+											tStamp = TRAFFIC[i][9];
+										end
+										
+										local str = player .. ";" .. issuer .. ";" .. action .. ";" .. EPB .. ";" .. EPA .. ";" .. GPB .. ";" .. GPA .. ";" .. itemID .. ";" .. tStamp .. ";" .. ID .. ";" .. GUID;
+										if #str > 255 then
+											CEPGP_print("Could not share traffic entry with ID " .. ID .. " / GUID " .. GUID .. ". Character limit exceeded!", true);
+											return;
+										end
+										
+										CEPGP_SendAddonMsg("CEPGP_TRAFFIC;" .. player .. ";" .. issuer .. ";" .. action .. ";" .. EPB .. ";" .. EPA .. ";" .. GPB .. ";" .. GPA .. ";" .. itemID .. ";" .. tStamp .. ";" .. ID .. ";" .. GUID, "GUILD");
+									else
+										print(i);
+									end
+									
+									i = i - 1;
+									if i == 1 then
+										CEPGP_Info.SharingTraffic = false;
+										CEPGP_SendAddonMsg("CEPGP_TRAFFICSyncStop", "GUILD");
+										CEPGP_print("Traffic logs have been shared");
+										CEPGP_print("Time taken: " .. (GetTime()-start));
+									end
+								end, limit);
+							end);
+						end);
+						
+						if not success then
+							CEPGP_print("Unable to share all traffic logs!", true);
+							CEPGP_print(failMsg);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="CEPGP_traffic_close" inherits="UIPanelCloseButton">
 				<Size>
 					<AbsDimension x="40" y="40" />
@@ -2568,7 +2643,7 @@
 			</Button>
 			<ScrollFrame name="trafficScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size>
-					<AbsDimension x="745" y="320"/>
+					<AbsDimension x="875" y="320"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">

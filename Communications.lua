@@ -1,6 +1,6 @@
 local L = CEPGP_Locale:GetLocale("CEPGP")
 
-function CEPGP_IncAddonMsg(message, sender, sync)
+function CEPGP_IncAddonMsg(message, sender)
 	local args = CEPGP_split(message, ";"); -- The broken down message, delimited by semi-colons
 	
 	if args[1] == "message" and args[2] == UnitName("player") then
@@ -755,33 +755,95 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 		local response = args[2];
 		CEPGP_handleComms("CHAT_MSG_WHISPER", nil, sender, response);	
 	
+	elseif args[1] == "CEPGP_TRAFFICSyncStart" and sender ~= UnitName("player") then
+		CEPGP_Info.SharingTraffic = true;
+		CEPGP_print(sender .. " is sharing their traffic log with you. Please prepare for possible lag during this process.");
+		CEPGP_print("Expected processing time: " .. tonumber(args[2])*0.01 .. " - " .. (tonumber(args[2])*0.01)*2 .. " seconds");
+		CEPGP_print("This process will start in 10 seconds");
+	
+	elseif args[1] == "CEPGP_TRAFFICSyncStop" and sender ~= UnitName("player") then
+		CEPGP_Info.SharingTraffic = false;
+		CEPGP_print("Traffic log sharing has completed");
+		CEPGP_UpdateTrafficScrollBar();
+	
 	elseif args[1] == "CEPGP_TRAFFIC" then
-		if string.find(sender, "-") then
-			sender = string.sub(sender, 0, string.find(sender, "-")-1);
-		end
-		if (sender == UnitName("player") or sender ~= args[3]) and not sync then return; end
-		local player = args[2];
-		local issuer = args[3];
-		local action = args[4];
-		local EPB = args[5];
-		local EPA = args[6];
-		local GPB = args[7];
-		local GPA = args[8];
-		local itemID = args[9];
-		local id = args[10];
-		local GUID = args[11];
-		if itemID == "" then itemID = 0; end
-		local tStamp = args[10];
-		if not tStamp or tStamp == "" then
-			tStamp = time();
-		end
-		if CEPGP_itemExists(tonumber(itemID)) then
-			local itemLink = CEPGP_getItemLink(itemID);
-			if not itemLink then
-				local item = Item:CreateFromItemID(tonumber(itemID));
-				item:ContinueOnItemLoad(function()
-					itemLink = CEPGP_getItemLink(itemID);
-					TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+		local success, failMsg = pcall(function()
+			if string.find(sender, "-") then
+				sender = string.sub(sender, 0, string.find(sender, "-")-1);
+			end
+			
+			if sender == UnitName("player") then return; end
+			
+			local player = args[2];
+			local issuer = args[3];
+			local action = args[4];
+			local EPB = args[5];
+			local EPA = args[6];
+			local GPB = args[7];
+			local GPA = args[8];
+			local itemID = args[9];
+			local tStamp = tonumber(args[10]);
+			local id = args[11];
+			local GUID = args[12];
+			local index;
+			local entry = {};
+			
+			for i = #TRAFFIC, 1, -1 do
+				if TRAFFIC[i][10] == id and TRAFFIC[i][11] == GUID then return; end
+				
+				if TRAFFIC[i][10] and TRAFFIC[i][11] then
+					if i > 1 then
+						if TRAFFIC[i-1][9] then
+							if tStamp < tonumber(TRAFFIC[i][9]) and tStamp > tonumber(TRAFFIC[i-1][9]) then
+								index = i;
+								break;
+							elseif tStamp > tonumber(TRAFFIC[i][9]) then
+								index = i+1;
+								break;
+							end
+						else
+							if tStamp > tonumber(TRAFFIC[i][9]) then
+								index = i;
+								break;
+							end
+						end
+					else
+						if tStamp < tonumber(TRAFFIC[i][9]) then
+							index = 1;
+							break;
+						end
+					end
+				end
+			end
+			
+			
+			if not index then index = #TRAFFIC > 0 and #TRAFFIC or 1; end
+			
+			if itemID == "" then itemID = 0; end
+
+
+			if CEPGP_itemExists(tonumber(itemID)) then
+				local itemLink = CEPGP_getItemLink(itemID);
+				if not itemLink then
+					local item = Item:CreateFromItemID(tonumber(itemID));
+					item:ContinueOnItemLoad(function()
+						itemLink = CEPGP_getItemLink(itemID);
+						entry = {
+							[1] = player,
+							[2] = issuer,
+							[3] = action,
+							[4] = EPB,
+							[5] = EPA,
+							[6] = GPB,
+							[7] = GPA,
+							[8] = itemLink,
+							[9] = tStamp,
+							[10] = id,
+							[11] = GUID
+						};
+					end);
+				elseif itemLink then
+					entry = {
 						[1] = player,
 						[2] = issuer,
 						[3] = action,
@@ -794,9 +856,9 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 						[10] = id,
 						[11] = GUID
 					};
-				end);
-			elseif itemLink then
-				TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
+				end
+			else
+				entry = {
 					[1] = player,
 					[2] = issuer,
 					[3] = action,
@@ -804,28 +866,22 @@ function CEPGP_IncAddonMsg(message, sender, sync)
 					[5] = EPA,
 					[6] = GPB,
 					[7] = GPA,
-					[8] = itemLink,
+					[8] = "",
 					[9] = tStamp,
 					[10] = id,
 					[11] = GUID
 				};
 			end
-		else
-			TRAFFIC[CEPGP_ntgetn(TRAFFIC)+1] = {
-				[1] = player,
-				[2] = issuer,
-				[3] = action,
-				[4] = EPB,
-				[5] = EPA,
-				[6] = GPB,
-				[7] = GPA,
-				[8] = "",
-				[9] = tStamp,
-				[10] = id,
-				[11] = GUID
-			};
+			table.insert(TRAFFIC, index, entry);
+			if not CEPGP_Info.SharingTraffic then
+				CEPGP_UpdateTrafficScrollBar();
+			end
+		end);
+		
+		if not success then
+			CEPGP_print("Failed to import traffic entry from " .. sender, true);
+			CEPGP_print(failMsg);
 		end
-		CEPGP_UpdateTrafficScrollBar();
 	end
 end
 
@@ -841,30 +897,38 @@ function CEPGP_SendAddonMsg(message, channel)
 	end
 end
 
-function CEPGP_ShareTraffic(player, issuer, action, EPB, EPA, GPB, GPA, itemID, tStamp)
-	if not player or not action then return; end
-	if not itemID then
-		itemID = "";
+function CEPGP_ShareTraffic(ID, GUID)
+	if not ID or not GUILD then return; end
+	
+	local success, failMsg = pcall(function()
+		local player, issuer, action, EPB, EPA, GPB, GPA, itemID, tStamp;
+		for i = #TRAFFIC, 1, -1 do
+			if TRAFFIC[i][10] == ID and TRAFFIC[i][11] == GUID then
+				player = TRAFFIC[i][1];
+				issuer = TRAFFIC[i][2];
+				action = TRAFFIC[i][3];
+				EPB = TRAFFIC[i][4] or "";
+				EPA = TRAFFIC[i][5] or "";
+				GPB = TRAFFIC[i][6] or "";
+				GPA = TRAFFIC[i][7] or "";
+				itemID = CEPGP_getItemID(CEPGP_getItemString(TRAFFIC[i][8])) or "";
+				tStamp = TRAFFIC[i][9];
+				break;
+			end
+		end
+		
+		local str = player .. ";" .. issuer .. ";" .. action .. ";" .. EPB .. ";" .. EPA .. ";" .. GPB .. ";" .. GPA .. ";" .. itemID .. ";" .. tStamp .. ";" .. ID .. ";" .. GUID;
+		if #str > 255 then
+			CEPGP_print("Could not share traffic entry with ID " .. ID .. " / GUID " .. GUID .. ". Character limit exceeded!", true);
+			return;
+		end
+		
+		CEPGP_SendAddonMsg("CEPGP_TRAFFIC;" .. player .. ";" .. issuer .. ";" .. action .. ";" .. EPB .. ";" .. EPA .. ";" .. GPB .. ";" .. GPA .. ";" .. itemID .. ";" .. tStamp .. ";" .. ID .. ";" .. GUID, "GUILD");
+	end);
+	
+	if not success then
+		CEPGP_print("Error encountered while sharing traffic ID " .. ID .. " / GUID " .. GUID, true);
+		CEPGP_print(failMsg);
 	end
-	if not issuer then
-		issuer = "";
-	end
-	if not EPB then
-		EPB = "";
-	end
-	if not EPA then
-		EPA = "";
-	end
-	if not GPB then
-		GPB = "";
-	end
-	if not GPA then
-		GPA = "";
-	end
-	if not tstamp then
-		tStamp = time();
-	end
-	if CanEditOfficerNote() then
-		CEPGP_SendAddonMsg("CEPGP_TRAFFIC;" .. player .. ";" .. issuer .. ";" .. action .. ";" .. EPB .. ";" .. EPA .. ";" .. GPB .. ";" .. GPA .. ";" .. itemID .. ";" .. tStamp, "GUILD");
-	end
+	
 end

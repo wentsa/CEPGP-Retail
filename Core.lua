@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.14.release"
+CEPGP_VERSION = "1.12.15.closed beta 1"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -167,8 +167,10 @@ CEPGP = {
 }
 
 CEPGP_Info = {
-	Version = "1.12.14",
-	Build = "Release",
+	Version = "1.12.15",
+	Build = "Closed Beta 1",
+	SharingTraffic = false,
+	ImportingTraffic = false,
 	NumExcluded = 0,
 	IgnoreUpdates = false,
 	LastImport = time(),
@@ -179,32 +181,6 @@ CEPGP_Info = {
 	RosterStack = {},
 	VersionNotified = false,
 	VerboseLogging = false,
-	Defaults = {
-		SlotWeights = {
-			["2HWEAPON"] = 2,
-			["WEAPONMAINHAND"] = 1.5,
-			["WEAPON"] = 1.5,
-			["WEAPONOFFHAND"] = 0.5,
-			["HOLDABLE"] = 0.5,
-			["SHIELD"] = 0.5,
-			["RANGED"] = 0.5,
-			["RANGEDRIGHT"] = 0.5,
-			["RELIC"] = 0.5,
-			["HEAD"] = 1,
-			["NECK"] = 0.5,
-			["SHOULDER"] = 0.75,
-			["CLOAK"] = 0.5,
-			["CHEST"] = 1,
-			["ROBE"] = 1,
-			["WRIST"] = 0.5,
-			["HAND"] = 0.75,
-			["WAIST"] = 0.75,
-			["LEGS"] = 1,
-			["FEET"] = 0.75,
-			["FINGER"] = 0.5,
-			["TRINKET"] = 0.75
-		}
-	},
 	LastRun = {
 		GuildSB = 0,
 		RaidSB = 0
@@ -625,9 +601,9 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 	local function callback()
 		local function update()
 			if tonumber(amount) > 0 then
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Standby EP +" .. amount);
+				CEPGP_addTraffic("Guild", UnitName("player"), "Standby EP +" .. amount);
 			elseif tonumber(amount) < 0 then
-				CEPGP_ShareTraffic("Guild", UnitName("player"), "Standby EP " .. amount);
+				CEPGP_addTraffic("Guild", UnitName("player"), "Standby EP " .. amount);
 			end
 			if _G["CEPGP_traffic"]:IsVisible() then
 				CEPGP_UpdateTrafficScrollBar();

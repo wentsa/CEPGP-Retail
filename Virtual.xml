@@ -480,7 +480,7 @@
 	</Button>
 	<Button name="trafficButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="720" y="15"/>
+			<AbsDimension x="860" y="15"/>
 		</Size>
 		<Layers>
 			<Layer level="BORDER">
@@ -567,6 +567,7 @@
 					</Layer>
 				</Layers>
 			</Button>
+			
 			<Button name="$parentRemove" inherits="UiPanelCloseButton">
 				<Size>
 					<AbsDimension x="20" y="20" />
@@ -575,6 +576,24 @@
 					<Anchor point="RIGHT" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						CEPGP_ListButton_OnClick(self:GetName());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentShare" inherits="GameMenuButtonTemplate" text="Share">
+				<Size>
+					<AbsDimension x="75" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentRemove">
+						<Offset>
+							<AbsDimension x="-12" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

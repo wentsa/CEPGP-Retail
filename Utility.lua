@@ -1673,8 +1673,9 @@ function CEPGP_getDebugInfo()
 	info = info .. "Version: " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build .. "<br />\n";
 	info = info .. "Locale: " .. GetLocale() .. "<br />\n";
 	info = info .. "Poll Rate: " .. CEPGP.PollRate .. "<br />\n";
-	info = info .. "GP Formula: (" .. COEF .. "x(" .. MOD_COEF .. "^<sup>((ilvl/26)+(rarity-4))</sup>)xSlot Modifier)x" .. MOD .. "<br />";
+	info = info .. "GP Formula: (" .. COEF .. "x(" .. MOD_COEF .. "^<sup>((ilvl/26)+(rarity-4))</sup>)xSlot Modifier)x" .. MOD .. "<br />\n";
 	info = info .. "Base GP: " .. BASEGP .. "<br />\n";
+	info = info .. "Traffic Entries: " .. #TRAFFIC .. "<br />\n";
 	if CEPGP_minGPDecayFactor then
 		info = info .. "Base GP Decay Factor: true<br />\n";
 	else

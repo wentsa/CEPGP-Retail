@@ -554,7 +554,7 @@ function CEPGP_UpdateTrafficScrollBar()
 	local results = {};
 	local matches = 1;
 	for i = 1, #TRAFFIC do
-		local name, issuer, action, EPB, EPA, GPB, GPA, item, tStamp = TRAFFIC[i][1] or "", TRAFFIC[i][2] or "", TRAFFIC[i][3] or "", TRAFFIC[i][4] or "", TRAFFIC[i][5] or "", TRAFFIC[i][6] or "", TRAFFIC[i][7] or "", TRAFFIC[i][8] or "", TRAFFIC[i][9];
+		local name, issuer, action, EPB, EPA, GPB, GPA, item, tStamp, ID, GUID = TRAFFIC[i][1] or "", TRAFFIC[i][2] or "", TRAFFIC[i][3] or "", TRAFFIC[i][4] or "", TRAFFIC[i][5] or "", TRAFFIC[i][6] or "", TRAFFIC[i][7] or "", TRAFFIC[i][8] or "", TRAFFIC[i][9], TRAFFIC[i][10], TRAFFIC[i][11];
 		if tStamp then
 			tStamp = date("Time: %I:%M%p\nDate: %a, %d %B %Y", tStamp);
 		else
@@ -578,7 +578,9 @@ function CEPGP_UpdateTrafficScrollBar()
 				[6] = GPB,
 				[7] = GPA,
 				[8] = item,
-				[9] = tStamp
+				[9] = tStamp,
+				[10] = ID,
+				[11] = GUID
 			};
 			matches = matches + 1;
 		elseif search == "" then
@@ -591,7 +593,9 @@ function CEPGP_UpdateTrafficScrollBar()
 				[6] = GPB,
 				[7] = GPA,
 				[8] = item,
-				[9] = tStamp
+				[9] = tStamp,
+				[10] = ID,
+				[11] = GUID
 			};
 			matches = matches + 1;
 		end
@@ -683,6 +687,12 @@ function CEPGP_UpdateTrafficScrollBar()
 			else
 				_G["TrafficButton" .. i .. "ItemName"]:SetText("");
 				_G["TrafficButton" .. i .. "Item"]:SetScript('OnClick', function() end);
+			end
+			
+			if results[i][10] and results[i][11] then
+				_G["TrafficButton" .. i .. "Share"]:Show();
+			else
+				_G["TrafficButton" .. i .. "Share"]:Hide();
 			end
 			i = i - 1;
 		end, #results);
