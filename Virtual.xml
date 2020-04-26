@@ -506,7 +506,7 @@
 					<Anchors>
 						<Anchor point="RIGHT" relativeTo="$parentName" relativePoint="LEFT">
 							<Offset>
-								<AbsDimension x="465" y="0"/>
+								<AbsDimension x="505" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
