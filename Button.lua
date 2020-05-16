@@ -501,20 +501,28 @@ end
 		--[[ Sync Rank DropDown ]]--
 		
 function CEPGP_syncRankDropdown(frame, level, menuList)
+	local init = false;
 	for i = 1, 10, 1 do
 		if GuildControlGetRankName(i) ~= "" then
-			local info = {text = GuildControlGetRankName(i), value = i, func = CEPGP_syncRankChange}; --Value is used as the guild rank index as ranks can have identical names
-			local entry = UIDropDownMenu_AddButton(info);
+			local info = {
+				text = GuildControlGetRankName(i),
+				value = i,
+				func = CEPGP_syncRankChange
+			}; --Value is used as the guild rank index as ranks can have identical names
+			UIDropDownMenu_AddButton(info);	--TAINTED
+			init = true;
 		end
 	end
-	UIDropDownMenu_SetSelectedName(CEPGP_interface_options_forced_sync_rank, GuildControlGetRankName(CEPGP_force_sync_rank));
-	UIDropDownMenu_SetSelectedValue(CEPGP_interface_options_forced_sync_rank, CEPGP_force_sync_rank);
+	if init then
+		UIDropDownMenu_SetSelectedName(CEPGP_interface_options_forced_sync_rank, GuildControlGetRankName(CEPGP_force_sync_rank));
+		--UIDropDownMenu_SetSelectedValue(CEPGP_interface_options_forced_sync_rank, CEPGP_force_sync_rank);
+	end
 end
 
 function CEPGP_syncRankChange(self, arg1, arg2, checked)
 	if (not checked) then
 		UIDropDownMenu_SetSelectedName(CEPGP_interface_options_forced_sync_rank, self:GetText());
-		UIDropDownMenu_SetSelectedValue(CEPGP_interface_options_forced_sync_rank, self.value);
+		--UIDropDownMenu_SetSelectedValue(CEPGP_interface_options_forced_sync_rank, self.value);
 		CEPGP_force_sync_rank = self.value;
 		CEPGP.Sync[2] = self.value;
 		CEPGP_print("Updated forced synchronisation rank");
@@ -535,7 +543,7 @@ end
 function CEPGP_attendanceChange(self, arg1, arg2, checked)
 	if (not checked) then
 		UIDropDownMenu_SetSelectedName(CEPGP_attendance_dropdown, self:GetText());
-		UIDropDownMenu_SetSelectedValue(CEPGP_attendance_dropdown, self.value);
+		--UIDropDownMenu_SetSelectedValue(CEPGP_attendance_dropdown, self.value);
 	end
 end
 
@@ -559,12 +567,12 @@ function CEPGP_minThresholdDropdown(frame, level, menuList)
 		local entry = UIDropDownMenu_AddButton(info);
 	end
 	UIDropDownMenu_SetSelectedName(CEPGP_min_threshold_dropdown, rarity[CEPGP_min_threshold]);
-	UIDropDownMenu_SetSelectedValue(CEPGP_min_threshold_dropdown, CEPGP_min_threshold);
+	--UIDropDownMenu_SetSelectedValue(CEPGP_min_threshold_dropdown, CEPGP_min_threshold);
 end
 
 function CEPGP_minThresholdChange(self, value)
 	UIDropDownMenu_SetSelectedName(CEPGP_min_threshold_dropdown, self:GetText());
-	UIDropDownMenu_SetSelectedValue(CEPGP_min_threshold_dropdown, self.value);
+	--UIDropDownMenu_SetSelectedValue(CEPGP_min_threshold_dropdown, self.value);
 	CEPGP_min_threshold = self.value;
 	CEPGP_print("Minimum auto show threshold is now set to " .. self:GetText());
 end
@@ -589,14 +597,13 @@ function CEPGP_defChannelDropdown(frame, level, menuList)
 	for i = 1, #channels do
 		if string.lower(CHANNEL) == string.lower(channels[i]) then
 			UIDropDownMenu_SetSelectedName(CEPGP_interface_options_def_channel_dropdown, channels[i]);
-			UIDropDownMenu_SetSelectedValue(CEPGP_interface_options_def_channel_dropdown, i);
 		end
 	end
 end
 
 function CEPGP_defChannelChange(self, value)
 	UIDropDownMenu_SetSelectedName(CEPGP_interface_options_def_channel_dropdown, self:GetText());
-	UIDropDownMenu_SetSelectedValue(CEPGP_interface_options_def_channel_dropdown, self.value);
+	--UIDropDownMenu_SetSelectedValue(CEPGP_interface_options_def_channel_dropdown, self.value);
 	CHANNEL = self:GetText();
 	CEPGP.Channel = self:GetText();
 	CEPGP_print("Reporting channel set to \"" .. CHANNEL .. "\".");
@@ -622,14 +629,14 @@ function CEPGP_lootChannelDropdown(frame, level, menuList)
 	for i = 1, #channels do
 		if string.lower(CEPGP_lootChannel) == string.lower(channels[i]) then
 			UIDropDownMenu_SetSelectedName(CEPGP_loot_channel_dropdown, channels[i]);
-			UIDropDownMenu_SetSelectedValue(CEPGP_loot_channel_dropdown, i);
+			--UIDropDownMenu_SetSelectedValue(CEPGP_loot_channel_dropdown, i);
 		end
 	end
 end
 
 function CEPGP_lootChannelChange(self, value)
 	UIDropDownMenu_SetSelectedName(CEPGP_loot_channel_dropdown, self:GetText());
-	UIDropDownMenu_SetSelectedValue(CEPGP_loot_channel_dropdown, self.value);
+	--UIDropDownMenu_SetSelectedValue(CEPGP_loot_channel_dropdown, self.value);
 	CEPGP_lootChannel = self:GetText();
 	CEPGP_print("Loot response channel set to \"" .. CEPGP_lootChannel .. "\".");
 end

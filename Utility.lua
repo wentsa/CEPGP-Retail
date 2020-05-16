@@ -1,8 +1,6 @@
 local L = CEPGP_Locale:GetLocale("CEPGP")
 
 function CEPGP_initialise()
-	UIDropDownMenu_Initialize(CEPGP_interface_options_forced_sync_rank, CEPGP_syncRankDropdown);
-	UIDropDownMenu_Initialize(CEPGP_interface_options_def_channel_dropdown, CEPGP_defChannelDropdown);
 	C_Timer.After(3, function()
 		_, _, _, CEPGP_ElvUI = GetAddOnInfo("ElvUI");
 		if not CEPGP_ElvUI then CEPGP_ElvUI = GetAddOnInfo("TukUI"); end
@@ -412,9 +410,10 @@ function CEPGP_initialise()
 		
 		CEPGP_initInterfaceOptions();
 		--CEPGP_updateGuild();
-		GameTooltip:HookScript("OnTooltipSetItem", CEPGP_addGPTooltip);
-		ItemRefTooltip:HookScript("OnTooltipSetItem", CEPGP_addGPTooltip);
+		GameTooltip:HookScript("OnShow", CEPGP_addGPTooltip);
+		ItemRefTooltip:HookScript("OnShow", CEPGP_addGPTooltip);
 		hooksecurefunc("ChatFrame_OnHyperlinkShow", CEPGP_addGPHyperlink);	
+		--hooksecurefunc("SetHyperlinkCompareItem", CEPGP_addGPHyperlink);	
 		
 		if not CEPGP_notice then
 			CEPGP_notice_frame:Show();
@@ -480,6 +479,29 @@ function CEPGP_initInterfaceOptions()
 	InterfaceOptions_AddCategory(panel.standby);
 	
 	_G["CEPGP_interface_options_version"]:SetText("Classic EPGP Version " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build);
+end
+
+function CEPGP_initDropdown(frame, initFunction, displayMode, level, menuList)
+	frame.menuList = menuList;
+
+	--securecall("UIDropDownMenu_InitializeHelper", frame);
+
+	-- Set the initialize function and call it.  The initFunction populates the dropdown list.
+	if ( initFunction ) then
+		UIDropDownMenu_SetInitializeFunction(frame, initFunction);
+		initFunction(frame, level, frame.menuList);
+	end
+
+	--master frame
+	if(level == nil) then
+		level = 1;
+	end
+
+	local dropDownList = _G["DropDownList"..level];
+	dropDownList.dropdown = frame;
+	dropDownList.shouldRefresh = true;
+
+	UIDropDownMenu_SetDisplayMode(frame, displayMode);
 end
 
 function CEPGP_calcGP(link, quantity, id)	
@@ -590,9 +612,9 @@ function CEPGP_calcGP(link, quantity, id)
 	end
 end
 
-function CEPGP_addGPTooltip(self)
-	if not CEPGP_gp_tooltips or not self:GetItem() or self:GetItem() == nil or self:GetItem() == "" then return; end
-	local _, link = self:GetItem();
+function CEPGP_addGPTooltip(frame)
+	if not CEPGP_gp_tooltips or not frame:GetItem() or frame:GetItem() == nil or frame:GetItem() == "" then return; end
+	local _, link = frame:GetItem();
 	local id = CEPGP_getItemID(CEPGP_getItemString(link));
 	if not CEPGP_itemExists(tonumber(id)) then return; end
 	local name = GetItemInfo(id);
@@ -600,11 +622,11 @@ function CEPGP_addGPTooltip(self)
 		local item = Item:CreateFromItemID(tonumber(id));
 		item:ContinueOnItemLoad(function()
 			local gp = CEPGP_calcGP(_, 1, id);
-			self:AddLine("GP Value: " .. gp, {1,1,1});	
+			frame:AddLine("GP Value: " .. gp, {1,1,1});	
 		end);
 	else
 		local gp = CEPGP_calcGP(_, 1, id);
-		self:AddLine("GP Value: " .. gp, {1,1,1});
+		frame:AddLine("GP Value: " .. gp, {1,1,1});
 	end
 	
 end
@@ -627,16 +649,9 @@ function CEPGP_addGPHyperlink(self, iString)
 	end
 end
 
-function CEPGP_populateFrame(CEPGP_criteria, items)
-	local sorting = nil;
+function CEPGP_populateFrame(items)
 	local subframe = nil;
-	if CEPGP_criteria == "name" or CEPGP_criteria == "rank" then
-		SortGuildRoster(CEPGP_criteria);
-	elseif CEPGP_criteria == "group" or CEPGP_criteria == "EP" or CEPGP_criteria == "GP" or CEPGP_criteria == "PR" then
-		sorting = CEPGP_criteria;
-	else
-		sorting = "group";
-	end
+	
 	if CEPGP_mode == "loot" then
 		CEPGP_cleanTable();
 	elseif CEPGP_mode ~= "loot" then
@@ -1491,13 +1506,13 @@ function CEPGP_updateGuild()
 	GuildRoster();
 end
 
-function CEPGP_tSort(t, index)
+function CEPGP_tSort(t, index, inverse)
 	if not t then return; end
 	if #t == 1 then return t; end
 		
 	for x = 1, #t do
 		for z = x+1, #t do
-			if CEPGP_critReverse then
+			if inverse then
 				if t[x][index] < t[z][index] then
 					local v = t[x];
 					t[x] = t[z];
@@ -1514,61 +1529,6 @@ function CEPGP_tSort(t, index)
 	end
 	
 	return t;
-	
-	--[[local t2 = {};
-	table.insert(t2, t[1]);
-	table.remove(t, 1);
-	local tSize = table.getn(t);
-	if tSize > 0 then
-		for x = 1, tSize do
-			local t2Size = table.getn(t2);
-			for y = 1, t2Size do
-				if y < t2Size and 
-				t[1][index] ~= nil then
-					if CEPGP_critReverse then
-						if (t[1][index] >= t2[y][index]) then
-							table.insert(t2, y, t[1]);
-							table.remove(t, 1);
-							break;
-						elseif (t[1][index] < t2[y][index]) and (t[1][index] >= t2[(y + 1)][index]) then
-							table.insert(t2, (y + 1), t[1]);
-							table.remove(t, 1);
-							break;
-						end
-					else
-						if (t[1][index] <= t2[y][index]) then
-							table.insert(t2, y, t[1]);
-							table.remove(t, 1);
-							break;
-						elseif (t[1][index] > t2[y][index]) and (t[1][index] <= t2[(y + 1)][index]) then
-							table.insert(t2, (y + 1), t[1]);
-							table.remove(t, 1);
-							break;
-						end
-					end
-				elseif y == t2Size and t[1][index] ~= nil then
-					if CEPGP_critReverse then
-						if t[1][index] > t2[y][index] then
-							table.insert(t2, y, t[1]);
-							table.remove(t, 1);
-						else
-							table.insert(t2, t[1]);
-							table.remove(t, 1);
-						end
-					else
-						if t[1][index] < t2[y][index] then
-							table.insert(t2, y, t[1]);
-							table.remove(t, 1);
-						else
-							table.insert(t2, t[1]);
-							table.remove(t, 1);
-						end
-					end
-				end
-			end
-		end
-	end
-	return t2;]]
 end
 
 function CEPGP_sortDistList(list)
@@ -1640,22 +1600,51 @@ function CEPGP_ntgetn(tbl)
 	return n;
 end
 
-function CEPGP_setCriteria(x, disp)
-	if CEPGP_criteria == x then
-		CEPGP_critReverse = not CEPGP_critReverse
-	end
-	CEPGP_criteria = x;
-	if not disp then return; end
-	if disp == "Raid" then
+function CEPGP_setCriteria(sortIndex, method)
+	if not method then return; end
+	
+	if method == "Raid" then
+		if CEPGP_Info.Sorting.Raid[1] == sortIndex then
+			CEPGP_Info.Sorting.Raid[2] = not CEPGP_Info.Sorting.Raid[2];
+		else
+			CEPGP_Info.Sorting.Raid[1] = sortIndex;
+		end
 		CEPGP_UpdateRaidScrollBar();
-	elseif disp == "Guild" then
+	elseif method == "Guild" then
+		if CEPGP_Info.Sorting.Guild[1] == sortIndex then
+			CEPGP_Info.Sorting.Guild[2] = not CEPGP_Info.Sorting.Guild[2];
+		else
+			CEPGP_Info.Sorting.Guild[1] = sortIndex;
+		end
 		CEPGP_UpdateGuildScrollBar();
-	elseif disp == "Loot" then
+	elseif method == "Loot" then
+		if CEPGP_Info.Sorting.Loot[1] == sortIndex then
+			CEPGP_Info.Sorting.Loot[2] = not CEPGP_Info.Sorting.Loot[2];
+		else
+			CEPGP_Info.Sorting.Loot[1] = sortIndex;
+		end
 		CEPGP_UpdateLootScrollBar(nil, true);
-	elseif disp == "Standby" then
+	elseif method == "Standby" then
+		if CEPGP_Info.Sorting.Standby[1] == sortIndex then
+			CEPGP_Info.Sorting.Standby[2] = not CEPGP_Info.Sorting.Standby[2];
+		else
+			CEPGP_Info.Sorting.Standby[1] = sortIndex;
+		end
 		CEPGP_UpdateStandbyScrollBar();
-	elseif disp == "Attendance" then
+	elseif method == "Attendance" then
+		if CEPGP_Info.Sorting.Attendance[1] == sortIndex then
+			CEPGP_Info.Sorting.Attendance[2] = not CEPGP_Info.Sorting.Attendance[2];
+		else
+			CEPGP_Info.Sorting.Attendance[1] = sortIndex;
+		end
 		CEPGP_UpdateAttendanceScrollBar();
+	elseif method == "Version" then
+		if CEPGP_Info.Sorting.Version[1] == sortIndex then
+			CEPGP_Info.Sorting.Version[2] = not CEPGP_Info.Sorting.Version[2];
+		else
+			CEPGP_Info.Sorting.Version[1] = sortIndex;
+		end
+		CEPGP_UpdateVersionScrollBar();
 	end
 end
 
@@ -2043,14 +2032,18 @@ function CEPGP_callItem(id, gp, buttons, timeout)
 		local call;
 		local timer = timeout-1;
 		CEPGP_respond_timeout_string:Show();
+		CEPGP_distribute_time:Show();
 		CEPGP_respond_timeout_string:SetText("Time Remaining: " .. timer);
+		CEPGP_distribute_time:SetText("Time Remaining: " .. timer);
 		local ticker = function()
 			if not CEPGP_respond:IsVisible() then
 				call._remainingIterations = 0;
+				CEPGP_distribute_time:SetText("Time Remaining: 0");
 				return;
 			end
 			timer = timer - 1;
 			CEPGP_respond_timeout_string:SetText("Time Remaining: " .. timer);
+			CEPGP_distribute_time:SetText("Time Remaining: " .. timer);
 			if timer == 0 then
 				if not CEPGP_respond:IsVisible() then
 					return;
@@ -2064,6 +2057,7 @@ function CEPGP_callItem(id, gp, buttons, timeout)
 		end, timeout);
 	else
 		CEPGP_respond_timeout_string:Hide();
+		CEPGP_distribute_time:Hide();
 	end
 	if not link and CEPGP_itemExists(id) then
 		local item = Item:CreateFromItemID(id);

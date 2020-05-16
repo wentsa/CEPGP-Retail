@@ -371,56 +371,61 @@ function CEPGP_handleLoot(event, arg1, arg2)
 
 	elseif event == "LOOT_SLOT_CLEARED" then
 		if CEPGP_distributing and arg1 == CEPGP_lootSlot then --Confirms that an item is currently being distributed and that the item taken is the one in question
-			local callback = function()
-				if CEPGP_distPlayer ~= "" and CEPGP_award then
-					CEPGP_distributing = false;
-					CEPGP_toggleGPEdit(true);
+				
+			local player = CEPGP_distPlayer;
+			local award = CEPGP_award;
+			local rate = CEPGP_rate;
+			local id = CEPGP_DistID;
+			local link = CEPGP_distItemLink;
+			local gpValue = tonumber(_G["CEPGP_distribute_GP_value"]:GetText());
+			local itemName = _G["CEPGP_distribute_item_name"]:GetText()
+			local response = CEPGP_distribute_popup:GetAttribute("responseName");
+			local distGP = CEPGP_distGP;
+			local tStamp = time();
+			
+			CEPGP_distPlayer = "";
+			CEPGP_distributing = false;
+			CEPGP_distribute_popup:Hide();
+			CEPGP_distribute:Hide();
+			_G["CEPGP_distributing_button"]:Hide();
+			CEPGP_loot:Show();
+			CEPGP_toggleGPEdit(true);
+			
+			local callback = function()				
+				if player ~= "" and award then
 					if CEPGP_isML() == 0 then
 						CEPGP_SendAddonMsg("RaidAssistLootClosed", "RAID");
 						CEPGP_SendAddonMsg("LootClosed;", "RAID");
 					end
-					local response;
-					if CEPGP_distribute_popup:GetAttribute("responseName") then
-						response = CEPGP_distribute_popup:GetAttribute("responseName");
-						if response == "" then response = nil; end
-					end
-					if CEPGP_distGP then
+					if response == "" then response = nil; end
+					
+					if distGP then
 						if response then
-							local message = "Awarded " .. _G["CEPGP_distribute_item_name"]:GetText() .. " to ".. CEPGP_distPlayer .. " for " .. CEPGP_distribute_GP_value:GetText()*CEPGP_rate .. " GP (" .. response .. ")";
+							local message = "Awarded " .. itemName .. " to ".. player .. " for " .. gpValue*rate .. " GP (" .. response .. ")";
 							SendChatMessage(message, CHANNEL, CEPGP_LANGUAGE);
 						else
-							local message = "Awarded " .. _G["CEPGP_distribute_item_name"]:GetText() .. " to ".. CEPGP_distPlayer .. " for " .. CEPGP_distribute_GP_value:GetText()*CEPGP_rate .. " GP";
+							local message = "Awarded " .. itemName .. " to ".. player .. " for " .. gpValue*rate .. " GP";
 							SendChatMessage(message, CHANNEL, CEPGP_LANGUAGE);
 						end
-						CEPGP_addGP(CEPGP_distPlayer, CEPGP_distribute_GP_value:GetText()*CEPGP_rate, CEPGP_DistID, CEPGP_distItemLink, nil, response);
+						CEPGP_addGP(player, gpValue*rate, id, link, nil, response);
 					else
-						if CEPGP_roster[CEPGP_distPlayer] then
-							local index = CEPGP_roster[CEPGP_distPlayer][1];
-							local EP, GP = CEPGP_getEPGP(CEPGP_distPlayer, index);
-							SendChatMessage("Awarded " .. _G["CEPGP_distribute_item_name"]:GetText() .. " to ".. CEPGP_distPlayer .. " for free", CHANNEL, CEPGP_LANGUAGE);
-							CEPGP_addTraffic(CEPGP_distPlayer, UnitName("player"), "Given for Free", EP, EP, GP, GP, CEPGP_DistID, time());
+						if CEPGP_roster[player] then
+							local index = CEPGP_roster[player][1];
+							local EP, GP = CEPGP_getEPGP(player, index);
+							SendChatMessage("Awarded " .. itemName .. " to ".. player .. " for free", CHANNEL, CEPGP_LANGUAGE);
+							CEPGP_addTraffic(player, UnitName("player"), "Given for Free", EP, EP, GP, GP, id, tStamp);
 						else
-							local index = CEPGP_getIndex(CEPGP_distPlayer);
+							local index = CEPGP_getIndex(player);
 							if index then
-								SendChatMessage("Awarded " .. _G["CEPGP_distribute_item_name"]:GetText() .. " to ".. CEPGP_distPlayer .. " for free (Exclusion List)", CHANNEL, CEPGP_LANGUAGE);
-								CEPGP_addTraffic(CEPGP_distPlayer, UnitName("player"), "Given for Free (Exclusion List)", nil, nil, nil, nil, CEPGP_DistID, time());
+								SendChatMessage("Awarded " .. itemName .. " to ".. player .. " for free (Exclusion List)", CHANNEL, CEPGP_LANGUAGE);
+								CEPGP_addTraffic(player, UnitName("player"), "Given for Free (Exclusion List)", nil, nil, nil, nil, id, tStamp);
 							end
 						end
 					end
-					CEPGP_distPlayer = "";
-					CEPGP_distribute_popup:Hide();
-					CEPGP_distribute:Hide();
-					_G["CEPGP_distributing_button"]:Hide();
-					CEPGP_loot:Show();
+					
 				else
-					CEPGP_distributing = false;
-					CEPGP_toggleGPEdit(true);
-					SendChatMessage(_G["CEPGP_distribute_item_name"]:GetText() .. " has been distributed without EPGP", CHANNEL, CEPGP_LANGUAGE);
-					CEPGP_addTraffic("", UnitName("player"), "Manually Awarded", "", "", "", "", CEPGP_DistID, time());
-					CEPGP_distribute_popup:Hide();
-					CEPGP_distribute:Hide();
-					_G["CEPGP_distributing_button"]:Hide();
-					CEPGP_loot:Show();
+					SendChatMessage(itemName .. " has been distributed without EPGP", CHANNEL, CEPGP_LANGUAGE);
+					CEPGP_addTraffic("", UnitName("player"), "Manually Awarded", "", "", "", "", id, tStamp);
 				end
 			end;
 			if CEPGP_ntgetn(CEPGP_roster) < (GetNumGuildMembers() - CEPGP_Info.NumExcluded) and CEPGP_Info.Polling then

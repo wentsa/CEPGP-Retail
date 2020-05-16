@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.15.closed beta 1"
+CEPGP_VERSION = "1.12.15.Open Beta 3"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -22,7 +22,7 @@ CEPGP_confirmrestore = false;
 CEPGP_looting = false;
 CEPGP_traffic_clear = false;
 CEPGP_criteria = 4;
-CEPGP_frames = {CEPGP_guild, CEPGP_raid, CEPGP_loot, CEPGP_distribute, CEPGP_context_popup, CEPGP_save_guild_logs, CEPGP_restore_guild_logs, CEPGP_settings_import, CEPGP_override, CEPGP_traffic};
+CEPGP_frames = {CEPGP_guild, CEPGP_raid, CEPGP_loot, CEPGP_distribute, CEPGP_context_popup};
 CEPGP_boss_config_frames = {CEPGP_EP_options_mc, CEPGP_EP_options_bwl, CEPGP_EP_options_zg, CEPGP_EP_options_aq20, CEPGP_EP_options_aq40, CEPGP_EP_options_naxx, CEPGP_EP_options_worldboss};
 CEPGP_LANGUAGE = GetDefaultLanguage("player");
 CEPGP_responses = {};
@@ -168,22 +168,37 @@ CEPGP = {
 
 CEPGP_Info = {
 	Version = "1.12.15",
-	Build = "Closed Beta 1",
+	Build = "Open Beta 3",
+	Active = {false, false},	--	Active state, queried for current raid
 	SharingTraffic = false,
 	ImportingTraffic = false,
 	NumExcluded = 0,
 	IgnoreUpdates = false,
 	LastImport = time(),
+	SyncInProgress = false,
 	LastUpdate = GetTime(),
 	QueuedAnnouncement = nil,
+	QueuedAward = nil,
 	Polling = false,
 	Rescan = false,
 	RosterStack = {},
+	Sorting = {	--	Sorting index, reverse
+		Attendance = {1, false},
+		Guild = {4, false},
+		Loot = {4, false},
+		Raid = {4, false},
+		Standby = {1, false},
+		Version = {1, false},
+	},
 	VersionNotified = false,
 	VerboseLogging = false,
+	TrafficImport = {},
+	TrafficScope = 1,
 	LastRun = {
 		GuildSB = 0,
-		RaidSB = 0
+		RaidSB = 0,
+		TrafficSB = 0,
+		VersionSB = 0
 	}
 };
 local L = CEPGP_Locale:GetLocale("CEPGP")
@@ -220,14 +235,20 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 	
 	elseif event == "GET_ITEM_INFO_RECEIVED" then
 		local id, success = arg1, arg2;
-		if success then CEPGP_updateOverride(id); end
+		if success then
+			CEPGP_updateOverride(id);
+		end
 		return;
 		
-	elseif event == "PARTY_LOOT_METHOD_CHANGED" then
-		if GetLootMethod() == "master" and IsInRaid("player") and (CEPGP_isML() == 0 or CEPGP_debugMode) then
+	elseif event == "PARTY_LOOT_METHOD_CHANGED" or event == "PLAYER_ROLES_ASSIGNED" then
+		if GetLootMethod() == "master" and IsInRaid("player") and (CEPGP_isML() == 0 or CEPGP_debugMode) and not CEPGP_Info.Active[2] then
 			_G["CEPGP_confirmation"]:Show();
 		else
 			_G["CEPGP_confirmation"]:Hide();
+		end
+		
+		if GetLootMethod() ~= "master" or not IsInRaid("player") or CEPGP_isML() ~= 0 then
+			CEPGP_Info.Active[2] = false;	--	Whenever the loot method, loot master or group type is changed, this will enable the check again
 		end
 		return;
 		
@@ -283,7 +304,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 		return;
 	end
 	
-	if CEPGP_use or CEPGP_debugMode then --EPGP and loot distribution related 
+	if CEPGP_Info.Active[1] or CEPGP_debugMode then --EPGP and loot distribution related 
 		--	An encounter has been defeated
 		local function handleEncounter(event, arg1, arg5)
 			
@@ -353,7 +374,6 @@ function SlashCmdList.CEPGP(msg, editbox)
 				};
 			end
 		end
-		CEPGP_groupVersion = CEPGP_tSort(CEPGP_groupVersion, 1);
 		ShowUIPanel(CEPGP_version);
 		CEPGP_UpdateVersionScrollBar();
 	

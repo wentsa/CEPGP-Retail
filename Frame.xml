@@ -731,6 +731,15 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<FontString name="$parent_time" inherits="GameFontNormal" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="10" y="20" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
 						<Texture name="CEPGP_distribute_item_texture">
 							<Size>
 								<AbsDimension x="30" y="30" />
@@ -928,6 +937,7 @@
 				self:RegisterEvent("CHAT_MSG_BN_WHISPER");
 				self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 				self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+				self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 				self:RegisterEvent("ENCOUNTER_END");
 			</OnLoad>
 			<OnMouseDown>
@@ -1062,9 +1072,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CEPGP_setCriteria(1);
-						CEPGP_groupVersion = CEPGP_tSort(CEPGP_groupVersion, 1);
-						CEPGP_UpdateVersionScrollBar();
+						CEPGP_setCriteria(1, "Version");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1081,9 +1089,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CEPGP_setCriteria(2);
-						CEPGP_groupVersion = CEPGP_tSort(CEPGP_groupVersion, 2);
-						CEPGP_UpdateVersionScrollBar();
+						CEPGP_setCriteria(2, "Version");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1142,7 +1148,6 @@
 								};
 							end
 						end
-						CEPGP_groupVersion = CEPGP_tSort(CEPGP_groupVersion, 1);
 						CEPGP_UpdateVersionScrollBar();
 
 					</OnClick>
@@ -1183,7 +1188,6 @@
 								};
 							end
 						end
-						CEPGP_groupVersion = CEPGP_tSort(CEPGP_groupVersion, 1);
 						CEPGP_UpdateVersionScrollBar();
 					</OnClick>
 				</Scripts>
@@ -1759,9 +1763,11 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						UIDropDownMenu_Initialize(self, CEPGP_initRestoreDropdown);
 						UIDropDownMenu_SetWidth(self, 250);
 					</OnShow>
+					<OnLoad>
+						CEPGP_initDropdown(self, CEPGP_initRestoreDropdown);
+					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button name="CEPGP_guild_log_restore_cancel" inherits="GameMenuButtonTemplate" text="Cancel">
@@ -1798,8 +1804,11 @@
 						local record = UIDropDownMenu_GetSelectedName(CEPGP_restoreDropdown);
 						RECORDS[record] = nil;
 						CEPGP_print("Deleted log: " .. record);
-						UIDropDownMenu_Initialize(self, CEPGP_initRestoreDropdown);
+						CEPGP_initDropdown(self, CEPGP_initRestoreDropdown);
 					</OnClick>
+					<OnLoad>
+						CEPGP_initDropdown(self, CEPGP_initRestoreDropdown);
+					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button name="CEPGP_guild_log_restore_confirm" inherits="GameMenuButtonTemplate" text="Confirm">
@@ -2493,6 +2502,11 @@
 				<FontString name="CEPGP_traffic_epa" inherits="GameFontNormalSmall" text="EP After" />
 				<FontString name="CEPGP_traffic_gpb" inherits="GameFontNormalSmall" text="GP Before /" />
 				<FontString name="CEPGP_traffic_gpa" inherits="GameFontNormalSmall" text="GP After" />
+				<FontString name="$parent_display" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -2520,14 +2534,14 @@
 					</OnTextChanged>
 				</Scripts>
 			</EditBox>
-			<Button name="CEPGP_traffic_clear" inherits="GameMenuButtonTemplate" text="Clear EPGP Traffic">
+			<Button name="CEPGP_traffic_clear_button" inherits="GameMenuButtonTemplate" text="Clear EPGP Traffic">
 				<Size>
 					<AbsDimension x="150" y="21" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-10" y="12" />
+							<AbsDimension x="10" y="12" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2555,16 +2569,48 @@
 					<AbsDimension x="125" y="21" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="CEPGP_traffic_clear_button">
 						<Offset>
-							<AbsDimension x="10" y="12" />
+							<AbsDimension x="10" y="0" />
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parent_share_info_texture" file="Interface/TUTORIALFRAME/TutorialFrame-QuestionMark.blp" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="25" y="25" />
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parent_share_info">
+						<Size>
+							<AbsDimension x="25" y="25" />
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parent_share_info_texture" />
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText("|c000077BEWhy can't I share some traffic entries?|r\nSome traffic entries cannot be shared because they are missing information which was added in version 1.12.10.\nIf a traffic entry was added before you (or your loot master) started using this version, it cannot be shared.\n\nAnother reason why you can't share a certain traffic entry is because the entry might contain malformed data.\nThe best way to avoid this is to ensure that you and your loot master are running the latest version of CEPGP.\n\n|c00FF0000Why is this taking so long?|r\nTo try to avoid disconnecting you, CEPGP transmits traffic entries at a rate of approximately one log per 0.1 seconds. You currently have " .. #TRAFFIC .. " entries.");
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+				</Frames>
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
 						local success, failMsg = pcall(function()
+							self:Disable();
 							local i = #TRAFFIC;
 							local limit = #TRAFFIC;
 							if CEPGP_Info.SharingTraffic then return; end
@@ -2572,45 +2618,44 @@
 							CEPGP_Info.SharingTraffic = true;
 							CEPGP_SendAddonMsg("CEPGP_TRAFFICSyncStart;"..limit, "GUILD");
 							
-							CEPGP_print("Sharing all traffic logs, please wait.");
-							CEPGP_print("Estimated processing time: " .. limit * 0.01 .. " - " .. (limit * 0.01)*2 .. " seconds. This process will start in 10 seconds.");
-							local start = GetTime();
+							CEPGP_print("Sharing all traffic logs, please wait. This process will start in 10 seconds.");
 							C_Timer.After(10, function()
-								C_Timer.NewTicker(0.01, function()
+								C_Timer.NewTicker(0.1, function()
 									local ID, GUID;
 									local player, issuer, action, EPB, EPA, GPB, GPA, itemID, tStamp;
 									
-									if TRAFFIC[i][10] and TRAFFIC[i][11] then
-										ID, GUID = TRAFFIC[i][10], TRAFFIC[i][11];
-										if TRAFFIC[i][10] == ID and TRAFFIC[i][11] == GUID then
-											player = TRAFFIC[i][1];
-											issuer = TRAFFIC[i][2];
-											action = TRAFFIC[i][3];
-											EPB = TRAFFIC[i][4] or "";
-											EPA = TRAFFIC[i][5] or "";
-											GPB = TRAFFIC[i][6] or "";
-											GPA = TRAFFIC[i][7] or "";
-											itemID = CEPGP_getItemID(CEPGP_getItemString(TRAFFIC[i][8])) or "";
-											tStamp = TRAFFIC[i][9];
-										end
+									if TRAFFIC[i][9] and TRAFFIC[i][10] and TRAFFIC[i][11] and tonumber(TRAFFIC[i][9]) ~= tonumber(TRAFFIC[i][10]) then
+										
+										player = TRAFFIC[i][1];
+										issuer = TRAFFIC[i][2];
+										action = TRAFFIC[i][3];
+										EPB = TRAFFIC[i][4] or "";
+										EPA = TRAFFIC[i][5] or "";
+										GPB = TRAFFIC[i][6] or "";
+										GPA = TRAFFIC[i][7] or "";
+										itemID = CEPGP_getItemID(CEPGP_getItemString(TRAFFIC[i][8])) or "";
+										tStamp = TRAFFIC[i][9];
+										ID = TRAFFIC[i][10];
+										GUID = TRAFFIC[i][11];
+										
 										
 										local str = player .. ";" .. issuer .. ";" .. action .. ";" .. EPB .. ";" .. EPA .. ";" .. GPB .. ";" .. GPA .. ";" .. itemID .. ";" .. tStamp .. ";" .. ID .. ";" .. GUID;
 										if #str > 255 then
 											CEPGP_print("Could not share traffic entry with ID " .. ID .. " / GUID " .. GUID .. ". Character limit exceeded!", true);
 											return;
 										end
-										
 										CEPGP_SendAddonMsg("CEPGP_TRAFFIC;" .. player .. ";" .. issuer .. ";" .. action .. ";" .. EPB .. ";" .. EPA .. ";" .. GPB .. ";" .. GPA .. ";" .. itemID .. ";" .. tStamp .. ";" .. ID .. ";" .. GUID, "GUILD");
-									else
-										print(i);
 									end
 									
 									i = i - 1;
 									if i == 1 then
 										CEPGP_Info.SharingTraffic = false;
-										CEPGP_SendAddonMsg("CEPGP_TRAFFICSyncStop", "GUILD");
-										CEPGP_print("Traffic logs have been shared");
-										CEPGP_print("Time taken: " .. (GetTime()-start));
+										
+										C_Timer.After(5, function()
+											CEPGP_SendAddonMsg("CEPGP_TRAFFICSyncStop", "GUILD");
+											CEPGP_print("Traffic logs have been shared");
+											self:Enable();
+										end);
 									end
 								end, limit);
 							end);
@@ -2621,6 +2666,118 @@
 							CEPGP_print(failMsg);
 						end
 					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CEPGP_traffic_previous" inherits="GameMenuButtonTemplate">
+				<Size>
+					<AbsDimension x="125" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="30" y="12" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CEPGP_Info.TrafficScope = math.min(CEPGP_Info.TrafficScope-500, #TRAFFIC);
+						CEPGP_UpdateTrafficScrollBar();
+						CEPGP_traffic_next:Enable();
+						
+						if 500 > #TRAFFIC - CEPGP_Info.TrafficScope then
+							CEPGP_traffic_next:SetText("Next");
+							CEPGP_traffic_next:Disable();							
+						elseif 500 > #TRAFFIC - (CEPGP_Info.TrafficScope+500) then
+							CEPGP_traffic_next:SetText("Last " .. #TRAFFIC - (CEPGP_Info.TrafficScope+500));
+						else
+							CEPGP_traffic_next:SetText("Next 500");
+						end
+						
+						if 500 > CEPGP_Info.TrafficScope then
+							CEPGP_traffic_previous:SetText("Previous");
+							CEPGP_traffic_previous:Disable();
+						elseif 500 > CEPGP_Info.TrafficScope - 500 then
+							CEPGP_traffic_previous:SetText("First 500");
+						else
+							CEPGP_traffic_previous:SetText("Previous 500");
+						end
+					</OnClick>
+					<OnShow>
+						if 500 > #TRAFFIC - CEPGP_Info.TrafficScope then
+							CEPGP_traffic_next:SetText("Next");
+							CEPGP_traffic_next:Disable();							
+						elseif 500 > #TRAFFIC - (CEPGP_Info.TrafficScope+500) then
+							CEPGP_traffic_next:SetText("Last " .. #TRAFFIC - (CEPGP_Info.TrafficScope+500));
+						else
+							CEPGP_traffic_next:SetText("Next 500");
+						end
+						
+						if 500 > CEPGP_Info.TrafficScope then
+							CEPGP_traffic_previous:SetText("Previous");
+							CEPGP_traffic_previous:Disable();
+						elseif 500 > CEPGP_Info.TrafficScope - 500 then
+							CEPGP_traffic_previous:SetText("First 500");
+						else
+							CEPGP_traffic_previous:SetText("Previous 500");
+						end
+					</OnShow>
+				</Scripts>
+			</Button>
+			<Button name="CEPGP_traffic_next" inherits="GameMenuButtonTemplate">
+				<Size>
+					<AbsDimension x="125" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="CEPGP_traffic_previous">
+						<Offset>
+							<AbsDimension x="10" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CEPGP_Info.TrafficScope = math.min(CEPGP_Info.TrafficScope+500, #TRAFFIC);
+						CEPGP_UpdateTrafficScrollBar();
+						CEPGP_traffic_previous:Enable();
+						
+						if 500 > #TRAFFIC - CEPGP_Info.TrafficScope then
+							CEPGP_traffic_next:SetText("Next");
+							CEPGP_traffic_next:Disable();							
+						elseif 500 > #TRAFFIC - (CEPGP_Info.TrafficScope+500) then
+							CEPGP_traffic_next:SetText("Last " .. #TRAFFIC - (CEPGP_Info.TrafficScope+500));
+						else
+							CEPGP_traffic_next:SetText("Next 500");
+						end
+						
+						if 500 > CEPGP_Info.TrafficScope then
+							CEPGP_traffic_previous:SetText("Previous");
+							CEPGP_traffic_previous:Disable();
+						elseif 500 > CEPGP_Info.TrafficScope - 500 then
+							CEPGP_traffic_previous:SetText("First 500");
+						else
+							CEPGP_traffic_previous:SetText("Previous 500");
+						end
+					</OnClick>
+					<OnShow>
+						if 500 > #TRAFFIC - CEPGP_Info.TrafficScope then
+							CEPGP_traffic_next:SetText("Next");
+							CEPGP_traffic_next:Disable();							
+						elseif 500 > #TRAFFIC - (CEPGP_Info.TrafficScope+500) then
+							CEPGP_traffic_next:SetText("Last " .. #TRAFFIC - (CEPGP_Info.TrafficScope+500));
+						else
+							CEPGP_traffic_next:SetText("Next 500");
+						end
+						
+						if 500 > CEPGP_Info.TrafficScope then
+							CEPGP_traffic_previous:SetText("Previous");
+							CEPGP_traffic_previous:Disable();
+						elseif 500 > CEPGP_Info.TrafficScope - 500 then
+							CEPGP_traffic_previous:SetText("First 500");
+						else
+							CEPGP_traffic_previous:SetText("Previous 500");
+						end
+					</OnShow>
 				</Scripts>
 			</Button>
 			<Button name="CEPGP_traffic_close" inherits="UIPanelCloseButton">
@@ -3017,9 +3174,12 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						UIDropDownMenu_Initialize(self, CEPGP_attendanceDropdown);
+						CEPGP_initDropdown(self, CEPGP_attendanceDropdown);
 						UIDropDownMenu_SetWidth(self, 140);
 					</OnShow>
+					<OnLoad>
+						CEPGP_initDropdown(self, CEPGP_attendanceDropdown);
+					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button name="CEPGP_attendance_record_view" inherits="GameMenuButtonTemplate" text="Filter by Snapshot">
@@ -3112,7 +3272,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CEPGP_setCriteria(4, "Attendance");
+						CEPGP_setCriteria(12, "Attendance");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -3132,7 +3292,7 @@
 						self:SetText("Raids\nAttended");
 					</OnLoad>
 					<OnClick>
-						CEPGP_setCriteria(4, "Attendance");
+						CEPGP_setCriteria(12, "Attendance");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -3926,8 +4086,9 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_use = true;
+						CEPGP_Info.Active[1] = true;
 						CEPGP_confirmation:Hide();
+						CEPGP_Info.Active[2] = true;
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -3945,8 +4106,9 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_use = false;
+						CEPGP_Info.Active[1] = false;
 						CEPGP_confirmation:Hide();
+						CEPGP_Info.Active[2] = true;
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -5081,6 +5243,7 @@
 				<Scripts>
 					<OnShow>
 						UIDropDownMenu_SetWidth(self, 140);
+						CEPGP_syncRankDropdown();
 					</OnShow>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -5089,6 +5252,9 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
+					<OnLoad>
+						CEPGP_initDropdown(self, CEPGP_syncRankDropdown);
+					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button name="$parent_force_sync_button" inherits="GameMenuButtonTemplate" text="Force Synchronise">
@@ -5119,6 +5285,7 @@
 				<Scripts>
 					<OnShow>
 						UIDropDownMenu_SetWidth(self, 140);
+						CEPGP_defChannelDropdown();
 					</OnShow>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -5127,6 +5294,9 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
+					<OnLoad>
+						CEPGP_initDropdown(self, CEPGP_defChannelDropdown);
+					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button name="$parent_poll_rate_info">
@@ -9346,7 +9516,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						UIDropDownMenu_Initialize(self, CEPGP_minThresholdDropdown);
+						CEPGP_initDropdown(self, CEPGP_minThresholdDropdown);
 						UIDropDownMenu_SetWidth(self, 140);
 					</OnShow>
 					<OnEnter>
@@ -9368,7 +9538,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						UIDropDownMenu_Initialize(self, CEPGP_lootChannelDropdown);
+						CEPGP_initDropdown(self, CEPGP_lootChannelDropdown);
 						UIDropDownMenu_SetWidth(self, 140);
 					</OnShow>
 					<OnEnter>
@@ -9998,7 +10168,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CEPGP_setCriteria(1);
+								CEPGP_setCriteria(1, "Standby");
 								CEPGP_standbyRoster = CEPGP_tSort(CEPGP_standbyRoster, 1);
 								CEPGP_UpdateStandbyScrollBar();
 							</OnClick>
@@ -10017,7 +10187,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CEPGP_setCriteria(2);
+								CEPGP_setCriteria(2, "Standby");
 								CEPGP_standbyRoster = CEPGP_tSort(CEPGP_standbyRoster, 2);
 								CEPGP_UpdateStandbyScrollBar();
 							</OnClick>
@@ -10036,7 +10206,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CEPGP_setCriteria(4);
+								CEPGP_setCriteria(4, "Standby");
 								CEPGP_standbyRoster = CEPGP_tSort(CEPGP_standbyRoster, 4);
 								CEPGP_UpdateStandbyScrollBar();
 							</OnClick>
@@ -10055,7 +10225,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CEPGP_setCriteria(5);
+								CEPGP_setCriteria(5, "Standby");
 								CEPGP_standbyRoster = CEPGP_tSort(CEPGP_standbyRoster, 5);
 								CEPGP_UpdateStandbyScrollBar();
 							</OnClick>
@@ -10074,7 +10244,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CEPGP_setCriteria(6);
+								CEPGP_setCriteria(6, "Standby");
 								CEPGP_standbyRoster = CEPGP_tSort(CEPGP_standbyRoster, 6);
 								CEPGP_UpdateStandbyScrollBar();
 							</OnClick>
@@ -10093,7 +10263,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								CEPGP_setCriteria(7);
+								CEPGP_setCriteria(7, "Standby");
 								CEPGP_standbyRoster = CEPGP_tSort(CEPGP_standbyRoster, 7);
 								CEPGP_UpdateStandbyScrollBar();
 							</OnClick>

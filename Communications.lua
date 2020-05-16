@@ -181,11 +181,16 @@ function CEPGP_IncAddonMsg(message, sender)
 		
 		--[[	IMPORTS		]]--
 	
-	elseif (args[1] == UnitName("player") and args[2] == "import") or (args[1] == "?forceSync" and not args[2]) then
-		if time() - CEPGP_Info.LastImport < 2 then
-			CEPGP_SendAddonMsg("message;" .. sender .. ";" .. UnitName("player") .. " has received too many import requests. Please try again.", "GUILD");
+	elseif (args[1] == UnitName("player") and args[2] == "import") or (args[1] == "?forceSync" and not args[2] and sender == UnitName("player")) then
+		if CEPGP_Info.SyncInProgress then
+			if args[1] == "?forceSync" then
+				CEPGP_print("Already exporting sending settings. Please wait until the previous request has completed and try again.", true);
+			else
+				CEPGP_SendAddonMsg("message;" .. sender .. ";" .. UnitName("player") .. " has received too many import requests. Please wait and then try again.", "GUILD");
+			end
 			return;
 		end
+		CEPGP_Info.SyncInProgress = true;
 		local lane = "GUILD";
 		local target = sender;
 		CEPGP_print(sender .. " is importing settings from you");
@@ -323,13 +328,12 @@ function CEPGP_IncAddonMsg(message, sender)
 									local temp = {};
 									for k, v in pairs(OVERRIDE_INDEX) do
 										temp[#temp+1] = {k, v};
-										CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..k..";"..v, lane);
 									end
 									
 									local i = 0;
 									C_Timer.NewTicker(0.01, function()
 										i = i + 1;
-										if #OVERRIDE_INDEX > 0 then
+										if #temp > 0 then
 											CEPGP_SendAddonMsg(target..";impresponse;OVERRIDE;"..temp[i][1]..";"..temp[i][2], lane);
 										end
 										
@@ -387,7 +391,14 @@ function CEPGP_IncAddonMsg(message, sender)
 												
 												CEPGP_SendAddonMsg(target..";impresponse;COMPLETE;", lane);
 												
+												if target == "?forceSync" then
+													CEPGP_print("Guild Synchronisation complete!");
+												else
+													CEPGP_print("Settings finished sending to " .. target);
+												end
+												
 												CEPGP_Info.LastImport = time();
+												CEPGP_Info.SyncInProgress = false;
 											end);										
 										end
 									end, #temp);
@@ -757,23 +768,149 @@ function CEPGP_IncAddonMsg(message, sender)
 	
 	elseif args[1] == "CEPGP_TRAFFICSyncStart" and sender ~= UnitName("player") then
 		CEPGP_Info.SharingTraffic = true;
-		CEPGP_print(sender .. " is sharing their traffic log with you. Please prepare for possible lag during this process.");
-		CEPGP_print("Expected processing time: " .. tonumber(args[2])*0.01 .. " - " .. (tonumber(args[2])*0.01)*2 .. " seconds");
-		CEPGP_print("This process will start in 10 seconds");
+		CEPGP_traffic_share:Disable();
+		CEPGP_print(sender .. " is sharing their traffic log with you. This process will start in 10 seconds");
+		CEPGP_Info.TrafficImport = {};
 	
-	elseif args[1] == "CEPGP_TRAFFICSyncStop" and sender ~= UnitName("player") then
-		CEPGP_Info.SharingTraffic = false;
-		CEPGP_print("Traffic log sharing has completed");
-		CEPGP_UpdateTrafficScrollBar();
-	
-	elseif args[1] == "CEPGP_TRAFFIC" then
+	elseif args[1] == "CEPGP_TRAFFICSyncStop" and sender ~= UnitName("player") and CEPGP_Info.SharingTraffic then
 		local success, failMsg = pcall(function()
-			if string.find(sender, "-") then
-				sender = string.sub(sender, 0, string.find(sender, "-")-1);
-			end
+			CEPGP_print(#CEPGP_Info.TrafficImport .. " Traffic Entries Received. Processing..");
+			local limit = #CEPGP_Info.TrafficImport;
+			local logs = CEPGP_Info.TrafficImport;
+			local count = 1;
+			local index;
 			
-			if sender == UnitName("player") then return; end
-			
+			C_Timer.NewTicker(0.1, function()
+				local entry = logs[count];
+				local newEntry = {};
+				local tStamp = tonumber(entry[9]);
+				local id = tonumber(entry[10]);
+				local GUID = entry[11];
+				
+				for i = #TRAFFIC, 1, -1 do
+					if TRAFFIC[i][9] and TRAFFIC[i][10] and TRAFFIC[i][11] then
+						if TRAFFIC[i][10] == id and TRAFFIC[i][11] == GUID then
+							break;
+						else
+							if i > 1 then
+								if TRAFFIC[i-1][9] then
+									if tStamp < tonumber(TRAFFIC[i][9]) and tStamp > tonumber(TRAFFIC[i-1][9]) then
+										index = i;
+										break;
+									elseif tStamp > tonumber(TRAFFIC[i][9]) then
+										index = i+1;
+										break;
+									end
+								else
+									if tStamp > tonumber(TRAFFIC[i][9]) then
+										index = i;
+										break;
+									end
+								end
+							else
+								if tStamp < tonumber(TRAFFIC[i][9]) then
+									index = 1;
+									break;
+								end
+							end
+						end
+					end
+				end
+				
+				local player = entry[1];
+				local issuer = entry[2];
+				local action = entry[3];
+				local EPB = entry[4];
+				local EPA = entry[5];
+				local GPB = entry[6];
+				local GPA = entry[7];
+				local itemID = tonumber(entry[8]);
+				
+				if CEPGP_itemExists(tonumber(itemID)) then
+					local itemLink = CEPGP_getItemLink(itemID);
+					if not itemLink then
+						local item = Item:CreateFromItemID(tonumber(itemID));
+						item:ContinueOnItemLoad(function()
+							itemLink = CEPGP_getItemLink(itemID);
+							newEntry = {
+								[1] = player,
+								[2] = issuer,
+								[3] = action,
+								[4] = EPB,
+								[5] = EPA,
+								[6] = GPB,
+								[7] = GPA,
+								[8] = itemLink,
+								[9] = tStamp,
+								[10] = id,
+								[11] = GUID
+							};
+							if not index and #TRAFFIC == 0 then
+								table.insert(TRAFFIC, 1, newEntry);
+							elseif index then
+								table.insert(TRAFFIC, index, newEntry);
+							end
+						end);
+					elseif itemLink then
+						newEntry = {
+							[1] = player,
+							[2] = issuer,
+							[3] = action,
+							[4] = EPB,
+							[5] = EPA,
+							[6] = GPB,
+							[7] = GPA,
+							[8] = itemLink,
+							[9] = tStamp,
+							[10] = id,
+							[11] = GUID
+						};
+						if not index and #TRAFFIC == 0 then
+							table.insert(TRAFFIC, 1, newEntry);
+						elseif index then
+							table.insert(TRAFFIC, index, newEntry);
+						end
+					end
+				else
+					newEntry = {
+						[1] = player,
+						[2] = issuer,
+						[3] = action,
+						[4] = EPB,
+						[5] = EPA,
+						[6] = GPB,
+						[7] = GPA,
+						[8] = "",
+						[9] = tStamp,
+						[10] = id,
+						[11] = GUID
+					};
+					if not index and #TRAFFIC == 0 then
+						table.insert(TRAFFIC, 1, newEntry);
+					elseif index then
+						table.insert(TRAFFIC, index, newEntry);
+					end
+				end
+				
+				if count >= limit then
+					CEPGP_Info.SharingTraffic = false;
+					CEPGP_print("Traffic import has completed");
+					CEPGP_traffic_share:Enable();
+					CEPGP_UpdateTrafficScrollBar();
+					CEPGP_Info.TrafficImport = {};
+				end
+				
+				count = count + 1;
+			end, limit);
+		end);
+		
+		if not success then
+			CEPGP_print("Failed to process imported traffic entries", true);
+			CEPGP_print(failMsg);
+		end
+	
+	elseif args[1] == "CEPGP_TRAFFIC" and sender ~= UnitName("player") then
+		local success, failMsg = pcall(function()
 			local player = args[2];
 			local issuer = args[3];
 			local action = args[4];
@@ -781,53 +918,87 @@ function CEPGP_IncAddonMsg(message, sender)
 			local EPA = args[6];
 			local GPB = args[7];
 			local GPA = args[8];
-			local itemID = args[9];
+			local itemID = tonumber(args[9]);
 			local tStamp = tonumber(args[10]);
-			local id = args[11];
+			local id = tonumber(args[11]);
 			local GUID = args[12];
+			
 			local index;
 			local entry = {};
 			
-			for i = #TRAFFIC, 1, -1 do
-				if TRAFFIC[i][10] == id and TRAFFIC[i][11] == GUID then return; end
-				
-				if TRAFFIC[i][10] and TRAFFIC[i][11] then
-					if i > 1 then
-						if TRAFFIC[i-1][9] then
-							if tStamp < tonumber(TRAFFIC[i][9]) and tStamp > tonumber(TRAFFIC[i-1][9]) then
-								index = i;
-								break;
-							elseif tStamp > tonumber(TRAFFIC[i][9]) then
-								index = i+1;
-								break;
+			if tonumber(id) <= tStamp then return; end	--	Protects against malformed entries. Some have been seen where tStamp is on 9 and 10, invalidating the ID
+			
+			if not CEPGP_Info.SharingTraffic then
+				for i = #TRAFFIC, 1, -1 do
+					if TRAFFIC[i][10] and TRAFFIC[i][11] then
+						if TRAFFIC[i][10] == id and TRAFFIC[i][11] == GUID then return; end
+						if i > 1 then
+							if TRAFFIC[i-1][9] then
+								if tStamp < tonumber(TRAFFIC[i][9]) and tStamp > tonumber(TRAFFIC[i-1][9]) then
+									index = i;
+									break;
+								elseif tStamp > tonumber(TRAFFIC[i][9]) then
+									index = i+1;
+									break;
+								end
+							else
+								if tStamp > tonumber(TRAFFIC[i][9]) then
+									index = i;
+									break;
+								end
 							end
 						else
-							if tStamp > tonumber(TRAFFIC[i][9]) then
-								index = i;
+							if tStamp < tonumber(TRAFFIC[i][9]) then
+								index = 1;
 								break;
 							end
-						end
-					else
-						if tStamp < tonumber(TRAFFIC[i][9]) then
-							index = 1;
-							break;
 						end
 					end
 				end
 			end
 			
-			
 			if not index then index = #TRAFFIC > 0 and #TRAFFIC or 1; end
 			
 			if itemID == "" then itemID = 0; end
-
-
-			if CEPGP_itemExists(tonumber(itemID)) then
-				local itemLink = CEPGP_getItemLink(itemID);
-				if not itemLink then
-					local item = Item:CreateFromItemID(tonumber(itemID));
-					item:ContinueOnItemLoad(function()
-						itemLink = CEPGP_getItemLink(itemID);
+			
+			entry = {
+				[1] = player,
+				[2] = issuer,
+				[3] = action,
+				[4] = EPB,
+				[5] = EPA,
+				[6] = GPB,
+				[7] = GPA,
+				[8] = itemID,
+				[9] = tStamp,
+				[10] = id,
+				[11] = GUID
+			};
+			
+			if not CEPGP_Info.SharingTraffic then
+				if CEPGP_itemExists(tonumber(itemID)) then
+					local itemLink = CEPGP_getItemLink(itemID);
+					if not itemLink then
+						local item = Item:CreateFromItemID(tonumber(itemID));
+						item:ContinueOnItemLoad(function()
+							itemLink = CEPGP_getItemLink(itemID);
+							entry = {
+								[1] = player,
+								[2] = issuer,
+								[3] = action,
+								[4] = EPB,
+								[5] = EPA,
+								[6] = GPB,
+								[7] = GPA,
+								[8] = itemLink,
+								[9] = tStamp,
+								[10] = id,
+								[11] = GUID
+							};
+							table.insert(TRAFFIC, index, entry);
+							CEPGP_UpdateTrafficScrollBar();
+						end);
+					elseif itemLink then
 						entry = {
 							[1] = player,
 							[2] = issuer,
@@ -841,40 +1012,14 @@ function CEPGP_IncAddonMsg(message, sender)
 							[10] = id,
 							[11] = GUID
 						};
-					end);
-				elseif itemLink then
-					entry = {
-						[1] = player,
-						[2] = issuer,
-						[3] = action,
-						[4] = EPB,
-						[5] = EPA,
-						[6] = GPB,
-						[7] = GPA,
-						[8] = itemLink,
-						[9] = tStamp,
-						[10] = id,
-						[11] = GUID
-					};
+						table.insert(TRAFFIC, index, entry);
+						CEPGP_UpdateTrafficScrollBar();
+					end
 				end
-			else
-				entry = {
-					[1] = player,
-					[2] = issuer,
-					[3] = action,
-					[4] = EPB,
-					[5] = EPA,
-					[6] = GPB,
-					[7] = GPA,
-					[8] = "",
-					[9] = tStamp,
-					[10] = id,
-					[11] = GUID
-				};
 			end
-			table.insert(TRAFFIC, index, entry);
-			if not CEPGP_Info.SharingTraffic then
-				CEPGP_UpdateTrafficScrollBar();
+			
+			if CEPGP_Info.SharingTraffic and tStamp and id and GUID then
+				table.insert(CEPGP_Info.TrafficImport, entry);
 			end
 		end);
 		
