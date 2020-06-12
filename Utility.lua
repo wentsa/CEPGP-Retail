@@ -414,11 +414,8 @@ function CEPGP_initialise()
 		CEPGP.Standby.Share = CEPGP.Standby.Share or CEPGP_standby_share;
 		
 		CEPGP_initInterfaceOptions();
-		--CEPGP_updateGuild();
-		GameTooltip:HookScript("OnShow", CEPGP_addGPTooltip);
-		ItemRefTooltip:HookScript("OnShow", CEPGP_addGPTooltip);
 		hooksecurefunc("ChatFrame_OnHyperlinkShow", CEPGP_addGPHyperlink);
-		--hooksecurefunc("SetHyperlinkCompareItem", CEPGP_addGPHyperlink);	
+		hooksecurefunc("GameTooltip_UpdateStyle", CEPGP_addGPTooltip);
 		
 		if not CEPGP_notice then
 			CEPGP_notice_frame:Show();
@@ -652,6 +649,9 @@ function CEPGP_addGPHyperlink(self, iString)
 	if not string.find(iString, "item:") or not CEPGP_gp_tooltips then return; end
 	local id = CEPGP_getItemID(iString);
 	local name = GetItemInfo(id);
+	for i = 1, ItemRefTooltip:NumLines() do
+		if string.find(_G["ItemRefTooltipTextLeft"..i]:GetText(), "GP Value:") then return end;
+	end
 	if not name and CEPGP_itemExists(tonumber(id)) then
 		local item = Item:CreateFromItemID(tonumber(id));
 		item:ContinueOnItemLoad(function()
