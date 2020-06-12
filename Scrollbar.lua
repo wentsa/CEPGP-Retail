@@ -2,6 +2,7 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 	local tempTable = {};
 	local count = 1;
 	for name, id in pairs(CEPGP_itemsTable) do
+		local roll = math.ceil(math.random(0, 100));
 		local EP, GP;
 		if CEPGP_roster[name] then
 			local index = CEPGP_getIndex(name);
@@ -18,7 +19,8 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 				[8] = CEPGP_itemsTable[name][1] or "noitem",
 				[9] = CEPGP_itemsTable[name][2] or "noitem",
 				[10] = CEPGP_roster[name][7], --className in English
-				[11] = CEPGP_itemsTable[name][3] -- Loot response
+				[11] = CEPGP_itemsTable[name][3], -- Loot response
+				[12] = CEPGP_itemsTable[name][4]
 			};
 		else
 			local index = CEPGP_getIndex(name);
@@ -36,7 +38,8 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 					[8] = CEPGP_itemsTable[name][1] or "noitem",
 					[9] = CEPGP_itemsTable[name][2] or "noitem",
 					[10] = classFileName,
-					[11] = CEPGP_itemsTable[name][3] -- Loot response
+					[11] = CEPGP_itemsTable[name][3], -- Loot response
+					[12] = CEPGP_itemsTable[name][4]
 				};
 			else
 				EP = 0;
@@ -58,13 +61,15 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 						[8] = CEPGP_itemsTable[name][1] or "noitem",
 						[9] = CEPGP_itemsTable[name][2] or "noitem",
 						[10] = classFile,
-						[11] = CEPGP_itemsTable[name][3] -- Loot response
+						[11] = CEPGP_itemsTable[name][3], -- Loot response
+						[12] = CEPGP_itemsTable[name][4]
 					};
 					end
 				end
 			end
-		end		
+		end
 		count = count + 1;
+		
 	end
 	if PRsort and CEPGP_PR_sort then
 		tempTable = CEPGP_sortDistList(tempTable);
@@ -134,6 +139,8 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 						_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
 						_G["LootDistButton" .. i .. "PR"]:SetTextColor(colour.r, colour.g, colour.b);
+						_G["LootDistButton" .. i .. "Roll"]:SetText(tempTable[i][12]);
+						_G["LootDistButton" .. i .. "Roll"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "Tex"]:SetScript('OnLeave', function()
 																						GameTooltip:Hide()
 																			end);
@@ -164,6 +171,8 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 					_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
 					_G["LootDistButton" .. i .. "PR"]:SetTextColor(colour.r, colour.g, colour.b);
+					_G["LootDistButton" .. i .. "Roll"]:SetText(tempTable[i][12]);
+					_G["LootDistButton" .. i .. "Roll"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "Tex"]:SetScript('OnLeave', function()
 																					GameTooltip:Hide()
 																		end);
@@ -206,6 +215,8 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 						_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
 						_G["LootDistButton" .. i .. "PR"]:SetTextColor(colour.r, colour.g, colour.b);
+						_G["LootDistButton" .. i .. "Roll"]:SetText(tempTable[i][12]);
+						_G["LootDistButton" .. i .. "Roll"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "Tex2"]:SetScript('OnLeave', function()
 																				GameTooltip:Hide()
 																			end);
@@ -236,6 +247,8 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 					_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
 					_G["LootDistButton" .. i .. "PR"]:SetTextColor(colour.r, colour.g, colour.b);
+					_G["LootDistButton" .. i .. "Roll"]:SetText(tempTable[i][12]);
+					_G["LootDistButton" .. i .. "Roll"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "Tex2"]:SetScript('OnLeave', function()
 																			GameTooltip:Hide()
 																		end);
@@ -269,6 +282,8 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 			_G["LootDistButton" .. i .. "GP"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "PR"]:SetText(string.format("%.2f", tempTable[i][7]));
 			_G["LootDistButton" .. i .. "PR"]:SetTextColor(colour.r, colour.g, colour.b);
+			_G["LootDistButton" .. i .. "Roll"]:SetText(tempTable[i][12]);
+			_G["LootDistButton" .. i .. "Roll"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "Tex"]:SetScript('OnLeave', function()
 																			GameTooltip:Hide()
 																end);
@@ -380,7 +395,7 @@ function CEPGP_UpdateRaidScrollBar()
 	for index, child in ipairs(kids) do
 		if index > CEPGP_ntgetn(CEPGP_raidRoster) then
 			child:Hide();
-			child = nil;
+			--child = nil;
 		end
 	end
 	for i = 1, CEPGP_ntgetn(tempTable) do
@@ -613,7 +628,7 @@ function CEPGP_UpdateTrafficScrollBar()
 		table.insert(temp, results[i]);
 	end
 	results = {};
-	for i = CEPGP_Info.TrafficScope, math.min(CEPGP_Info.TrafficScope+500, #TRAFFIC) do
+	for i = CEPGP_Info.TrafficScope, math.min(CEPGP_Info.TrafficScope+499, #TRAFFIC) do
 		table.insert(results, temp[i]);
 	end
 	temp = {};

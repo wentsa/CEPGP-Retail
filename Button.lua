@@ -26,17 +26,28 @@ function CEPGP_ListButton_OnClick(obj)
 	if strfind(obj, "TrafficButton") and strfind(obj, "Remove") then
 		local id = string.sub(obj, 14, string.find(obj, "Remove")-1);
 		local frame = _G["TrafficButton" .. id];
+		local page = CEPGP_traffic:GetAttribute("page");
+		local entry = #TRAFFIC - (500-id) - (page*500);
 		if frame:GetAttribute("delete_confirm") == "true" then
-			table.remove(TRAFFIC, tonumber(id));
-			CEPGP_print("Traffic entry " .. id .. " purged.");
+			table.remove(TRAFFIC, tonumber(entry));
+			CEPGP_print("Traffic entry " .. entry .. " purged.");
 			CEPGP_UpdateTrafficScrollBar();
 		else
-			CEPGP_print("You are attempting to purge the following entry:");
-			id = tonumber(id);
-			if TRAFFIC[id][8] and string.find(TRAFFIC[id][8], "item:") then -- If an item is associated with the log
-				CEPGP_print("Issuer: " .. TRAFFIC[id][2] .. ", Action: " .. TRAFFIC[id][3] .. ", Item: " .. TRAFFIC[id][8] .. " |c006969FF, Recipient: " .. TRAFFIC[id][1] .. "|r");
+			local function verify(tLog)
+				for i = 1, 8 do
+					if not tLog[i] then return false; end
+				end
+				return true;
+			end
+			if verify(TRAFFIC[entry]) then
+				CEPGP_print("You are attempting to purge the following entry:");
+				if TRAFFIC[entry][8] and string.find(TRAFFIC[entry][8], "item:") then -- If an item is associated with the log
+					CEPGP_print("Issuer: " .. TRAFFIC[entry][2] .. ", Action: " .. TRAFFIC[entry][3] .. ", Item: " .. TRAFFIC[entry][8] .. " |c006969FF, Recipient: " .. TRAFFIC[entry][1] .. "|r");
+				else
+					CEPGP_print("Issuer: " .. TRAFFIC[entry][2] .. ", Action: " .. TRAFFIC[entry][3] .. ", Recipient: " .. TRAFFIC[entry][1]);
+				end
 			else
-				CEPGP_print("Issuer: " .. TRAFFIC[id][2] .. ", Action: " .. TRAFFIC[id][3] .. ", Recipient: " .. TRAFFIC[id][1]);
+				CEPGP_print("You are attempting to purge a traffic entry.");
 			end
 			CEPGP_print("This action cannot be undone. To proceed, press the delete button again.");
 			frame:SetAttribute("delete_confirm", "true");
@@ -341,28 +352,34 @@ function CEPGP_ListButton_OnClick(obj)
 		return;
 	
 	elseif strfind(obj, "CEPGP_guild_decay") then --Click the Decay Guild EPGP button in the Guild menu
-		ShowUIPanel(CEPGP_context_popup);
-		ShowUIPanel(CEPGP_context_amount);
-		HideUIPanel(CEPGP_context_popup_EP_check);
-		HideUIPanel(CEPGP_context_popup_GP_check);
-		_G["CEPGP_context_popup_EP_check_text"]:Hide();
-		_G["CEPGP_context_popup_GP_check_text"]:Hide();
-		CEPGP_context_popup_EP_check:SetChecked(nil);
-		CEPGP_context_popup_GP_check:SetChecked(nil);
-		CEPGP_context_popup_header:SetText("Guild Moderation");
-		CEPGP_context_popup_title:SetText("Decay Guild EPGP");
-		CEPGP_context_popup_desc:SetText("Positive numbers decay | Negative numbers inflate");
-		CEPGP_context_amount:SetText("0");
-		CEPGP_context_popup_confirm:SetScript('OnClick', function()
-															if string.find(CEPGP_context_amount:GetText(), '^[0-9]+$') or string.find(CEPGP_context_amount:GetText(), '^[0-9]+.[0-9]+$') or
-																string.find(CEPGP_context_amount:GetText(), '^-[0-9]+$') or string.find(CEPGP_context_amount:GetText(), '^-[0-9]+.[0-9]+$') then
-																PlaySound(799);
-																HideUIPanel(CEPGP_context_popup);
-																CEPGP_decay(tonumber(CEPGP_context_amount:GetText()), CEPGP_context_reason:GetText());
-															else
-																CEPGP_print("Enter a valid number", true);
-															end
-														end);
+		CEPGP_decay_popup:Show();
+		CEPGP_decay_popup_reason:SetText("");
+		CEPGP_decay_popup_amount:SetText("0");
+		local EP, GP; -- Whether or not this is an EP or GP specific decay
+		if obj == "CEPGP_guild_decay_EP" then
+			CEPGP_decay_popup_header:SetText("Decay Guild EP");
+			EP = true;
+		elseif obj == "CEPGP_guild_decay_GP" then
+			CEPGP_decay_popup_header:SetText("Decay Guild GP");
+			GP = true;
+		else
+			CEPGP_decay_popup_header:SetText("Decay Guild EPGP");
+		end
+		CEPGP_decay_popup_desc:SetText("Positive numbers decay | Negative numbers inflate");
+		CEPGP_decay_popup_confirm:SetScript('OnClick', function()
+			local amount = CEPGP_decay_popup_amount:GetText();
+			local fixed = CEPGP_decay_popup_fixed_check:GetChecked();
+			local reason = CEPGP_decay_popup_reason:GetText();
+			if (string.find(amount, '^[0-9]+$') or string.find(amount, '^[0-9]+.[0-9]+$') or
+				string.find(amount, '^-[0-9]+$') or string.find(amount, '^-[0-9]+.[0-9]+$')) and
+				amount ~= "0" then
+				PlaySound(799);
+				CEPGP_decay_popup:Hide();
+				CEPGP_decay(tonumber(amount), reason, EP, GP, fixed);
+			else
+				CEPGP_print("Enter a valid number", true);
+			end
+		end);
 		return;
 		
 	elseif strfind(obj, "CEPGP_guild_reset") then --Click the Reset All EPGP Standings button in the Guild menu
@@ -404,42 +421,38 @@ function CEPGP_ListButton_OnClick(obj)
 		CEPGP_context_popup_desc:SetText("Add/Subtract EP");
 		CEPGP_context_amount:SetText("0");
 		CEPGP_context_popup_confirm:SetScript('OnClick', function()
-															if string.find(CEPGP_context_amount:GetText(), '[^0-9%-]') then
-																CEPGP_print("Enter a valid number", true);
-															else
-																PlaySound(799);
-																HideUIPanel(CEPGP_context_popup);
-																if CEPGP_context_popup_EP_check:GetChecked() then
-																	CEPGP_addEP(name, tonumber(CEPGP_context_amount:GetText()), CEPGP_context_reason:GetText());
-																else
-																	CEPGP_addGP(name, tonumber(CEPGP_context_amount:GetText()), nil, nil, CEPGP_context_reason:GetText());
-																end
-															end
-														end);
+			if string.find(CEPGP_context_amount:GetText(), '[^0-9%-]') then
+				CEPGP_print("Enter a valid number", true);
+			else
+				PlaySound(799);
+				HideUIPanel(CEPGP_context_popup);
+				if CEPGP_context_popup_EP_check:GetChecked() then
+					CEPGP_addEP(name, tonumber(CEPGP_context_amount:GetText()), CEPGP_context_reason:GetText());
+				else
+					CEPGP_addGP(name, tonumber(CEPGP_context_amount:GetText()), nil, nil, CEPGP_context_reason:GetText());
+				end
+			end
+		end);
 		return;
 	
 	elseif strfind(obj, "CEPGP_raid_add_EP") then --Click the Add Raid EP button in the Raid menu
-		ShowUIPanel(CEPGP_context_popup);
-		ShowUIPanel(CEPGP_context_amount);
-		HideUIPanel(CEPGP_context_popup_EP_check);
-		HideUIPanel(CEPGP_context_popup_GP_check);
-		_G["CEPGP_context_popup_EP_check_text"]:Hide();
-		_G["CEPGP_context_popup_GP_check_text"]:Hide();
-		CEPGP_context_popup_EP_check:SetChecked(nil);
-		CEPGP_context_popup_GP_check:SetChecked(nil);
-		CEPGP_context_popup_header:SetText("Raid Moderation");
-		CEPGP_context_popup_title:SetText("Modify Raid EP");
-		CEPGP_context_popup_desc:SetText("Adds/Subtracts an amount of EP for the entire raid");
-		CEPGP_context_amount:SetText("0");
-		CEPGP_context_popup_confirm:SetScript('OnClick', function()
-															if string.find(CEPGP_context_amount:GetText(), '[^0-9%-]') then
-																CEPGP_print("Enter a valid number", true);
-															else
-																PlaySound(799);
-																HideUIPanel(CEPGP_context_popup);
-																CEPGP_AddRaidEP(tonumber(CEPGP_context_amount:GetText()), CEPGP_context_reason:GetText());
-															end
-														end);
+		CEPGP_award_raid_popup:Show();
+		CEPGP_award_raid_popup_amount:SetText("0");
+		CEPGP_award_raid_popup_confirm:SetScript('OnClick', function()
+			local standby = CEPGP_award_raid_popup_standby_check:GetChecked();
+			local amount = tonumber(CEPGP_award_raid_popup_amount:GetText());
+			local reason = CEPGP_award_raid_popup_reason:GetText();
+			if string.find(CEPGP_award_raid_popup_amount:GetText(), '[^0-9%-]') then
+				CEPGP_print("Enter a valid number", true);
+			else
+				PlaySound(799);
+				CEPGP_award_raid_popup:Hide();
+				CEPGP_AddRaidEP(amount, reason);
+				if standby then
+					CEPGP_addStandbyEP(amount, nil, reason);
+				end
+			end
+		end);
 		return;
 	end
 end
@@ -543,7 +556,7 @@ end
 function CEPGP_attendanceChange(self, arg1, arg2, checked)
 	if (not checked) then
 		UIDropDownMenu_SetSelectedName(CEPGP_attendance_dropdown, self:GetText());
-		--UIDropDownMenu_SetSelectedValue(CEPGP_attendance_dropdown, self.value);
+		UIDropDownMenu_SetSelectedValue(CEPGP_attendance_dropdown, self.value);
 	end
 end
 

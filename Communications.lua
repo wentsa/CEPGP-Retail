@@ -57,16 +57,18 @@ function CEPGP_IncAddonMsg(message, sender)
 		table.insert(CEPGP_responses, sender);
 		local itemID = args[3];
 		local itemID2 = args[4];
-		local response;
+		local response, roll;
 		if CEPGP_itemsTable[sender] then
 			response = CEPGP_itemsTable[sender][3];
+			roll = CEPGP_itemsTable[sender][4];
 		end
 		if not response and not CEPGP_show_passes then return; end
 		CEPGP_itemsTable[sender] = {};
 		CEPGP_itemsTable[sender] = {
 			[1] = itemID,
 			[2] = itemID2,
-			[3] = response
+			[3] = response,
+			[4] = roll
 		};
 		CEPGP_UpdateLootScrollBar(true);
 	end
@@ -120,11 +122,16 @@ function CEPGP_IncAddonMsg(message, sender)
 		
 		--Raid assists receiving !need responses in the format of !need;playername;itemID (of item being distributed)
 	elseif args[1] == "!need" and sender ~= UnitName("player") then
+		local player = args2;
 		local response = tonumber(args[4]);
+		local roll = args[5];
 		if not response then response = 5; end
 		if (CEPGP_show_passes and response == 6) or response < 6 then
 			CEPGP_itemsTable[args[2]] = {};
 			CEPGP_itemsTable[args[2]][3] = response;
+			if roll then
+				CEPGP_itemsTable[args[2]][4] = roll;
+			end
 			CEPGP_UpdateLootScrollBar(sort);
 		end
 		
@@ -244,6 +251,17 @@ function CEPGP_IncAddonMsg(message, sender)
 					CEPGP_SendAddonMsg(target..";impresponse;LOOTHIDEKEYPHRASES;false");
 				end
 				CEPGP_SendAddonMsg(target..";impresponse;LootAnnounce;"..CEPGP.Loot.Announcement);
+				if CEPGP.Loot.PassRolls then
+					CEPGP_SendAddonMsg(target..";impresponse;PassRoll;true");
+				else
+					CEPGP_SendAddonMsg(target..";impresponse;PassRoll;true");
+				end
+				if CEPGP.Loot.RollAnnounce then
+					CEPGP_SendAddonMsg(target..";impresponse;RollAnnounce;true");
+				else
+					CEPGP_SendAddonMsg(target..";impresponse;RollAnnounce;false");
+				end
+				
 				CEPGP_SendAddonMsg(target..";impresponse;Done;", lane);
 				
 				C_Timer.After(1, function()
@@ -740,6 +758,21 @@ function CEPGP_IncAddonMsg(message, sender)
 			elseif option == "LootAnnounce" then
 				CEPGP.Loot.Announcement = args[4];
 			
+			elseif option == "PassRoll" then
+				if args[4] == "true" then
+					CEPGP.Loot.PassRolls = true;
+				else
+					CEPGP.Loot.PassRolls = false;
+				end
+			
+			elseif option == "RollAnnounce" then
+				if args[4] == "true" then
+					CEPGP.Loot.RollAnnounce = true;
+				else
+					CEPGP.Loot.RollAnnounce = false;
+				end
+			
+			
 			elseif option == "COMPLETE" then
 				CEPGP_print("Import complete");
 				CEPGP_Info.VerboseLogging = false;
@@ -770,6 +803,7 @@ function CEPGP_IncAddonMsg(message, sender)
 		CEPGP_Info.SharingTraffic = true;
 		CEPGP_traffic_share:Disable();
 		CEPGP_print(sender .. " is sharing their traffic log with you. This process will start in 10 seconds");
+		CEPGP_traffic_share_status:SetText("Preparing to receive traffic entries");
 		CEPGP_Info.TrafficImport = {};
 	
 	elseif args[1] == "CEPGP_TRAFFICSyncStop" and sender ~= UnitName("player") and CEPGP_Info.SharingTraffic then
@@ -891,9 +925,10 @@ function CEPGP_IncAddonMsg(message, sender)
 						table.insert(TRAFFIC, index, newEntry);
 					end
 				end
-				
+				CEPGP_traffic_share_status:SetText("Processed " .. count .. " of " .. limit .. " entries");
 				if count >= limit then
 					CEPGP_Info.SharingTraffic = false;
+					CEPGP_traffic_share_status:SetText("Finished processing traffic entries");
 					CEPGP_print("Traffic import has completed");
 					CEPGP_traffic_share:Enable();
 					CEPGP_UpdateTrafficScrollBar();
@@ -1015,11 +1050,28 @@ function CEPGP_IncAddonMsg(message, sender)
 						table.insert(TRAFFIC, index, entry);
 						CEPGP_UpdateTrafficScrollBar();
 					end
+				else
+					entry = {
+						[1] = player,
+						[2] = issuer,
+						[3] = action,
+						[4] = EPB,
+						[5] = EPA,
+						[6] = GPB,
+						[7] = GPA,
+						[8] = "",
+						[9] = tStamp,
+						[10] = id,
+						[11] = GUID
+					};
+					table.insert(TRAFFIC, index, entry);
+					CEPGP_UpdateTrafficScrollBar();
 				end
 			end
 			
 			if CEPGP_Info.SharingTraffic and tStamp and id and GUID then
 				table.insert(CEPGP_Info.TrafficImport, entry);
+				CEPGP_traffic_share_status:SetText(#CEPGP_Info.TrafficImport .. " entries received");
 			end
 		end);
 		

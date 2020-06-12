@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.15.Open Beta 3"
+CEPGP_VERSION = "1.12.15.Release"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -97,6 +97,9 @@ CEPGP = {
 		SyncEP = true,
 		SyncGP = true,
 	},
+	Decay = {
+		Separate = false,
+	},
 	EP = {
 		AutoAward = AUTOEP,
 		BossEP = EPVALS,
@@ -168,7 +171,7 @@ CEPGP = {
 
 CEPGP_Info = {
 	Version = "1.12.15",
-	Build = "Open Beta 3",
+	Build = "Release",
 	Active = {false, false},	--	Active state, queried for current raid
 	SharingTraffic = false,
 	ImportingTraffic = false,
@@ -198,7 +201,8 @@ CEPGP_Info = {
 		GuildSB = 0,
 		RaidSB = 0,
 		TrafficSB = 0,
-		VersionSB = 0
+		VersionSB = 0,
+		ItemCall = time()
 	}
 };
 local L = CEPGP_Locale:GetLocale("CEPGP")
@@ -248,8 +252,10 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 		end
 		
 		if GetLootMethod() ~= "master" or not IsInRaid("player") or CEPGP_isML() ~= 0 then
+			CEPGP_Info.Active[1] = false;
 			CEPGP_Info.Active[2] = false;	--	Whenever the loot method, loot master or group type is changed, this will enable the check again
 		end
+		
 		return;
 		
 	elseif event == "CHAT_MSG_BN_WHISPER" then
@@ -409,7 +415,7 @@ function CEPGP_RaidAssistLootClosed()
 end
 
 function CEPGP_RaidAssistLootDist(link, gp, raidwide) --raidwide refers to whether or not the ML would like everyone in the raid to be able to see the distribution window
-	if UnitIsGroupAssistant("player") or raidwide then --Only returns true if the unit is raid ASSIST, not raid leader
+	if ((UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and CEPGP_isML ~= 0) or raidwide then --Only returns true if the unit is raid ASSIST, not raid leader
 		ShowUIPanel(CEPGP_distributing_button);
 		CEPGP_itemsTable = {};
 		CEPGP_UpdateLootScrollBar();
@@ -459,11 +465,16 @@ end
 
 function CEPGP_AddRaidEP(amount, msg, encounter)
 	amount = math.floor(amount);
-	
 	local function callback()
 		local total = GetNumGroupMembers();
 		CEPGP_Info.IgnoreUpdates = true;
 		CEPGP_SendAddonMsg("?IgnoreUpdates;true");
+		
+		local roster = {};
+		
+		for k, v in pairs(CEPGP_raidRoster) do
+			roster[k] = "";
+		end
 		
 		local function update()
 			if msg ~= "" and msg ~= nil or encounter then
@@ -500,6 +511,7 @@ function CEPGP_AddRaidEP(amount, msg, encounter)
 		end
 		
 		local i = 0;
+		local mains = {};
 		C_Timer.NewTicker(0.0001, function()
 			i = i + 1;
 			local name = GetRaidRosterInfo(i);
@@ -508,21 +520,36 @@ function CEPGP_AddRaidEP(amount, msg, encounter)
 				local index = CEPGP_getIndex(name);
 				local main = CEPGP_getMain(name);
 				
-				EP, GP = CEPGP_getEPGP(name, index);
-				EPB = EP;
-				
-				EP = math.max(math.floor(EP + amount), 0);
-				GP = math.max(math.floor(GP), CEPGP.GP.Min);
 				if main then
-					CEPGP_addAltEPGP(amount, 0, name, main);
+					for v, _ in pairs(mains) do
+						if v == main then
+							return;
+						end
+					end
+					if not roster[main] then
+						mains[main] = name;
+					end
 				else
+					EP, GP = CEPGP_getEPGP(name, index);
+					EPB = EP;
+					EP = math.max(math.floor(EP + amount), 0);
+					GP = math.max(math.floor(GP), CEPGP.GP.Min);
 					GuildRosterSetOfficerNote(index, EP .. "," .. GP);
-					C_Timer.After(1, function()
-						CEPGP_syncAltStandings(player);
-					end);
+					if CEPGP.Alt.Links[name] and not mains[name] then
+						mains[name] = {};
+					end
 				end
 			end
 			if i == total then
+				C_Timer.After(2, function()
+					for main, alt in pairs(mains) do
+						if #mains[main] == 0 then
+							CEPGP_syncAltStandings(main);
+						else
+							CEPGP_addAltEPGP(amount, 0, alt, main);
+						end
+					end
+				end);
 				update();
 			end
 		end, total);
@@ -580,6 +607,7 @@ function CEPGP_addGuildEP(amount, msg)
 	CEPGP_Info.IgnoreUpdates = true;
 	CEPGP_SendAddonMsg("?IgnoreUpdates;true");
 	local temp = {};
+	local mains = {};
 	for k, _ in pairs(CEPGP_roster) do
 		table.insert(temp, k);
 	end
@@ -589,23 +617,39 @@ function CEPGP_addGuildEP(amount, msg)
 			i = i + 1;
 			local name = temp[i];
 			local main = CEPGP_getMain(name);
-			local index = CEPGP_getIndex(name);
 			
-			EP, GP = CEPGP_getEPGP(name, index);
-			EP = math.max(math.floor(EP + amount), 0);
-			GP = math.max(math.floor(GP), CEPGP.GP.Min);
-			
-			if index then
-				if main then
-					CEPGP_addAltEPGP(amount, 0, name, main);
-				else
-					GuildRosterSetOfficerNote(index, EP .. "," .. GP);
-					C_Timer.After(1, function()
-						CEPGP_syncAltStandings(player);
-					end);
+			if main then
+				for _, v in ipairs(mains) do
+					if v == main then
+						return;
+					end
+				end
+				
+				table.insert(mains, main);
+			else
+				local index = CEPGP_getIndex(name);
+				
+				EP, GP = CEPGP_getEPGP(name, index);
+				EP = math.max(math.floor(EP + amount), 0);
+				GP = math.max(math.floor(GP), CEPGP.GP.Min);
+				
+				if index then
+					if main then
+						CEPGP_addAltEPGP(amount, 0, name, main);
+					else
+						GuildRosterSetOfficerNote(index, EP .. "," .. GP);
+						C_Timer.After(1, function()
+							CEPGP_syncAltStandings(player);
+						end);
+					end
 				end
 			end
 			if i == #temp then
+				C_Timer.After(2, function()
+					for _, name in ipairs(mains) do
+						CEPGP_syncAltStandings(name);
+					end
+				end);
 				update();
 			end
 		end, #temp);
@@ -642,6 +686,13 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 		CEPGP_SendAddonMsg("?IgnoreUpdates;true");
 		
 		local i = 0;
+		local mains = {};
+		
+		local roster = {};
+		
+		for k, v in pairs(CEPGP_raidRoster) do
+			roster[k] = "";
+		end
 		
 		C_Timer.After(0.1, function()
 			local temp = {};
@@ -653,7 +704,6 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 				C_Timer.NewTicker(0.0001, function()
 					i = i + 1;
 					local name = temp[i];
-					local main = CEPGP_getMain(name);
 					inRaid = false;
 					
 					for _, v in ipairs(CEPGP_raidRoster) do
@@ -662,35 +712,48 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 							break;
 						end
 					end
+					
 					if not inRaid then
-						local index = CEPGP_getIndex(name);
-						local _, rank, rankIndex, _, _, _, _, _, online = GetGuildRosterInfo(index);
-						local EP,GP = CEPGP_getEPGP(name, index);
-						
-						EP = math.max(math.floor(EP + amount), 0);
-						GP = math.max(math.floor(GP), CEPGP.GP.Min);
+						local main = CEPGP_getMain(name);
+						if main then							
+							for v, _ in pairs(mains) do
+								if v == main then
+									return;
+								end
+							end
+							if not roster[main] then
+								mains[main] = name;
+							end
+						else
+							local index = CEPGP_getIndex(name);
+							local _, rank, rankIndex, _, _, _, _, _, online = GetGuildRosterInfo(index);
+							local EP,GP = CEPGP_getEPGP(name, index);
 							
-						for i = 1, #STANDBYRANKS do
-							if STANDBYRANKS[i][1] == rank then
-								if STANDBYRANKS[i][2] == true and (online or STANDBYOFFLINE) then
-									if main then
-										CEPGP_addAltEPGP(amount, 0, name, main);
-									else
-										GuildRosterSetOfficerNote(index, EP .. "," .. GP);
-									end
-									if boss then
-										CEPGP_SendAddonMsg("STANDBYEP;"..name..";You have been awarded "..amount.." standby EP for encounter " .. boss, "GUILD");
-									elseif msg ~= "" and msg ~= nil then
-										if tonumber(amount) > 0 then
-											CEPGP_SendAddonMsg("STANDBYEP;"..name..";You have been awarded "..amount.." standby EP - "..msg, "GUILD");
-										elseif tonumber(amount) < 0 then
-											CEPGP_SendAddonMsg("STANDBYEP;"..name..";"..amount.." standby EP has been taken from you - "..msg, "GUILD");
+							EP = math.max(math.floor(EP + amount), 0);
+							GP = math.max(math.floor(GP), CEPGP.GP.Min);
+								
+							for i = 1, #STANDBYRANKS do
+								if STANDBYRANKS[i][1] == rank then
+									if STANDBYRANKS[i][2] == true and (online or STANDBYOFFLINE) then
+										if main then
+											CEPGP_addAltEPGP(amount, 0, name, main);
+										else
+											GuildRosterSetOfficerNote(index, EP .. "," .. GP);
 										end
-									else
-										if tonumber(amount) > 0 then
-											CEPGP_SendAddonMsg("STANDBYEP;"..name..";You have been awarded "..amount.." standby EP", "GUILD");
-										elseif tonumber(amount) < 0 then
-											CEPGP_SendAddonMsg("STANDBYEP;"..name..";"..amount.." standby EP has been taken from you", "GUILD");
+										if boss then
+											CEPGP_SendAddonMsg("STANDBYEP;"..name..";You have been awarded "..amount.." standby EP for encounter " .. boss, "GUILD");
+										elseif msg ~= "" and msg ~= nil then
+											if tonumber(amount) > 0 then
+												CEPGP_SendAddonMsg("STANDBYEP;"..name..";You have been awarded "..amount.." standby EP - "..msg, "GUILD");
+											elseif tonumber(amount) < 0 then
+												CEPGP_SendAddonMsg("STANDBYEP;"..name..";"..amount.." standby EP has been taken from you - "..msg, "GUILD");
+											end
+										else
+											if tonumber(amount) > 0 then
+												CEPGP_SendAddonMsg("STANDBYEP;"..name..";You have been awarded "..amount.." standby EP", "GUILD");
+											elseif tonumber(amount) < 0 then
+												CEPGP_SendAddonMsg("STANDBYEP;"..name..";"..amount.." standby EP has been taken from you", "GUILD");
+											end
 										end
 									end
 								end
@@ -713,12 +776,18 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 					if online or STANDBYOFFLINE then
 						local EP,GP = CEPGP_getEPGP(name, index);
 						
-						EP = math.max(math.floor(EP + amount), 0);
-						GP = math.max(math.floor(GP), CEPGP.GP.Min);
-						
 						if main then
-							CEPGP_addAltEPGP(amount, 0, name, main);
+							for v, _ in pairs(mains) do
+								if v == main then
+									return;
+								end
+							end
+							if not roster[main] then
+								mains[main] = name;
+							end
 						else
+							EP = math.max(math.floor(EP + amount), 0);
+							GP = math.max(math.floor(GP), CEPGP.GP.Min);
 							GuildRosterSetOfficerNote(index, EP .. "," .. GP);
 						end
 						
@@ -739,6 +808,15 @@ function CEPGP_addStandbyEP(amount, boss, msg)
 						end
 					end
 					if i == #CEPGP_standbyRoster then
+						C_Timer.After(2, function()
+							for main, alt in pairs(mains) do
+								if #mains[main] == 0 then
+									CEPGP_syncAltStandings(main);
+								else
+									CEPGP_addAltEPGP(amount, 0, alt, main);
+								end
+							end
+						end);
 						update();
 					end
 				end, #CEPGP_standbyRoster);
@@ -888,7 +966,7 @@ function CEPGP_addEP(player, amount, msg)
 	end
 end
 
-function CEPGP_decay(amount, msg)
+function CEPGP_decay(amount, msg, decayEP, decayGP, fixed)
 	if amount == nil then
 		CEPGP_print("Please enter a valid number", 1);
 		return;
@@ -899,19 +977,51 @@ function CEPGP_decay(amount, msg)
 			if tonumber(amount) <= 0 then
 				amount = string.sub(amount, 2, string.len(amount));
 				if msg ~= "" and msg ~= nil then
-					CEPGP_sendChatMessage("Guild EPGP inflated by " .. amount .. "% (" .. msg .. ")", CHANNEL);
-					CEPGP_addTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "% (" .. msg .. ")");
+					if decayEP then
+						CEPGP_sendChatMessage("Guild EP inflated by " .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")", CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Inflated EP +" .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")");
+					elseif decayGP then
+						CEPGP_sendChatMessage("Guild GP inflated by " .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")", CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Inflated GP +" .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")");
+					else
+						CEPGP_sendChatMessage("Guild EPGP inflated by " .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")", CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")");
+					end
 				else
-					CEPGP_sendChatMessage("Guild EPGP inflated by " .. amount .. "%", CHANNEL);
-					CEPGP_addTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. "%");
+					if decayEP then
+						CEPGP_sendChatMessage("Guild EP inflated by " .. amount .. (fixed and "" or "%"), CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Inflated EP +" .. amount .. (fixed and "" or "%"));
+					elseif decayGP then
+						CEPGP_sendChatMessage("Guild GP inflated by " .. amount .. (fixed and "" or "%"), CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Inflated GP +" .. amount .. (fixed and "" or "%"));
+					else
+						CEPGP_sendChatMessage("Guild EPGP inflated by " .. amount .. (fixed and "" or "%"), CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Inflated EPGP +" .. amount .. (fixed and "" or "%"));
+					end
 				end
 			else
 				if msg ~= "" and msg ~= nil then
-					CEPGP_sendChatMessage("Guild EPGP decayed by " .. amount .. "% (" .. msg .. ")", CHANNEL);
-					CEPGP_addTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. "% (" .. msg .. ")");
+					if decayEP then
+						CEPGP_sendChatMessage("Guild EP decayed by " .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")", CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Decayed EP -" .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")");
+					elseif decayGP then
+						CEPGP_sendChatMessage("Guild GP decayed by " .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")", CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Decayed GP -" .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")");
+					else
+						CEPGP_sendChatMessage("Guild EPGP decayed by " .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")", CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. (fixed and " " or "% ") .. "(" .. msg .. ")");
+					end
 				else
-					CEPGP_sendChatMessage("Guild EPGP decayed by " .. amount .. "%", CHANNEL);
-					CEPGP_addTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. "%");
+					if decayEP then
+						CEPGP_sendChatMessage("Guild EP decayed by " .. amount .. (fixed and "" or "%"), CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Decayed EP -" .. amount .. (fixed and "" or "%"));
+					elseif decayGP then
+						CEPGP_sendChatMessage("Guild GP decayed by " .. amount .. (fixed and "" or "% "), CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Decayed GP -" .. amount .. (fixed and "" or "%"));
+					else
+						CEPGP_sendChatMessage("Guild EPGP decayed by " .. amount .. (fixed and "" or "%"), CHANNEL);
+						CEPGP_addTraffic("Guild", UnitName("player"), "Decayed EPGP -" .. amount .. (fixed and "" or "%"));
+					end
 				end
 			end
 			if _G["CEPGP_traffic"]:IsVisible() then
@@ -940,17 +1050,39 @@ function CEPGP_decay(amount, msg)
 				local name = temp[i];
 				local index = CEPGP_getIndex(name);
 				local rankIndex = select(3, GetGuildRosterInfo(index));
-				if not CEPGP.Exclusions[rankIndex+1] then
+				local main = CEPGP_getMain(name);
+				if not CEPGP.Exclusions[rankIndex+1] and not main then
 					EP, GP = CEPGP_getEPGP(name, index);
-					EP = math.max(math.floor(tonumber(EP)*(1-(amount/100))), 0);
-					if CEPGP_minGPDecayFactor then
-						GP = math.max(math.floor((tonumber((GP-BASEGP))*(1-(amount/100)))+BASEGP), CEPGP.GP.Min);
-					else
-						GP = math.max(math.floor((tonumber(GP)*(1-(amount/100)))), CEPGP.GP.Min);
+					if decayEP or (not decayEP and not decayGP) then
+						if fixed then
+							EP = math.max(math.floor(tonumber(EP)-amount), 0);
+						else
+							EP = math.max(math.floor(tonumber(EP)*(1-(amount/100))), 0);
+						end
+					end
+					if decayGP or (not decayEP and not decayGP) then
+						if CEPGP_minGPDecayFactor then
+							if fixed then
+								GP = math.max(math.floor((tonumber(GP-BASEGP)-amount)+BASEGP), CEPGP.GP.Min);
+							else
+								GP = math.max(math.floor((tonumber(GP-BASEGP)*(1-(amount/100)))+BASEGP), CEPGP.GP.Min);
+							end
+						else
+							if fixed then
+								GP = math.max(math.floor(tonumber(GP)-amount), CEPGP.GP.Min);
+							else
+								GP = math.max(math.floor((tonumber(GP)*(1-(amount/100)))), CEPGP.GP.Min);
+							end
+						end
 					end
 					GuildRosterSetOfficerNote(index, EP .. "," .. GP);
 				end
 				if i == #temp then
+					C_Timer.After(2, function()
+						for name, _ in pairs(CEPGP.Alt.Links) do
+							CEPGP_syncAltStandings(name);
+						end
+					end);
 					update();
 				end
 			end, #temp);

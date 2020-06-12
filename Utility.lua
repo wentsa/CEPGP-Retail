@@ -261,6 +261,11 @@ function CEPGP_initialise()
 				BossEP = EPVALS,
 			}
 		end
+		if not CEPGP.Decay then
+			CEPGP.Decay = {
+				Separate = false,
+			};
+		end
 		CEPGP.EP.AutoAward = CEPGP.EP.AutoAward or AUTOEP;
 		CEPGP.EP.BossEP = CEPGP.EP.BossEP or EPVALS;
 		if not CEPGP.GP then
@@ -412,7 +417,7 @@ function CEPGP_initialise()
 		--CEPGP_updateGuild();
 		GameTooltip:HookScript("OnShow", CEPGP_addGPTooltip);
 		ItemRefTooltip:HookScript("OnShow", CEPGP_addGPTooltip);
-		hooksecurefunc("ChatFrame_OnHyperlinkShow", CEPGP_addGPHyperlink);	
+		hooksecurefunc("ChatFrame_OnHyperlinkShow", CEPGP_addGPHyperlink);
 		--hooksecurefunc("SetHyperlinkCompareItem", CEPGP_addGPHyperlink);	
 		
 		if not CEPGP_notice then
@@ -489,7 +494,7 @@ function CEPGP_initDropdown(frame, initFunction, displayMode, level, menuList)
 	-- Set the initialize function and call it.  The initFunction populates the dropdown list.
 	if ( initFunction ) then
 		UIDropDownMenu_SetInitializeFunction(frame, initFunction);
-		initFunction(frame, level, frame.menuList);
+		--initFunction(frame, level, frame.menuList);
 	end
 
 	--master frame
@@ -502,6 +507,18 @@ function CEPGP_initDropdown(frame, initFunction, displayMode, level, menuList)
 	dropDownList.shouldRefresh = true;
 
 	UIDropDownMenu_SetDisplayMode(frame, displayMode);
+end
+
+function CEPGP_addResponse(player, response, roll)
+	
+	CEPGP_itemsTable[player] = {};
+	CEPGP_itemsTable[player][3] = response;
+	
+	if (CEPGP.Loot.PassRolls and response == 6) or response < 6 then
+		CEPGP_itemsTable[player][4] = roll;
+	end
+	
+	CEPGP_SendAddonMsg("!need;"..player..";"..CEPGP_DistID..";"..response..";"..roll, "RAID"); --!need;playername;itemID (of the item being distributed) is sent for sharing with raid assist
 end
 
 function CEPGP_calcGP(link, quantity, id)	
@@ -1034,6 +1051,8 @@ function CEPGP_rosterUpdate(event)
 				local rankIndex = select(3, GetGuildRosterInfo(index));
 				
 				EP, GP = CEPGP_getEPGP(name, index);
+				local PR = math.floor((EP/GP)*100)/100;
+				
 				CEPGP_raidRoster[i] = {
 					[1] = name,
 					[2] = class,
@@ -1041,7 +1060,7 @@ function CEPGP_rosterUpdate(event)
 					[4] = rankIndex,
 					[5] = EP,
 					[6] = GP,
-					[7] = EP/GP,
+					[7] = PR,
 					[8] = classFileName
 				};
 			else
@@ -1554,7 +1573,8 @@ function CEPGP_sortDistList(list)
 			[7] = list[i][7],
 			[8] = list[i][8],
 			[9] = list[i][9],
-			[10] = list[i][10]
+			[10] = list[i][10],
+			[12] = list[i][12]
 		}
 	end
 	for i = 1, 6 do
@@ -1582,7 +1602,8 @@ function CEPGP_sortDistList(list)
 				[8] = temp[i][x][8],
 				[9] = temp[i][x][9],
 				[10] = temp[i][x][10],
-				[11] = i
+				[11] = i,
+				[12] = temp[i][x][12]
 			};
 		end
 	end
@@ -1717,6 +1738,21 @@ function CEPGP_getDebugInfo()
 		info = info .. "Suppress Loot Announcements: true<br />\n";
 	else
 		info = info .. "Suppress Loot Announcements: false<br />\n";
+	end
+	if CEPGP.Loot.PassRolls then
+		info = info .. "Roll for Passes: true<br />\n";
+	else
+		info = info .. "Roll for Passes: false<br />\n";
+	end
+	if CEPGP.Loot.RollAnnounce then
+		info = info .. "Announce Rolls: true<br />\n";
+	else
+		info = info .. "Announce Rolls: true<br />\n";
+	end
+	if CEPGP.Loot.ResolveRolls then
+		info = info .. "Resolve Duplicate Rolls: true<br />\n";
+	else
+		info = info .. "Resolve Duplicate Rolls: true<br />\n";
 	end
 	if CEPGP_minEP[1] then
 		info = info .. "Minimum EP: true, " .. CEPGP_minEP[2] .. "<br />\n";
@@ -2028,37 +2064,39 @@ function CEPGP_callItem(id, gp, buttons, timeout)
 	id = tonumber(id); -- Must be in a numerical format
 	local name, link, _, _, _, _, _, _, _, tex, _, classID, subClassID = GetItemInfo(id);
 	local iString;
+	CEPGP_Info.LastRun.ItemCall = GetTime();
+	local timestamp = CEPGP_Info.LastRun.ItemCall;
+	
+	local call;
+	local timer = timeout-1;
+	CEPGP_respond_timeout_string:Show();
+	CEPGP_distribute_time:Show();
+	CEPGP_respond_timeout_string:SetText("Time Remaining: " .. timer);
+	CEPGP_distribute_time:SetText("Time Remaining: " .. timer);
+	
 	if tonumber(timeout) > 0 then
-		local call;
-		local timer = timeout-1;
-		CEPGP_respond_timeout_string:Show();
-		CEPGP_distribute_time:Show();
-		CEPGP_respond_timeout_string:SetText("Time Remaining: " .. timer);
-		CEPGP_distribute_time:SetText("Time Remaining: " .. timer);
-		local ticker = function()
-			if not CEPGP_respond:IsVisible() then
-				call._remainingIterations = 0;
-				CEPGP_distribute_time:SetText("Time Remaining: 0");
+		C_Timer.NewTicker(1, function()
+			if CEPGP_Info.LastRun.ItemCall ~= timestamp then
 				return;
 			end
-			timer = timer - 1;
-			CEPGP_respond_timeout_string:SetText("Time Remaining: " .. timer);
-			CEPGP_distribute_time:SetText("Time Remaining: " .. timer);
 			if timer == 0 then
+				CEPGP_distribute_time:SetText("Response Time Expired");
 				if not CEPGP_respond:IsVisible() then
 					return;
 				end
 				CEPGP_respond:Hide();
 				CEPGP_SendAddonMsg("LootRsp;6", "RAID");
+				return;
 			end
-		end
-		call = C_Timer.NewTicker(1, function()
-			ticker();
+			timer = timer - 1;
+			CEPGP_respond_timeout_string:SetText("Time Remaining: " .. timer);
+			CEPGP_distribute_time:SetText("Time Remaining: " .. timer);
 		end, timeout);
 	else
 		CEPGP_respond_timeout_string:Hide();
 		CEPGP_distribute_time:Hide();
 	end
+	
 	if not link and CEPGP_itemExists(id) then
 		local item = Item:CreateFromItemID(id);
 		item:ContinueOnItemLoad(function()
@@ -2215,6 +2253,11 @@ function CEPGP_toggleGPEdit(mode)
 		CEPGP_loot_options_min_EP_check:Enable();
 		CEPGP_loot_options_min_EP_amount:Enable();
 		CEPGP_loot_options_show_passes_check:Enable();
+		CEPGP_loot_options_enforce_PR_sorting_check:Enable();
+		CEPGP_loot_options_dist_raidwide_check:Enable();
+		CEPGP_loot_options_pass_roll_check:Enable();
+		CEPGP_loot_options_announce_roll_check:Enable();
+		CEPGP_loot_options_resolve_roll_check:Enable();
 		for k, v in pairs(SLOTWEIGHTS) do
 			if k ~= "ROBE" and k ~= "EXCEPTION" then
 				_G["CEPGP_options_" .. k .. "_weight"]:Enable();
@@ -2228,6 +2271,12 @@ function CEPGP_toggleGPEdit(mode)
 		CEPGP_loot_options_min_EP_check:Disable();
 		CEPGP_loot_options_min_EP_amount:Disable();
 		CEPGP_loot_options_show_passes_check:Disable();
+		CEPGP_loot_options_enforce_PR_sorting_check:Disable();
+		CEPGP_loot_options_dist_raidwide_check:Disable();
+		CEPGP_loot_options_pass_roll_check:Disable();
+		CEPGP_loot_options_announce_roll_check:Disable();
+		CEPGP_loot_options_resolve_roll_check:Disable();
+		
 		for k, v in pairs(SLOTWEIGHTS) do
 			if k ~= "ROBE" and k ~= "EXCEPTION" then
 				_G["CEPGP_options_" .. k .. "_weight"]:Disable();
@@ -2557,9 +2606,10 @@ end
 
 function CEPGP_syncAltStandings(main)
 	if not main or not CEPGP.Alt.Links[main] then return; end
+	local mainIndex;
 	for k, alt in pairs(CEPGP.Alt.Links[main]) do
 		if CEPGP_roster[alt] then
-			local mainIndex = CEPGP_getIndex(main);
+			mainIndex = CEPGP_getIndex(main, CEPGP_roster[main] or nil);
 			
 			if CEPGP_charIsExcluded(main, mainIndex) then
 				CEPGP_print("Could not synchronise EPGP from " .. main .. " because they are in an excluded rank", true);
