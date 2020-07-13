@@ -143,6 +143,23 @@ function CEPGP_announce(link, x, slotNum, quantity)
 				SendChatMessage(CEPGP_response_buttons[4][4] .. " : " .. CEPGP_response_buttons[4][2], "RAID", CEPGP_LANGUAGE);
 			end
 		end
+		
+		local keywords = {};
+	
+		for label, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+			local entry = {};
+			for key, disc in pairs(v) do
+				entry = {[1] = label, [2] = key, [3] = disc};
+			end
+			table.insert(keywords, entry);
+		end
+		
+		keywords = CEPGP_tSort(keywords, 3, true);
+		
+		for k, v in ipairs(keywords) do
+			SendChatMessage(v[1] .. " : " .. v[2], "RAID", CEPGP_LANGUAGE);
+		end
+	
 		SendChatMessage("--------------------------", "RAID", CEPGP_LANGUAGE);
 		
 		

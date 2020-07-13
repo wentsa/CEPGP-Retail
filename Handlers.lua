@@ -10,8 +10,9 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 		end
 	end
 	response = tonumber(response);
-	
-	local index = CEPGP_getIndex(arg2)
+	if not response then response = arg1; end
+	local reason = CEPGP_response_buttons[response] and CEPGP_response_buttons[response][2] or CEPGP_getResponse(response);
+	local index = CEPGP_getIndex(arg2);
 
 	if event == "CHAT_MSG_WHISPER" and response then
 		local roll = math.ceil(math.random(1,100));
@@ -36,7 +37,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 		end
 		
 		if not CEPGP_distributing then return; end
-		for _, name in ipairs(CEPGP_responses) do
+		for name, _ in pairs(CEPGP_itemsTable) do
 			if name == arg2 then return; end
 		end
 		
@@ -60,21 +61,15 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 					class = select(5, GetGuildRosterInfo(index));
 					inGuild = true; 
 				end
-				if (CEPGP_show_passes and response == 6) or response < 6 then
+				if CEPGP_getResponse(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then
 					CEPGP_SendAddonMsg(arg2..";distslot;"..CEPGP_distSlot, "RAID");
 				end
 				if inGuild and not CEPGP_suppress_announcements then
-					if response < 5 then	-- 5 means they're not using the addon or they're using an outdated version that doesn't support responses
+					if CEPGP_getResponse(arg1) or response < 5 then	-- 5 means they're not using the addon or they're using an outdated version that doesn't support responses
 						if CEPGP.Loot.RollAnnounce then
-							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. CEPGP_response_buttons[response][2] .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR) (Rolled " .. roll .. ")", CEPGP_lootChannel);
+							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR) (Rolled " .. roll .. ")", CEPGP_lootChannel);
 						else
-							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. CEPGP_response_buttons[response][2] .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR)", CEPGP_lootChannel);
-						end
-					elseif response == 5 or not response then
-						if CEPGP.Loot.RollAnnounce then
-							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. math.floor((EP/GP)*100)/100 .. " PR) (Rolled " .. roll .. ")", CEPGP_lootChannel);
-						else
-							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. math.floor((EP/GP)*100)/100 .. " PR)", CEPGP_lootChannel);
+							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR)", CEPGP_lootChannel);
 						end
 					end
 				elseif not CEPGP_suppress_announcements then
@@ -84,21 +79,15 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 							_, _, _, _, class = GetRaidRosterInfo(i);
 						end
 					end
-					if response < 5 then
+					if CEPGP_getResponse(arg1) or response < 5 then
 						if CEPGP.Loot.RollAnnounce then
-							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. CEPGP_response_buttons[response][2] .. "). (Non-guild member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
+							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (Non-guild member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
 						else
-							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. CEPGP_response_buttons[response][2] .. "). (Non-guild member)", CEPGP_lootChannel);
-						end
-					elseif response == 5 then
-						if CEPGP.Loot.RollAnnounce then
-							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (Non-guild Member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
-						else
-							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (Non-guild Member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
+							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (Non-guild member)", CEPGP_lootChannel);
 						end
 					end
 				end
-				if (CEPGP_show_passes and response == 6) or response < 6 then --If you are the master looter
+				if CEPGP_getResponse(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then --If you are the master looter
 					CEPGP_addResponse(arg2, response, roll);
 				end
 				CEPGP_UpdateLootScrollBar(true);
@@ -110,9 +99,6 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 			if CEPGP_roster[arg2] then 
 					local index = CEPGP_getIndex(arg2);
 					EP, GP = CEPGP_getEPGP(arg2, index);
-					--[[if CEPGP.Loot.MinReq[1] and CEPGP.Loot.MinReq[2] > tonumber(EP) then
-						CEPGP_print(arg2 .. " is interested in this item but doesn't have enough EP.");
-					end]]
 					class = CEPGP_roster[arg2][2];
 					inGuild = true;
 				else
@@ -123,21 +109,15 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 						inGuild = true; 
 					end
 				end
-			if (CEPGP_show_passes and response == 6) or response < 6 then
+			if CEPGP_getResponse(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then
 				CEPGP_SendAddonMsg(arg2..";distslot;"..CEPGP_distSlot, "RAID");
 			end
 			if inGuild and not CEPGP_suppress_announcements then
-				if response < 5 then
+				if CEPGP_getResponse(arg1) or response < 5 then
 					if CEPGP.Loot.RollAnnounce then
-						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. CEPGP_response_buttons[response][2] .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR) (Rolled " .. roll .. ")", CEPGP_lootChannel);
+						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR) (Rolled " .. roll .. ")", CEPGP_lootChannel);
 					else
-						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. CEPGP_response_buttons[response][2] .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR)", CEPGP_lootChannel);
-					end
-				elseif response == 5 then
-					if CEPGP.Loot.RollAnnounce then
-						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. math.floor((EP/GP)*100)/100 .. " PR) (Rolled " .. roll .. ")", CEPGP_lootChannel);
-					else
-						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. math.floor((EP/GP)*100)/100 .. " PR)", CEPGP_lootChannel);
+						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR)", CEPGP_lootChannel);
 					end
 				end
 			elseif not CEPGP_suppress_announcements then
@@ -147,21 +127,15 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 						_, _, _, _, class = GetRaidRosterInfo(i);
 					end
 				end
-				if response < 5 then
+				if CEPGP_getResponse(arg1) or response < 5 then
 					if CEPGP.Loot.RollAnnounce then
-						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. CEPGP_response_buttons[response][2] .. "). (Non-guild member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
+						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (Non-guild member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
 					else
-						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. CEPGP_response_buttons[response][2] .. "). (Non-guild member)", CEPGP_lootChannel);
-					end
-				elseif response == 5 then
-					if CEPGP.Loot.RollAnnounce then
-						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (Non-guild Member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
-					else
-						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (Non-guild Member)", CEPGP_lootChannel);
+						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (Non-guild member)", CEPGP_lootChannel);
 					end
 				end
 			end
-			if (CEPGP_show_passes and response == 6) or response < 6 then --If you are the master looter
+			if CEPGP_getResponse(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then --If you are the master looter
 				CEPGP_addResponse(arg2, response, roll);
 			end
 			CEPGP_UpdateLootScrollBar(true);

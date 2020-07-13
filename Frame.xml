@@ -380,7 +380,7 @@
 							</OnLoad>
 							<OnClick>
 								PlaySound(799);
-								CEPGP_ListButton_OnClick(self:GetName());
+								CEPGP_ListButton_OnClick(self:GetName(), button);
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -405,7 +405,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound(799);
-								CEPGP_ListButton_OnClick(self:GetName());
+								CEPGP_ListButton_OnClick(self:GetName(), button);
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -435,7 +435,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound(799);
-								CEPGP_ListButton_OnClick(self:GetName());
+								CEPGP_ListButton_OnClick(self:GetName(), button);
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -474,7 +474,7 @@
 							</OnShow>
 							<OnClick>
 								PlaySound(799);
-								CEPGP_ListButton_OnClick(self:GetName());
+								CEPGP_ListButton_OnClick(self:GetName(), button);
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -505,7 +505,7 @@
 							</OnLoad>
 							<OnClick>
 								PlaySound(799);
-								CEPGP_ListButton_OnClick(self:GetName());
+								CEPGP_ListButton_OnClick(self:GetName(), button);
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -683,7 +683,7 @@
 							</OnLoad>
 							<OnClick>
 								PlaySound(799);
-								CEPGP_ListButton_OnClick(self:GetName());
+								CEPGP_ListButton_OnClick(self:GetName(), button);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -4956,7 +4956,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CEPGP_ListButton_OnClick(self:GetName());
+						CEPGP_ListButton_OnClick(self:GetName(), button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -5315,7 +5315,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CEPGP_ListButton_OnClick(self:GetName());
+						CEPGP_ListButton_OnClick(self:GetName(), button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -5719,6 +5719,128 @@
 		</Scripts>
 	</Frame>
 	
+	<Frame name="CEPGP_changelog" hidden="true" enableMouse="true" frameStrata="DIALOG" movable="true" clampedToScreen="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<Color r="0" g="0" b="0" />
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_heading" inherits="GameFontNormal" />
+				<FontString name="$parent_content" inherits="GameFontNormalSmall" justifyH="LEFT"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parent_close" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="30" y="30" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						CEPGP_changelog:Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnShow>
+				local heading, content = CEPGP_changelog_heading, CEPGP_changelog_content;
+				heading:SetPoint("TOP", 0, -20);
+				content:SetPoint("TOPLEFT", 20, -40);
+				heading:SetText("Classic EPGP Version " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build .. " Changelog");
+				local info = "- The license for CEPGP has changed\nThe license can be found in World of Warcraft\\_classic_\\Interface\\AddOns\\CEPGP\\License.txt\n\nNew Feature\n- Extra responses for loot can now be added in Loot Distribution options\n\nBugfixes/Changes\n- Updated interface version\n- Comms module will now check and resend failed messages\n- Corrected token slot for Imperial Qiraji Regalia\n- Added Vek'lor's Diadem and Vek'nilash's Circlet to token table\n- Rewrote the traffic sharing module with significant optimisations\n- Resolved duplicate check for loot responses\n- Hunters will no longer auto pass on daggers\n- Raid window will now update properly when EPGP standings change\n- Standby list should now be correctly recorded when taking an attendance snapshot";
+				content:SetText(info);
+				self:SetWidth(content:GetStringWidth()+40);
+				self:SetHeight(heading:GetStringHeight() + content:GetStringHeight() + 50);
+			</OnShow>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="CEPGP_license" hidden="true" enableMouse="true" frameStrata="DIALOG" movable="true" clampedToScreen="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<Color r="0" g="0" b="0" />
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_heading" inherits="GameFontNormal" text="Classic EPGP End User License Agreement"/>
+				<FontString name="$parent_content" inherits="GameFontNormalSmall" justifyH="LEFT"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parent_close" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="30" y="30" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						CEPGP_license:Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnShow>
+				local heading, content = CEPGP_license_heading, CEPGP_license_content;
+				heading:SetPoint("TOP", 0, -20);
+				content:SetPoint("TOPLEFT", 20, -40);
+				local info = "The contents of this addon, excluding third-party resources, are copyrighted by the author with all rights reserved.\n\nDefinitions:\n1. \"The Software\" refers to CEPGP (Classic EPGP).\n2. \"Dependent Code\" refers to the requirement of having CEPGP listed as a dependency in the AddOn .toc (table of contents) file.\n\nThe author of this addon ehreby grants you the following rights:\n\n1. You may download this addon and run it for the intended purpose as an AddOn for World of Warcraft®.\n2. You may make modifications to the software for private use only, you may not publish or distribute any modified portion of the software.\n3. You may produce independent AddOns which use the software as dependent code for the purposes of:\n    a. Making use of functions provided by the software or\n    b. Modifying the behaviour of the software\n4. Do not modify the name of this addon, including the addon folders.\n5. This copyright notice shall be included in all copies or substantial portions of the Software.\n\nAll rights not explicitly addressed in this license are reserved by the copyright holder.\n\nBy using the software you are acknowledging that you understand and agree with the above terms and conditions.";
+				content:SetText(info);
+				self:SetWidth(content:GetStringWidth()+40);
+				self:SetHeight(heading:GetStringHeight() + content:GetStringHeight() + 50);
+			</OnShow>
+		</Scripts>
+	</Frame>
 	
 	<Frame name="CEPGP_interface_options" hidden="true">
 		<Anchors>
@@ -5755,30 +5877,28 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parent_import" inherits="GameMenuButtonTemplate" text="Overwrite Settings">
-				<Size>
-					<AbsDimension x="125" y="21" />
-				</Size>
+			<Button name="$parent_changelog" inherits="GameMenuButtonTemplate" text="View Changelog">
+				<Size x="125" y="21" />
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
-						<AbsDimension x="10" y="-10" />
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="10" y="-10" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						ShowUIPanel(CEPGP_settings_import);
+						CEPGP_changelog:Show();
 					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText("Import CEPGP configuration from a guild member, overwriting your own.");
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnShow>
-						CEPGP_interface_options_force_sync:SetPoint("BOTTOMLEFT", "CEPGP_interface_options", "BOTTOMLEFT", 10, 10);
-					</OnShow>
+				</Scripts>
+			</Button>
+			<Button name="$parent_license" inherits="GameMenuButtonTemplate" text="View EULA">
+				<Size x="125" y="21" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_interface_options_changelog" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						CEPGP_license:Show();
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="$parent_exclusions" inherits="GameMenuButtonTemplate" text="Rank Exclusions">
@@ -5804,6 +5924,30 @@
 					<OnLeave>
 						GameTooltip:Hide();
 					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parent_import" inherits="GameMenuButtonTemplate" text="Overwrite Settings">
+				<Size>
+					<AbsDimension x="125" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent_exclusions" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						ShowUIPanel(CEPGP_settings_import);
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText("Import CEPGP configuration from a guild member, overwriting your own.");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnShow>
+						CEPGP_interface_options_force_sync:SetPoint("BOTTOMLEFT", "CEPGP_interface_options", "BOTTOMLEFT", 10, 10);
+					</OnShow>
 				</Scripts>
 			</Button>
 			<CheckButton name="$parent_forced_sync_check" inherits="UIOptionsCheckButtonTemplate">
@@ -8954,6 +9098,7 @@
 					<Frame name="$parent_container">
 						<Layers>
 							<Layer level="HIGH">
+								<FontString name="CEPGP_loot_options_keywords_string" inherits="GameFontNormal" text="Enable Additional Keywords:" />
 								<FontString name="CEPGP_loot_options_timer_text" inherits="GameFontNormal" text="Timeout Duration: " />
 								<FontString name="CEPGP_loot_options_raid_warning_text" inherits="GameFontNormal" text="Raid Warning on Announcement: " />
 								<FontString name="CEPGP_loot_options_announce_text" inherits="GameFontNormal" text="Announcement Message: " />
@@ -9089,7 +9234,7 @@
 										<Scripts>
 											<OnLoad>
 												self:SetAutoFocus(false);
-												self:SetMaxLetters(3);
+												self:SetMaxLetters(4);
 											</OnLoad>
 											<OnEnterPressed>
 												self:ClearFocus();
@@ -9100,6 +9245,11 @@
 												local default = CEPGP_response_buttons[1][3];
 												if not value or value == default then
 													self:SetText(default);
+													return;
+												end
+												if value > 100 then
+													self:SetText(default);
+													CEPGP_print("Discount cannot be more than 100%.", true);
 													return;
 												end
 												CEPGP_response_buttons[1][3] = value;
@@ -9130,11 +9280,28 @@
 												self:HighlightText(0,0);
 												local value = self:GetText();
 												local default = CEPGP_response_buttons[1][4];
+												
+												if string.lower(value) == string.lower(default) then return; end
+												
+												for i = 1, 4 do
+													if string.lower(value) == string.lower(CEPGP_response_buttons[i][4]) then
+														CEPGP_print("Keyword '" .. value .. "' is already in use", true);
+														self:SetText(default);
+														return;
+													end
+												end
+												
+												for k, _ in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+													if string.lower(value) == string.lower(k) then
+														CEPGP_print("Keyword '" .. value .. "' is already in use", true);
+														self:SetText(default);
+														return;
+													end
+												end
+												
 												if value == "" then
 													self:SetText(default);
 													CEPGP_print("Response keyphrase cannot be blank", true);
-													return;
-												elseif value == default then
 													return;
 												end
 												
@@ -9269,7 +9436,7 @@
 										<Scripts>
 											<OnLoad>
 												self:SetAutoFocus(false);
-												self:SetMaxLetters(3);
+												self:SetMaxLetters(4);
 											</OnLoad>
 											<OnEnterPressed>
 												self:ClearFocus();
@@ -9280,6 +9447,11 @@
 												local default = CEPGP_response_buttons[2][3];
 												if not value or value == default then
 													self:SetText(default);
+													return;
+												end
+												if value > 100 then
+													self:SetText(default);
+													CEPGP_print("Discount cannot be more than 100%.", true);
 													return;
 												end
 												CEPGP_response_buttons[2][3] = value;
@@ -9310,11 +9482,28 @@
 												self:HighlightText(0,0);
 												local value = self:GetText();
 												local default = CEPGP_response_buttons[2][4];
+												
+												if string.lower(value) == string.lower(default) then return; end
+												
+												for i = 1, 4 do
+													if string.lower(value) == string.lower(CEPGP_response_buttons[i][4]) then
+														CEPGP_print("Keyword '" .. value .. "' is already in use", true);
+														self:SetText(default);
+														return;
+													end
+												end
+												
+												for k, _ in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+													if string.lower(value) == string.lower(k) then
+														CEPGP_print("Keyword '" .. value .. "' is already in use", true);
+														self:SetText(default);
+														return;
+													end
+												end
+												
 												if value == "" then
 													self:SetText(default);
 													CEPGP_print("Response keyphrase cannot be blank", true);
-													return;
-												elseif value == default then
 													return;
 												end
 												
@@ -9448,7 +9637,7 @@
 										<Scripts>
 											<OnLoad>
 												self:SetAutoFocus(false);
-												self:SetMaxLetters(3);
+												self:SetMaxLetters(4);
 											</OnLoad>
 											<OnEnterPressed>
 												self:ClearFocus();
@@ -9459,6 +9648,11 @@
 												local default = CEPGP_response_buttons[3][3];
 												if not value or value == default then
 													self:SetText(default);
+													return;
+												end
+												if value > 100 then
+													self:SetText(default);
+													CEPGP_print("Discount cannot be more than 100%.", true);
 													return;
 												end
 												CEPGP_response_buttons[3][3] = value;
@@ -9492,11 +9686,28 @@
 												self:HighlightText(0,0);
 												local value = self:GetText();
 												local default = CEPGP_response_buttons[3][4];
+												
+												if string.lower(value) == string.lower(default) then return; end
+												
+												for i = 1, 4 do
+													if string.lower(value) == string.lower(CEPGP_response_buttons[i][4]) then
+														CEPGP_print("Keyword '" .. value .. "' is already in use", true);
+														self:SetText(default);
+														return;
+													end
+												end
+												
+												for k, _ in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+													if string.lower(value) == string.lower(k) then
+														CEPGP_print("Keyword '" .. value .. "' is already in use", true);
+														self:SetText(default);
+														return;
+													end
+												end
+												
 												if value == "" then
 													self:SetText(default);
 													CEPGP_print("Response keyphrase cannot be blank", true);
-													return;
-												elseif value == default then
 													return;
 												end
 												
@@ -9630,7 +9841,7 @@
 										<Scripts>
 											<OnLoad>
 												self:SetAutoFocus(false);
-												self:SetMaxLetters(3);
+												self:SetMaxLetters(4);
 											</OnLoad>
 											<OnEnterPressed>
 												self:ClearFocus();
@@ -9641,6 +9852,11 @@
 												local default = CEPGP_response_buttons[4][3];
 												if not value or value == default then
 													self:SetText(default);
+													return;
+												end
+												if value > 100 then
+													self:SetText(default);
+													CEPGP_print("Discount cannot be more than 100%.", true);
 													return;
 												end
 												CEPGP_response_buttons[4][3] = value;
@@ -9671,11 +9887,28 @@
 												self:HighlightText(0,0);
 												local value = self:GetText();
 												local default = CEPGP_response_buttons[4][4];
+												
+												if string.lower(value) == string.lower(default) then return; end
+												
+												for i = 1, 4 do
+													if string.lower(value) == string.lower(CEPGP_response_buttons[i][4]) then
+														CEPGP_print("Keyword '" .. value .. "' is already in use", true);
+														self:SetText(default);
+														return;
+													end
+												end
+												
+												for k, _ in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+													if string.lower(value) == string.lower(k) then
+														CEPGP_print("Keyword '" .. value .. "' is already in use", true);
+														self:SetText(default);
+														return;
+													end
+												end
+												
 												if value == "" then
 													self:SetText(default);
 													CEPGP_print("Response keyphrase cannot be blank", true);
-													return;
-												elseif value == default then
 													return;
 												end
 												
@@ -9693,7 +9926,7 @@
 								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_loot_options_2">
-										<AbsDimension x="0" y="0" />
+										<AbsDimension x="0" y="10" />
 									</Anchor>
 								</Anchors>
 								<Layers>
@@ -9774,6 +10007,330 @@
 											</OnClick>
 										</Scripts>
 									</Button>
+								</Frames>
+							</Frame>
+							<CheckButton name="CEPGP_loot_options_keywords_enable" inherits="UIOptionsCheckButtonTemplate">
+								<HitRectInsets>
+									<AbsInset left="0" right="0" top="0" bottom="0" />
+								</HitRectInsets>
+								<Anchors>
+									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="CEPGP_loot_options_keywords_string">
+										<Offset>
+											<AbsDimension x="5" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										local parent = self:GetParent();
+										
+										CEPGP.Loot.ExtraKeywords.Enabled = not CEPGP.Loot.ExtraKeywords.Enabled;
+										if CEPGP.Loot.ExtraKeywords.Enabled then
+											CEPGP_loot_options_keywords:Show();
+											CEPGP_loot_options_timer_text:SetPoint("TOPLEFT", CEPGP_loot_options_keywords, "BOTTOMLEFT");
+										else
+											CEPGP_loot_options_keywords:Hide();
+											CEPGP_loot_options_timer_text:SetPoint("TOPLEFT", CEPGP_loot_options_keywords_string, "BOTTOMLEFT", 0, -7);
+										end
+									</OnClick>
+									<OnShow>
+										self:SetChecked(CEPGP.Loot.ExtraKeywords.Enabled);
+									</OnShow>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+										GameTooltip:SetText("|c000077BELoot Master Feature|r\nNeed more than 4 loot buttons? Enable this option to add additional keywords for loot responses.\n\nAny keywords you use here will be announced when loot distribution starts regardless\nof whether or not you have checked 'Hide Keyphrase Alternatives in Loot Announcement'.");
+									</OnEnter>
+								</Scripts>
+							</CheckButton>
+							<Frame name="CEPGP_loot_options_keywords">
+								<Size>
+									<AbsDimension x="550" y="125" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_loot_options_keywords_string">
+										<Offset x="0" y="-10" />
+									</Anchor>
+								</Anchors>
+								<Frames>
+									<ScrollFrame name="$parent_scrollframe" inherits="UIPanelScrollFrameTemplate">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPLEFT" X="0" Y="-15"/>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="$parent_label" inherits="GameFontNormal" text="Label">
+													<Anchors>
+														<Anchor point="TOPLEFT" x="0" y="10" />
+													</Anchors>
+												</FontString>
+												<FontString name="$parent_keyword" inherits="GameFontNormal" text="Keyword" />
+												<FontString name="$parent_discount" inherits="GameFontNormal" text="% Discount">
+													<Anchors>
+														<Anchor point="TOPRIGHT">
+															<Offset x="0" y="10" />
+														</Anchor>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<ScrollChild>
+											<Frame name="$parent_container">
+												<Frames>
+												</Frames>
+											</Frame>
+										</ScrollChild>
+									</ScrollFrame>
+									<EditBox name="$parent_label" inherits="InputBoxTemplate" autofocus="false">
+										<Size>
+											<AbsDimension x="150" y="21" />
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_scrollframe" X="0" Y="-20" />
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="$parent_text" inherits="GameFontNormal" text="Label">
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnTabPressed>
+												CEPGP_loot_options_keywords_name:SetFocus();
+											</OnTabPressed>
+										</Scripts>
+									</EditBox>
+									<EditBox name="$parent_name" inherits="InputBoxTemplate" autofocus="false">
+										<Size>
+											<AbsDimension x="150" y="21" />
+										</Size>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="$parent_text" inherits="GameFontNormal" text="Keyword">
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnTabPressed>
+												CEPGP_loot_options_keywords_discount:SetFocus();
+											</OnTabPressed>
+										</Scripts>
+									</EditBox>
+									<EditBox name="$parent_discount" inherits="InputBoxTemplate" autofocus="false">
+										<Size>
+											<AbsDimension x="75" y="21" />
+										</Size>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="$parent_text" inherits="GameFontNormal" text="% Discount">
+													<Anchors>
+														<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnTabPressed>
+												CEPGP_loot_options_keywords_name:SetFocus();
+											</OnTabPressed>
+										</Scripts>
+									</EditBox>
+									<Button name="$parent_confirm" inherits="GameMenuButtonTemplate" text="Add Keyword">
+										<Size>
+											<AbsDimension x="90" y="40" />
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_label" />
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												local label = CEPGP_loot_options_keywords_label:GetText();
+												local keyword = CEPGP_loot_options_keywords_name:GetText();
+												local discount = tonumber(CEPGP_loot_options_keywords_discount:GetText());
+												
+												if #label == 0 then return; end
+												if #keyword == 0 then return; end
+												if not discount then return; end
+												
+												if discount > 100 then
+													CEPGP_print("Discount cannot be greater than 100%", true);
+													return;
+												end
+												
+												local function isKey(t, val)
+													for k, _ in pairs(t) do
+														if string.lower(val) == string.lower(k) then
+															return true;
+														end
+													end
+													return false;
+												end
+												
+												local function sanitise()
+													if string.sub(label, 1, 1) == " " then
+														label = string.sub(label, 2);
+														sanitise();
+														return;
+													end
+													if string.sub(label, #label) == " " then
+														label = string.sub(label, 1, #label-1);
+														sanitise();
+														return;
+													end
+													if string.find(label, "  ") then
+														local temp = string.sub(label, 1, string.find(label, "  "));
+														label = temp .. string.sub(label, string.find(label, "  ")+2);
+														sanitise();
+														return;
+													end
+													if string.sub(keyword, 1, 1) == " " then
+														keyword = string.sub(keyword, 2);
+														sanitise();
+														return;
+													end
+													if string.sub(keyword, #keyword) == " " then
+														keyword = string.sub(keyword, 1, #keyword-1);
+														sanitise();
+														return;
+													end
+													if string.find(keyword, "  ") then
+														local temp = string.sub(keyword, 1, string.find(keyword, "  "));
+														keyword = temp .. string.sub(keyword, string.find(keyword, "  ")+2);
+														sanitise();
+														return;
+													end
+												end
+												
+												sanitise();
+												
+												
+												for i = 1, 4 do
+													if string.lower(label) == string.lower(CEPGP_response_buttons[i][2]) or
+														string.lower(label) == string.lower(CEPGP_response_buttons[i][4])then
+														CEPGP_print("Label '" .. label .. "' is already in use", true);
+														return;
+													end
+													if string.lower(keyword) == string.lower(CEPGP_response_buttons[i][2]) or
+														string.lower(keyword) == string.lower(CEPGP_response_buttons[i][4])then
+														CEPGP_print("Keyword '" .. keyword .. "' is already in use", true);
+														return;
+													end
+												end
+												
+												for k, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+													if k == label or isKey(v, label) then
+														CEPGP_print("Label '" .. label .. "' is already in use", true);
+														return;
+													end
+													if k == keyword or isKey(v, keyword) then
+														CEPGP_print("Keyword '" .. keyword .. "' is already in use", true);
+														return;
+													end
+												end
+												
+												if 3 > #label then
+													CEPGP_print("Labels must be at least 3 characters long", true);
+												end
+												if 3 > #keyword then
+													CEPGP_print("Keywords must be at least 3 characters long", true);
+												end
+												
+												CEPGP.Loot.ExtraKeywords.Keywords[label] = {
+													[keyword] = discount
+												};
+												CEPGP_UpdateKeywordScrollBar();
+												CEPGP_loot_options_keywords_label:SetText("");
+												CEPGP_loot_options_keywords_name:SetText("");
+												CEPGP_loot_options_keywords_discount:SetText("");
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Button name="$parent_label_tip">
+										<Size x="25" y="25" />
+										<Anchors>
+											<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_label_text" />
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<Texture name="$parent_texture" file="Interface/TUTORIALFRAME/TutorialFrame-QuestionMark.blp" alphaMode="ADD">
+													<Size>
+														<AbsDimension x="25" y="25" />
+													</Size>
+													<Anchors>
+														<Anchor point="CENTER" relativePoint="CENTER" />
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnEnter>
+												GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+												GameTooltip:SetText("|c000077BEWhat is a Label?|r\nThe label is the actual response for this discount.\nFor example: Where 'need' might be the keyword, this might reflect 'Main Spec' or 'greed' might reflect 'Off Spec'.\nThis is what will be recorded in your traffic log.");
+											</OnEnter>
+											<OnLeave>
+												GameTooltip:Hide();
+											</OnLeave>
+										</Scripts>
+									</Button>
+									<Button name="$parent_keyword_tip">
+										<Size x="25" y="25" />
+										<Anchors>
+											<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_name_text" />
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<Texture name="$parent_texture" file="Interface/TUTORIALFRAME/TutorialFrame-QuestionMark.blp" alphaMode="ADD">
+													<Size>
+														<AbsDimension x="25" y="25" />
+													</Size>
+													<Anchors>
+														<Anchor point="CENTER" relativePoint="CENTER" />
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnEnter>
+												GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+												GameTooltip:SetText("|c000077BEWhat is a Keyword?|r\nThe keyword is what people need to whisper you to use this response.\nThis word is not recorded in traffic.");
+											</OnEnter>
+											<OnLeave>
+												GameTooltip:Hide();
+											</OnLeave>
+										</Scripts>
+									</Button>
+									<Button name="$parent_discount_tip">
+									<Size x="25" y="25" />
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parent_discount_text" />
+									</Anchors>
+									<Layers>
+										<Layer level="OVERLAY">
+											<Texture name="$parent_texture" file="Interface/TUTORIALFRAME/ui-tutorialframe-questgiver.blp" alphaMode="ADD">
+												<Size>
+													<AbsDimension x="25" y="25" />
+												</Size>
+												<Anchors>
+													<Anchor point="CENTER" relativePoint="CENTER" />
+												</Anchors>
+											</Texture>
+										</Layer>
+									</Layers>
+									<Scripts>
+										<OnEnter>
+											GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+											GameTooltip:SetText("|c000077BEDiscounts|r\nThe discount is used as written. For example, if you enter 50, then it will be a 50% discount.\n\n|c000077BETip!|r\nIf you want a response which |c00FF00FFincreases|r the cost of an item, make the % Discount negative.");
+										</OnEnter>
+										<OnLeave>
+											GameTooltip:Hide();
+										</OnLeave>
+									</Scripts>
+								</Button>
 								</Frames>
 							</Frame>
 							<EditBox name="CEPGP_loot_options_timer_value" inherits="InputBoxTemplate" autofocus="false" numeric="true">
@@ -10347,7 +10904,30 @@
 				CEPGP_loot_options_scrollframe:SetHeight(height-20);
 				CEPGP_loot_options_scrollframe_container:SetHeight(height-20);
 				
-				CEPGP_loot_options_timer_text:SetPoint("TOPLEFT", "CEPGP_loot_options_preview", "BOTTOMLEFT", 0, -20);
+				width, height = CEPGP_loot_options_keywords:GetWidth(), CEPGP_loot_options_keywords:GetHeight();
+				
+				CEPGP_loot_options_keywords_scrollframe:SetWidth(width-20);
+				CEPGP_loot_options_keywords_scrollframe_container:SetWidth(width-20);
+				CEPGP_loot_options_keywords_scrollframe:SetHeight(130);
+				CEPGP_loot_options_keywords_scrollframe_container:SetHeight(130);
+				if not CEPGP.Loot.ExtraKeywords then CEPGP.Loot.ExtraKeywords = {Enabled = false}; end
+				CEPGP_loot_options_keywords:SetHeight((CEPGP_loot_options_keywords_enable:GetTop())-(CEPGP_loot_options_keywords_confirm:GetBottom()));
+				CEPGP_loot_options_keywords_discount:SetPoint("TOPRIGHT", CEPGP_loot_options_keywords_scrollframe, "BOTTOMRIGHT", 0, -20);
+				CEPGP_loot_options_keywords_scrollframe_keyword:SetPoint("LEFT", CEPGP_loot_options_keywords_scrollframe_label, "LEFT", (width-20)/3, 0);
+				CEPGP_loot_options_keywords_name:SetPoint("LEFT", CEPGP_loot_options_keywords_label, "LEFT", (width-20)/3, 0);
+				CEPGP_loot_options_keywords_string:SetPoint("TOPLEFT", CEPGP_loot_options_preview, "BOTTOMLEFT");
+				
+				if CEPGP.Loot.ExtraKeywords.Enabled then
+					CEPGP_loot_options_keywords:Show();
+					CEPGP_loot_options_timer_text:SetPoint("TOPLEFT", CEPGP_loot_options_keywords, "BOTTOMLEFT");
+				else
+					CEPGP_loot_options_keywords:Hide();
+					CEPGP_loot_options_timer_text:SetPoint("TOPLEFT", CEPGP_loot_options_keywords_string, "BOTTOMLEFT", 0, -7);
+				end
+				
+				CEPGP_UpdateKeywordScrollBar();
+				
+				
 				CEPGP_loot_options_raid_warning_text:SetPoint("TOPLEFT", "CEPGP_loot_options_timer_text", "BOTTOMLEFT", 0, -10);
 				CEPGP_loot_options_announce_text:SetPoint("TOPLEFT", "CEPGP_loot_options_raid_warning_text", "BOTTOMLEFT", 0, -10);
 				CEPGP_loot_options_hide_response_text:SetPoint("TOPLEFT", "CEPGP_loot_options_announce_text", "BOTTOMLEFT", 0, -10);
@@ -11090,7 +11670,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(856);
-						CEPGP_ListButton_OnClick(self:GetName());
+						CEPGP_ListButton_OnClick(self:GetName(), button);
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
@@ -11116,7 +11696,7 @@
 					<OnClick>
 						PlaySound(799);
 						if UnitInRaid("player") then
-							CEPGP_ListButton_OnClick(self:GetName());
+							CEPGP_ListButton_OnClick(self:GetName(), button);
 						else
 							CEPGP_print("You need to be in a raid group to add players to standby.", true);
 						end
@@ -11138,7 +11718,7 @@
 					<OnClick>
 						PlaySound(799);
 						if UnitInRaid("player") then
-							CEPGP_ListButton_OnClick(self:GetName());
+							CEPGP_ListButton_OnClick(self:GetName(), button);
 						else
 							CEPGP_print("You need to be in a raid group to add players to standby.", true);
 						end
@@ -11159,7 +11739,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_ListButton_OnClick(self:GetName());
+						CEPGP_ListButton_OnClick(self:GetName(), button);
 					</OnClick>
 				</Scripts>
 			</Button>

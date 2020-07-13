@@ -203,7 +203,7 @@
 			</Layer>
 		</Layers>
 		<Attributes>
-			<Attribute name="response" type="int" value="0" />
+			<Attribute name="response" type="string" value="0" />
 			<Attribute name="responseName" type="string" value=""/>
 		</Attributes>
 		<Scripts>
@@ -215,7 +215,7 @@
 				PlaySound(856);
 				if CEPGP_isML() == 0 or CEPGP_debugMode then
 					CEPGP_roll_award_confirm:Hide();
-					CEPGP_ListButton_OnClick(self:GetName());
+					CEPGP_ListButton_OnClick(self:GetName(), button);
 				end
 			</OnClick>
 		</Scripts>
@@ -287,11 +287,11 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:RegisterForClicks("LeftButtonDown");
+				self:RegisterForClicks("AnyDown");
 			</OnLoad>
 			<OnClick>
 				PlaySound(856);
-				CEPGP_ListButton_OnClick(self:GetName());
+				CEPGP_ListButton_OnClick(self:GetName(), button);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
@@ -366,7 +366,7 @@
 			</OnLoad>
 			<OnClick>
 				PlaySound(856);
-				CEPGP_ListButton_OnClick(self:GetName());
+				CEPGP_ListButton_OnClick(self:GetName(), button);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
@@ -429,7 +429,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_ListButton_OnClick(self:GetName());
+						CEPGP_ListButton_OnClick(self:GetName(), button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -593,7 +593,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_ListButton_OnClick(self:GetName());
+						CEPGP_ListButton_OnClick(self:GetName(), button);
 					</OnClick>
 					<OnHide>
 						local parent = self:GetParent();
@@ -615,7 +615,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_ListButton_OnClick(self:GetName());
+						CEPGP_ListButton_OnClick(self:GetName(), button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -655,7 +655,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_ListButton_OnClick(self:GetName());
+						CEPGP_ListButton_OnClick(self:GetName(), button);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -816,14 +816,14 @@
 			</OnLoad>
 			<OnClick>
 				PlaySound(856);
-				CEPGP_ListButton_OnClick(self:GetName());
+				CEPGP_ListButton_OnClick(self:GetName(), button);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
 	<Button name="PluginButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="200" y="15"/>
+			<AbsDimension x="200" y="30"/>
 		</Size>
 		<Frames>
 			<CheckButton name="$parentEnabled" inherits="UIOptionsCheckButtonTemplate">
@@ -864,6 +864,57 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</Button>
+	<Button name="KeywordButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT" />
+				<FontString name="$parentKeyword" inherits="GameFontNormal" justifyH="LEFT" />
+				<FontString name="$parentDiscount" inherits="GameFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="RIGHT">
+							<Offset x="-20" y="0" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentDelete" inherits="UiPanelCloseButton">
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						CEPGP_ListButton_OnClick(self:GetName(), button);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				local label = _G[self:GetName() .. "Label"];
+				local kw = _G[self:GetName() .. "Keyword"];
+				local dc = _G[self:GetName() .. "Discount"];
+				local del = _G[self:GetName() .. "Delete"];
+				
+				self:SetWidth(self:GetParent():GetWidth()-20);
+				self:SetHeight(21);
+				
+				local width = self:GetWidth();
+				label:SetPoint("LEFT");
+				kw:SetPoint("LEFT", label, "LEFT", width/3, 0);
+			</OnShow>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
 	
 	<EditBox name="epValInputBoxTemplate" inherits="InputBoxTemplate" numeric="true" virtual="true">

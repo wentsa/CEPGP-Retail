@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.16.Release"
+CEPGP_VERSION = "1.12.17.Release"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -80,133 +80,134 @@ CEPGP_response_time = 0;
 CEPGP_show_passes = false;
 CEPGP_PR_sort = true;
 
+CEPGP_Info = {
+	Version = 				"1.12.17",
+	Build = 				"Release",
+	Active = 				{false, false},	--	Active state, queried for current raid
+	SharingTraffic = 		false,
+	ImportingTraffic = 		false,
+	NumExcluded = 			0,
+	IgnoreUpdates = 		false,
+	LastImport = 			time(),
+	SyncInProgress = 		false,
+	LastUpdate = 			GetTime(),
+	QueuedAnnouncement = 	nil,
+	QueuedAward = 			nil,
+	Polling = 				false,
+	Rescan = 				false,
+	MessageStack =			{},
+	RosterStack = 			{},
+	Sorting = {	--	Sorting index, reverse
+		Attendance = 		{1, false},
+		Guild = 			{4, false},
+		Loot = 				{4, false},
+		Raid = 				{4, false},
+		Standby = 			{1, false},
+		Version = 			{1, false},
+	},
+	VersionNotified = 		false,
+	VerboseLogging = 		false,
+	TrafficImport = 		{},
+	TrafficScope = 			1,
+	LastRun = {
+		GuildSB = 			0,
+		RaidSB = 			0,
+		TrafficSB = 		0,
+		VersionSB = 		0,
+		ItemCall = 			time()
+	}
+};
+
 CEPGP = {
-	Attendance = CEPGP_raid_logs,
-	Backups = RECORDS,
-	Channel = CHANNEL,
-	Exclusions = {false,false,false,false,false,false,false,false,false,false},
-	LootChannel = CEPGP_lootChannel,
-	Notice = CEPGP_notice,
-	Overrides = OVERRIDE_INDEX,
-	PollRate = 0.0001,
-	Sync = {ALLOW_FORCED_SYNC, CEPGP_force_sync_rank},
-	Traffic = TRAFFIC,
-	Alt = {
-		Links = {},
-		BlockAwards = false,
-		SyncEP = true,
-		SyncGP = true,
-	},
-	Decay = {
-		Separate = false,
-	},
-	EP = {
-		AutoAward = AUTOEP,
-		BossEP = EPVALS,
-		Keyword = CEPGP_keyword,
-	},
-	GP = {
-		Base = 4.83,
-		DecayFactor = false,
-		Min = 1,
-		Mod = 1,
-		Multiplier = 2,
-		SlotWeights = {
-			["2HWEAPON"] = 2,
-			["WEAPONMAINHAND"] = 1.5,
-			["WEAPON"] = 1.5,
-			["WEAPONOFFHAND"] = 0.5,
-			["HOLDABLE"] = 0.5,
-			["SHIELD"] = 0.5,
-			["WAND"] = 0.5,
-			["RANGED"] = 2,
-			["RELIC"] = 0.5,
-			["HEAD"] = 1,
-			["NECK"] = 0.5,
-			["SHOULDER"] = 0.75,
-			["CLOAK"] = 0.5,
-			["CHEST"] = 1,
-			["ROBE"] = 1,
-			["WRIST"] = 0.5,
-			["HAND"] = 0.75,
-			["WAIST"] = 0.75,
-			["LEGS"] = 1,
-			["FEET"] = 0.75,
-			["FINGER"] = 0.5,
-			["TRINKET"] = 0.75
-		},
-		Tooltips = false,
+	Attendance = 			CEPGP_raid_logs,
+	Backups = 				RECORDS,
+	Channel = 				CHANNEL,
+	Exclusions = 			{false,false,false,false,false,false,false,false,false,false},
+	ChangelogVersion =		CEPGP_Info.Version,
+	LootChannel = 			CEPGP_lootChannel,
+	Notice = 				CEPGP_notice,
+	Overrides = 			OVERRIDE_INDEX,
+	PollRate = 				0.0001,
+	Sync = 					{ALLOW_FORCED_SYNC, CEPGP_force_sync_rank},
+	Traffic = 				TRAFFIC,
+	Alt = {		
+							Links = {},
+							BlockAwards = false,
+							SyncEP = true,
+							SyncGP = true,
+	},		
+	Decay = 				{Separate = false},
+	EP = {		
+							AutoAward = AUTOEP,
+							BossEP = EPVALS,
+							Keyword = CEPGP_keyword,
+	},		
+	GP = {		
+							Base = 4.83,
+							DecayFactor = false,
+							Min = 1,
+							Mod = 1,
+							Multiplier = 2,
+								SlotWeights = {
+								["2HWEAPON"] = 2,
+								["WEAPONMAINHAND"] = 1.5,
+								["WEAPON"] = 1.5,
+								["WEAPONOFFHAND"] = 0.5,
+								["HOLDABLE"] = 0.5,
+								["SHIELD"] = 0.5,
+								["WAND"] = 0.5,
+								["RANGED"] = 2,
+								["RELIC"] = 0.5,
+								["HEAD"] = 1,
+								["NECK"] = 0.5,
+								["SHOULDER"] = 0.75,
+								["CLOAK"] = 0.5,
+								["CHEST"] = 1,
+								["ROBE"] = 1,
+								["WRIST"] = 0.5,
+								["HAND"] = 0.75,
+								["WAIST"] = 0.75,
+								["LEGS"] = 1,
+								["FEET"] = 0.75,
+								["FINGER"] = 0.5,
+								["TRINKET"] = 0.75
+							},
+							Tooltips = false,
 	},
 	Loot = {
-		Announcement = "Whisper me for loot",
-		AutoPass = CEPGP_auto_pass,
-		AutoSort = CEPGP_PR_sort,
-		Keyword = CEPGP_keyword,
-		HideKeyphrases = false,
-		MinThreshold = CEPGP_min_threshold,
-		MinReq = CEPGP_minEP,
-		RaidVisibility = CEPGP_raid_wide_dist,
-		RaidWarning = false,
-		ShowPass = CEPGP_show_passes,
+		Announcement = 		"Whisper me for loot",
+		AutoPass = 			CEPGP_auto_pass,
+		AutoSort = 			CEPGP_PR_sort,
+		ExtraKeywords = 	{Keywords = {}},
+		Keyword = 			CEPGP_keyword,
+		HideKeyphrases = 	false,
+		MinThreshold = 		CEPGP_min_threshold,
+		MinReq = 			CEPGP_minEP,
+		RaidVisibility = 	CEPGP_raid_wide_dist,
+		RaidWarning = 		false,
+		ShowPass = 			CEPGP_show_passes,
 		SuppressResponses = CEPGP_suppress_announcements,
 		GUI = {
-			Buttons = CEPGP_response_buttons,
-			Enabled = CEPGP_loot_GUI,
-			Timer = CEPGP_response_time
+							Buttons = CEPGP_response_buttons,
+							Enabled = CEPGP_loot_GUI,
+							Timer = CEPGP_response_time
 		}
 	},
 	Standby = {
-		AcceptWhispers = CEPGP_standby_accept_whispers,
-		ByRank = CEPGP_standby_byrank,
-		Enabled = STANDBYEP,
-		Keyword = CEPGP_standby_whisper_msg,
-		Manual = CEPGP_standby_manual,
-		Offline = STANDBYOFFLINE,
-		Percent = STANDBYPERCENT,
-		Ranks = STANDBYRANKS,
-		Roster = CEPGP_standbyRoster,
-		Share = CEPGP_standby_share,
+							AcceptWhispers = CEPGP_standby_accept_whispers,
+							ByRank = CEPGP_standby_byrank,
+							Enabled = STANDBYEP,
+							Keyword = CEPGP_standby_whisper_msg,
+							Manual = CEPGP_standby_manual,
+							Offline = STANDBYOFFLINE,
+							Percent = STANDBYPERCENT,
+							Ranks = STANDBYRANKS,
+							Roster = CEPGP_standbyRoster,
+							Share = CEPGP_standby_share,
 	}
 }
 
-CEPGP_Info = {
-	Version = "1.12.16",
-	Build = "Release",
-	Active = {false, false},	--	Active state, queried for current raid
-	SharingTraffic = false,
-	ImportingTraffic = false,
-	NumExcluded = 0,
-	IgnoreUpdates = false,
-	LastImport = time(),
-	SyncInProgress = false,
-	LastUpdate = GetTime(),
-	QueuedAnnouncement = nil,
-	QueuedAward = nil,
-	Polling = false,
-	Rescan = false,
-	RosterStack = {},
-	Sorting = {	--	Sorting index, reverse
-		Attendance = {1, false},
-		Guild = {4, false},
-		Loot = {4, false},
-		Raid = {4, false},
-		Standby = {1, false},
-		Version = {1, false},
-	},
-	VersionNotified = false,
-	VerboseLogging = false,
-	TrafficImport = {},
-	TrafficScope = 1,
-	LastRun = {
-		GuildSB = 0,
-		RaidSB = 0,
-		TrafficSB = 0,
-		VersionSB = 0,
-		ItemCall = time()
-	}
-};
 local L = CEPGP_Locale:GetLocale("CEPGP")
-
 
 --[[ EVENT AND COMMAND HANDLER ]]--
 function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
@@ -215,6 +216,13 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 		for i = 1, 4 do
 			if string.lower(arg1) == string.lower(CEPGP_response_buttons[i][4]) then
 				return true;
+			end
+		end
+		for _, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+			for key, _ in pairs(v) do
+				if string.lower(arg1) == string.lower(key) then
+					return true;
+				end
 			end
 		end
 		return false;
@@ -300,7 +308,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 			CEPGP_handleComms(event, arg1, arg5);
 			return;
 	
-	elseif (event == "CHAT_MSG_ADDON") then
+	elseif (event == "CHAT_MSG_ADDON") or (event == "CHAT_MSG_ADDON_LOGGED") then
 		if (arg1 == "CEPGP")then
 			if string.find(arg4, "-") then
 				arg4 = string.sub(arg4, 0, string.find(arg4, "-")-1);
@@ -347,7 +355,7 @@ function SlashCmdList.CEPGP(msg, editbox)
 		CEPGP_print("Classic EPGP Usage");
 		CEPGP_print("|cFF80FF80show|r - |cFFFF8080Manually shows the CEPGP window|r");
 		CEPGP_print("|cFF80FF80version|r - |cFFFF8080Checks the version of the addon everyone in your raid is running|r");
-		
+	
 	elseif msg == "show" then
 		CEPGP_populateFrame();
 		ShowUIPanel(CEPGP_frame);

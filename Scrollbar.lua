@@ -1,7 +1,7 @@
 function CEPGP_UpdateLootScrollBar(PRsort, sort)
 	local tempTable = {};
 	local count = 1;
-	for name, id in pairs(CEPGP_itemsTable) do
+	for name, _ in pairs(CEPGP_itemsTable) do
 		local roll = math.ceil(math.random(0, 100));
 		local EP, GP;
 		if CEPGP_roster[name] then
@@ -89,8 +89,8 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 				_G["LootDistButton" .. i]:SetPoint("TOPLEFT", _G["CEPGP_dist_scrollframe_container"], "TOPLEFT", 0, -10);
 			end
 		end
+		tempTable[i][11] = (CEPGP_response_buttons[tonumber(tempTable[i][11])] and CEPGP_response_buttons[tonumber(tempTable[i][11])][2]) or tempTable[i][11];
 		local response = tempTable[i][11];
-		tempTable[i][11] = CEPGP_response_buttons[tonumber(response)][2];
 		local EPcolour;
 		if CEPGP.Loot.MinReq[1] and CEPGP.Loot.MinReq[2] > tonumber(tempTable[i][5]) then
 			EPcolour = {
@@ -124,14 +124,14 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 						
 						_G["LootDistButton" .. i]:Show();
 						_G["LootDistButton" .. i]:SetAttribute("response", response);
-						_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
+						_G["LootDistButton" .. i]:SetAttribute("responseName", response);
 						_G["LootDistButton" .. i .. "Info"]:SetText(tempTable[i][1]);
 						_G["LootDistButton" .. i .. "Info"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "Class"]:SetText(tempTable[i][2]);
 						_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 						_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-						_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
+						_G["LootDistButton" .. i .. "Response"]:SetText(response);
 						_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 						_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -156,14 +156,14 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 				
 					_G["LootDistButton" .. i]:Show();
 					_G["LootDistButton" .. i]:SetAttribute("response", response);
-					_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
+					_G["LootDistButton" .. i]:SetAttribute("responseName", response);
 					_G["LootDistButton" .. i .. "Info"]:SetText(tempTable[i][1]);
 					_G["LootDistButton" .. i .. "Info"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "Class"]:SetText(tempTable[i][2]);
 					_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 					_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-					_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
+					_G["LootDistButton" .. i .. "Response"]:SetText(response);
 					_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 					_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -200,14 +200,14 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 						
 						_G["LootDistButton" .. i]:Show();
 						_G["LootDistButton" .. i]:SetAttribute("response", response);
-						_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
+						_G["LootDistButton" .. i]:SetAttribute("responseName", response);
 						_G["LootDistButton" .. i .. "Info"]:SetText(tempTable[i][1]);
 						_G["LootDistButton" .. i .. "Info"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "Class"]:SetText(tempTable[i][2]);
 						_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 						_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-						_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
+						_G["LootDistButton" .. i .. "Response"]:SetText(response);
 						_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 						_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -232,14 +232,14 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 					
 					_G["LootDistButton" .. i]:Show();
 					_G["LootDistButton" .. i]:SetAttribute("response", response);
-					_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
+					_G["LootDistButton" .. i]:SetAttribute("responseName", response);
 					_G["LootDistButton" .. i .. "Info"]:SetText(tempTable[i][1]);
 					_G["LootDistButton" .. i .. "Info"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "Class"]:SetText(tempTable[i][2]);
 					_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 					_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-					_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
+					_G["LootDistButton" .. i .. "Response"]:SetText(response);
 					_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 					_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -267,14 +267,14 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 			
 			_G["LootDistButton" .. i]:Show();
 			_G["LootDistButton" .. i]:SetAttribute("response", response);
-			_G["LootDistButton" .. i]:SetAttribute("responseName", tempTable[i][11]);
+			_G["LootDistButton" .. i]:SetAttribute("responseName", response);
 			_G["LootDistButton" .. i .. "Info"]:SetText(tempTable[i][1]);
 			_G["LootDistButton" .. i .. "Info"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "Class"]:SetText(tempTable[i][2]);
 			_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 			_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-			_G["LootDistButton" .. i .. "Response"]:SetText(tempTable[i][11]);
+			_G["LootDistButton" .. i .. "Response"]:SetText(response);
 			_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 			_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -1175,5 +1175,43 @@ function CEPGP_UpdateAltScrollBar()
 				frame:SetPoint("TOPLEFT", _G["CEPGP_options_alt_mangement_ScrollFrame_Container"], "TOPLEFT", 0, -10);
 			end
 		end
+	end
+end
+
+function CEPGP_UpdateKeywordScrollBar()
+	local kids = {_G["CEPGP_loot_options_keywords_scrollframe_container"]:GetChildren()};
+	for _, child in ipairs(kids) do
+		child:Hide();
+	end
+	
+	local keywords = {};
+	
+	for label, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+		local entry = {};
+		for key, disc in pairs(v) do
+			entry = {[1] = label, [2] = key, [3] = disc};
+		end
+		table.insert(keywords, entry);
+	end
+	
+	keywords = CEPGP_tSort(keywords, 3, true);
+		
+	for i, v in ipairs(keywords) do
+		local label, key, disc = v[1], v[2], v[3];
+		if not _G["keywordButton" .. i] then
+			local frame = CreateFrame('Button', 'keywordButton' .. i, _G["CEPGP_loot_options_keywords_scrollframe_container"], "KeywordButtonTemplate");
+			if i > 1 then
+				_G["keywordButton" .. i]:SetPoint("TOPLEFT", _G["keywordButton" .. i-1], "BOTTOMLEFT", 0, -2);
+			else
+				_G["keywordButton" .. i]:SetPoint("TOP", _G["CEPGP_loot_options_keywords_scrollframe_container"], "TOP", 0, -10);
+			end
+		end
+		_G["keywordButton" .. i]:Show();
+		_G["keywordButton" .. i .. "Label"]:SetText(label);
+		_G["keywordButton" .. i .. "Keyword"]:SetText(key);
+		_G["keywordButton" .. i .. "Discount"]:SetText(disc);
+		_G["keywordButton" .. i .. "Label"]:SetTextColor(1, 1, 1);
+		_G["keywordButton" .. i .. "Keyword"]:SetTextColor(1, 1, 1);
+		_G["keywordButton" .. i .. "Discount"]:SetTextColor(1, 1, 1);
 	end
 end

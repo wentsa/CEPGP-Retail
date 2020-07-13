@@ -195,6 +195,8 @@ function CEPGP_initialise()
 		tinsert(UISpecialFrames, "CEPGP_settings_import");
 		tinsert(UISpecialFrames, "CEPGP_override");
 		tinsert(UISpecialFrames, "CEPGP_traffic");
+		tinsert(UISpecialFrames, "CEPGP_changelog");
+		tinsert(UISpecialFrames, "CEPGP_license");
 		
 		CEPGP_SendAddonMsg("version-check", "GUILD");
 		for i, t in ipairs(bossNames) do
@@ -391,6 +393,8 @@ function CEPGP_initialise()
 			end
 		end
 		CEPGP.Loot.GUI.Timer = CEPGP.Loot.GUI.Timer or CEPGP_response_time;
+		CEPGP.Loot.ExtraKeywords = CEPGP.Loot.ExtraKeywords or {};
+		CEPGP.Loot.ExtraKeywords.Keywords = CEPGP.Loot.ExtraKeywords.Keywords or {};
 		
 		if not CEPGP.Standby then
 			Standby = {
@@ -436,6 +440,11 @@ function CEPGP_initialise()
 			end
 			
 			DEFAULT_CHAT_FRAME:AddMessage("|c00FFC100Classic EPGP Version: " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build .. " Loaded|r");
+			if CEPGP.ChangelogVersion ~= CEPGP_Info.Version then
+				CEPGP_print("A new version has been installed. The changelog can be viewed in CEPGP options.");
+				CEPGP.ChangelogVersion = CEPGP_Info.Version;
+			end
+			
 			if UnitInRaid("player") then
 				CEPGP_rosterUpdate("GROUP_ROSTER_UPDATE");
 			end
@@ -507,15 +516,36 @@ function CEPGP_initDropdown(frame, initFunction, displayMode, level, menuList)
 end
 
 function CEPGP_addResponse(player, response, roll)
-	
+	local reason = CEPGP_getResponse(response) or response;
 	CEPGP_itemsTable[player] = {};
-	CEPGP_itemsTable[player][3] = response;
+	CEPGP_itemsTable[player][3] = reason;
 	
-	if (CEPGP.Loot.PassRolls and response == 6) or response < 6 then
+	if CEPGP_getResponse(response) or (CEPGP.Loot.PassRolls and response == 6) or response < 6 then
 		CEPGP_itemsTable[player][4] = roll;
 	end
 	
-	CEPGP_SendAddonMsg("!need;"..player..";"..CEPGP_DistID..";"..response..";"..roll, "RAID"); --!need;playername;itemID (of the item being distributed) is sent for sharing with raid assist
+	CEPGP_SendAddonMsg("!need;"..player..";"..CEPGP_DistID..";"..reason..";"..roll, "RAID"); --!need;playername;itemID (of the item being distributed) is sent for sharing with raid assist
+end
+
+function CEPGP_getDiscount(label)
+	for l, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+		for _, discount in pairs(v) do
+			if l == label then
+				return tonumber(discount);
+			end
+		end
+	end
+end
+
+function CEPGP_getResponse(keyword)
+	if not keyword then return false; end
+	for label, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+		for key, _ in pairs(v) do
+			if string.lower(keyword) == string.lower(key) then
+				return label;
+			end
+		end
+	end
 end
 
 function CEPGP_calcGP(link, quantity, id)	
@@ -618,6 +648,7 @@ function CEPGP_calcGP(link, quantity, id)
 		end
 		slot = strsub(slot,strfind(slot,"INVTYPE_")+8,string.len(slot));
 		slot = SLOTWEIGHTS[slot];
+		
 		if ilvl and rarity and slot then
 			return math.floor((((COEF * (MOD_COEF^((ilvl/26) + (rarity-4))) * slot)*MOD)*quantity));
 		else
@@ -891,6 +922,8 @@ function CEPGP_rosterUpdate(event)
 			tempRoster[k] = "";
 		end
 		
+		CEPGP_rosterUpdate("GROUP_ROSTER_UPDATE");
+		
 		local function update()
 			--	Purges players that have been removed from the guild from CEPGP_roster
 			for k, _ in pairs(tempRoster) do
@@ -927,8 +960,6 @@ function CEPGP_rosterUpdate(event)
 		local i = 0;
 		local limit = GetNumGuildMembers();
 		C_Timer.NewTicker(CEPGP.PollRate, function()
-			--if timer ~= CEPGP_Info.LastUpdate then return; end
-			
 			if quit then return; end
 			if pRate ~= CEPGP.PollRate then 
 				quit = true;
@@ -1528,17 +1559,29 @@ end
 function CEPGP_tSort(t, index, inverse)
 	if not t then return; end
 	if #t == 1 then return t; end
-		
-	for x = 1, #t do
-		for z = x+1, #t do
-			if inverse then
-				if t[x][index] < t[z][index] then
-					local v = t[x];
-					t[x] = t[z];
-					t[z] = v;
+	
+	if index then	--	2 dimensional table
+		for x = 1, #t do
+			for z = x+1, #t do
+				if inverse then
+					if t[x][index] < t[z][index] then
+						local v = t[x];
+						t[x] = t[z];
+						t[z] = v;
+					end
+				else
+					if t[x][index] > t[z][index] then
+						local v = t[x];
+						t[x] = t[z];
+						t[z] = v;
+					end
 				end
-			else
-				if t[x][index] > t[z][index] then
+			end
+		end
+	else	--	1 dimensional table
+		for x = 1, #t do
+			for z = x+1, #t do
+				if t[x] > t[z] then
 					local v = t[x];
 					t[x] = t[z];
 					t[z] = v;
@@ -1559,25 +1602,67 @@ function CEPGP_sortDistList(list)
 		[5] = {},
 		[6] = {}
 	};
-	for i = 1, #list do
-		local index = tonumber(list[i][11]);
-		if not index then index = 5; end
-		--if not temp[index] then temp[index] = {}; end
-		temp[index][#temp[index]+1] = {	-- Response Index
-			[1] = list[i][1],
-			[2] = list[i][2],
-			[3] = list[i][3],
-			[4] = list[i][4],
-			[5] = list[i][5],
-			[6] = list[i][6],
-			[7] = list[i][7],
-			[8] = list[i][8],
-			[9] = list[i][9],
-			[10] = list[i][10],
-			[12] = list[i][12]
-		}
+	
+	local keyMap = {}
+	for label, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+		for _, disc in pairs(v) do
+			local entry = {[1] = label, [2] = disc};
+			table.insert(keyMap, entry);
+		end
 	end
-	for i = 1, 6 do
+	
+	keyMap = CEPGP_tSort(keyMap, 2, true);
+	
+	local function getKeyIndex(key)
+		for index, v in pairs(keyMap) do
+			if v[1] == key then
+				return index;
+			end
+		end
+	end
+	
+	for k, v in ipairs(keyMap) do
+		table.insert(temp, {});
+	end
+	
+	for i = 1, #list do
+		if tonumber(list[i][11]) and tonumber(list[i][11]) <= 6 then
+			local index = tonumber(list[i][11]);
+			--if not temp[index] then temp[index] = {}; end
+			local entry = {
+				[1] = list[i][1],
+				[2] = list[i][2],
+				[3] = list[i][3],
+				[4] = list[i][4],
+				[5] = list[i][5],
+				[6] = list[i][6],
+				[7] = list[i][7],
+				[8] = list[i][8],
+				[9] = list[i][9],
+				[10] = list[i][10],
+				[12] = list[i][12]
+			}
+			table.insert(temp[index], entry);
+		elseif CEPGP.Loot.ExtraKeywords.Keywords[list[i][11]] then
+			local entry = {
+				[1] = list[i][1],
+				[2] = list[i][2],
+				[3] = list[i][3],
+				[4] = list[i][4],
+				[5] = list[i][5],
+				[6] = list[i][6],
+				[7] = list[i][7],
+				[8] = list[i][8],
+				[9] = list[i][9],
+				[10] = list[i][10],
+				[11] = list[i][11],
+				[12] = list[i][12]
+			};
+			local index = getKeyIndex(list[i][11]);
+			table.insert(temp[index+6], entry);
+		end
+	end
+	for i = 1, #temp do
 		for x = 1, #temp[i] do
 			for z = x+1, #temp[i] do
 				if temp[i][x][7] < temp[i][z][7] then
@@ -1589,24 +1674,27 @@ function CEPGP_sortDistList(list)
 		end
 	end
 	local result = {};
-	for i = 1, 6 do
-		for x = 1, #temp[i]	do
-			result[#result+1] = {
-				[1] = temp[i][x][1],
-				[2] = temp[i][x][2],
-				[3] = temp[i][x][3],
-				[4] = temp[i][x][4],
-				[5] = temp[i][x][5],
-				[6] = temp[i][x][6],
-				[7] = temp[i][x][7],
-				[8] = temp[i][x][8],
-				[9] = temp[i][x][9],
-				[10] = temp[i][x][10],
-				[11] = i,
-				[12] = temp[i][x][12]
+	for i = 1, #temp do	--	Response level
+		for x = 1, #temp[i]	do	--	Entry index
+			local response = i <= 6 and i or temp[i][x][11];
+			local entry = {
+				[1] = temp[i][x][1],	--	Character Name
+				[2] = temp[i][x][2],	--	Localised class name
+				[3] = temp[i][x][3],	--	Guild Rank
+				[4] = temp[i][x][4],	--	Guild Rank Index
+				[5] = temp[i][x][5],	--	EP
+				[6] = temp[i][x][6],	--	GP
+				[7] = temp[i][x][7],	--	PR
+				[8] = temp[i][x][8],	--	Item ID 1
+				[9] = temp[i][x][9],	--	Item ID 2
+				[10] = temp[i][x][10],	--	Class name in English
+				[11] = response,		--	Response
+				[12] = temp[i][x][12]	--	Roll
 			};
+			table.insert(result, entry);
 		end
 	end
+	
 	return result;
 end
 
@@ -1876,7 +1964,7 @@ function CEPGP_recordAttendance()
 			[2] = false --Are they a standby player? Nope.
 		};
 	end
-	for k, v in pairs(CEPGP_standbyRoster) do
+	for k, v in ipairs(CEPGP_standbyRoster) do
 		CEPGP_raid_logs[#CEPGP_raid_logs][#CEPGP_raid_logs[#CEPGP_raid_logs]+1] = { --CEPGP_raid_logs[index][timestamp][1] = player name, [2] = bool
 			[1] = v[1],
 			[2] = true --Are they a standby player? YUP.
@@ -2422,12 +2510,19 @@ function CEPGP_addPlugin(plugin, iPanel, enabled, func)	-- Addon name, interface
 		frame:SetPoint("TOPLEFT", _G["CEPGP_plugin_" .. #CEPGP_plugins-1], "BOTTOMLEFT");
 	end
 	local name = frame:GetName();
-	_G[name .. "Name"]:SetText(iPanel.name);
-	_G[name .. "Enabled"]:SetChecked(enabled);
-	_G[name .. "Enabled"]:SetScript('OnClick', func);
-	_G[name .. "Options"]:SetScript('OnClick', function()
-		xpcall(function() InterfaceOptionsFrame_OpenToCategory(iPanel) end, geterrorhandler());
-	end);
+	if iPanel then
+		_G[name .. "Name"]:SetText(iPanel.name);
+		_G[name .. "Enabled"]:SetChecked(enabled);
+		_G[name .. "Enabled"]:SetScript('OnClick', func);
+		_G[name .. "Options"]:SetScript('OnClick', function()
+			xpcall(function() InterfaceOptionsFrame_OpenToCategory(iPanel) end, geterrorhandler());
+		end);
+	else
+		_G[name .. "Name"]:SetText(plugin);
+		_G[name .. "Enabled"]:SetChecked(enabled);
+		_G[name .. "Enabled"]:SetScript('OnClick', func);
+		_G[name .. "Options"]:Hide();
+	end
 end
 
 function CEPGP_addTraffic(target, source, desc, EPB, EPA, GPB, GPA, itemID, tStamp)
