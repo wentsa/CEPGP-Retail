@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.17.Release"
+CEPGP_VERSION = "1.12.18.Release"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -81,7 +81,7 @@ CEPGP_show_passes = false;
 CEPGP_PR_sort = true;
 
 CEPGP_Info = {
-	Version = 				"1.12.17",
+	Version = 				"1.12.18",
 	Build = 				"Release",
 	Active = 				{false, false},	--	Active state, queried for current raid
 	SharingTraffic = 		false,
@@ -305,6 +305,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 	elseif (event == "CHAT_MSG_WHISPER" and isLootKeyword() and CEPGP_distributing) or
 		(event == "CHAT_MSG_WHISPER" and string.lower(arg1) == "!info") or
 		(event == "CHAT_MSG_WHISPER" and (string.lower(arg1) == "!infoguild" or string.lower(arg1) == "!inforaid" or string.lower(arg1) == "!infoclass")) then
+			--	arg1 - message | arg5 - sender
 			CEPGP_handleComms(event, arg1, arg5);
 			return;
 	
