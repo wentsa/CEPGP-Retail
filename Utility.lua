@@ -41,7 +41,7 @@ function CEPGP_initialise()
 					EPVALS[k] = EPVALS["Silithid Royalty"] or CEPGP_EncounterInfo.Bosses["The Silithid Royalty"];
 					
 				elseif k == "The Twin Emperors" then
-					EPVALS[k] = EPVALS["Twin Emperors"] or CEPGP_EncounterInfo.Bosses["Twin Emperors"];
+					EPVALS[k] = EPVALS["Twin Emperors"] or CEPGP_EncounterInfo.Bosses["The Twin Emperors"];
 					
 				else
 					EPVALS[k] = v;

@@ -7728,7 +7728,7 @@
 							</Anchor>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="CEPGP_options_Silithid Royalty_auto_check" inherits="AutoAwardEPCheckBox">
+					<CheckButton name="CEPGP_options_The Silithid Royalty_auto_check" inherits="AutoAwardEPCheckBox">
 						<Anchors>
 							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_Princess Huhuran_auto_check">
 								<AbsDimension x="0" y="3" />
@@ -7737,7 +7737,7 @@
 					</CheckButton>
 					<CheckButton name="CEPGP_options_Viscidus_auto_check" inherits="AutoAwardEPCheckBox">
 						<Anchors>
-							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_Silithid Royalty_auto_check">
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_The Silithid Royalty_auto_check">
 								<AbsDimension x="0" y="3" />
 							</Anchor>
 						</Anchors>
@@ -7749,7 +7749,7 @@
 							</Anchor>
 						</Anchors>
 					</CheckButton>
-					<CheckButton name="CEPGP_options_Twin Emperors_auto_check" inherits="AutoAwardEPCheckBox">
+					<CheckButton name="CEPGP_options_The Twin Emperors_auto_check" inherits="AutoAwardEPCheckBox">
 						<Anchors>
 							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_Ouro_auto_check">
 								<AbsDimension x="0" y="3" />
@@ -7758,7 +7758,7 @@
 					</CheckButton>
 					<CheckButton name="CEPGP_options_C'Thun_auto_check" inherits="AutoAwardEPCheckBox">
 						<Anchors>
-							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_Twin Emperors_auto_check">
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_The Twin Emperors_auto_check">
 								<AbsDimension x="0" y="3" />
 							</Anchor>
 						</Anchors>
@@ -7792,7 +7792,7 @@
 							</Anchor>
 						</Anchors>
 					</EditBox>
-					<EditBox name="CEPGP_options_Silithid Royalty_EP_value" inherits="epValInputBoxTemplate">
+					<EditBox name="CEPGP_options_The Silithid Royalty_EP_value" inherits="epValInputBoxTemplate">
 						<Anchors>
 							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_Princess Huhuran_EP_value">
 								<AbsDimension x="0" y="-12.5" />
@@ -7801,7 +7801,7 @@
 					</EditBox>
 					<EditBox name="CEPGP_options_Viscidus_EP_value" inherits="epValInputBoxTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_Silithid Royalty_EP_value">
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_The Silithid Royalty_EP_value">
 								<AbsDimension x="0" y="-12.5" />
 							</Anchor>
 						</Anchors>
@@ -7813,7 +7813,7 @@
 							</Anchor>
 						</Anchors>
 					</EditBox>
-					<EditBox name="CEPGP_options_Twin Emperors_EP_value" inherits="epValInputBoxTemplate">
+					<EditBox name="CEPGP_options_The Twin Emperors_EP_value" inherits="epValInputBoxTemplate">
 						<Anchors>
 							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_Ouro_EP_value">
 								<AbsDimension x="0" y="-12.5" />
@@ -7822,7 +7822,7 @@
 					</EditBox>
 					<EditBox name="CEPGP_options_C'Thun_EP_value" inherits="epValInputBoxTemplate">
 						<Anchors>
-							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_Twin Emperors_EP_value">
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="CEPGP_options_The Twin Emperors_EP_value">
 								<AbsDimension x="0" y="-12.5" />
 							</Anchor>
 						</Anchors>
@@ -7900,7 +7900,7 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
-						<FontString name="CEPGP_options_Twin Emperors_val" inherits="GameFontNormal" parentArray="bosses" text="The Twin Emperors">
+						<FontString name="CEPGP_options_The Twin Emperors_val" inherits="GameFontNormal" parentArray="bosses" text="The Twin Emperors">
 							<Color r="1" g="1" b="1"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_options_Ouro_val">
@@ -7913,7 +7913,7 @@
 						<FontString name="CEPGP_options_C'Thun_val" inherits="GameFontNormal" parentArray="bosses" text="C'Thun">
 							<Color r="1" g="1" b="1"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_options_Twin Emperors_val">
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_options_The Twin Emperors_val">
 									<Offset>
 										<AbsDimension x="0" y="-10" />
 									</Offset>
