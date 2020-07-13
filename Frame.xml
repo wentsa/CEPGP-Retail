@@ -8496,7 +8496,7 @@
 					<AbsDimension x="125" y="21" />
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_interface_options_import">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CEPGP_interface_options_changelog">
 						<Offset>
 							<AbsDimension x="0" y="0" />
 						</Offset>
