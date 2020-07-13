@@ -89,8 +89,9 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 				_G["LootDistButton" .. i]:SetPoint("TOPLEFT", _G["CEPGP_dist_scrollframe_container"], "TOPLEFT", 0, -10);
 			end
 		end
-		tempTable[i][11] = (CEPGP_response_buttons[tonumber(tempTable[i][11])] and CEPGP_response_buttons[tonumber(tempTable[i][11])][2]) or tempTable[i][11];
+		--tempTable[i][11] = (CEPGP_response_buttons[tonumber(tempTable[i][11])] and CEPGP_response_buttons[tonumber(tempTable[i][11])][2]) or tempTable[i][11];
 		local response = tempTable[i][11];
+		local reason = CEPGP_response_buttons[response] and CEPGP_response_buttons[response][2] or tempTable[i][11];
 		local EPcolour;
 		if CEPGP.Loot.MinReq[1] and CEPGP.Loot.MinReq[2] > tonumber(tempTable[i][5]) then
 			EPcolour = {
@@ -131,7 +132,7 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 						_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 						_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-						_G["LootDistButton" .. i .. "Response"]:SetText(response);
+						_G["LootDistButton" .. i .. "Response"]:SetText(reason);
 						_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 						_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -163,7 +164,7 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 					_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 					_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-					_G["LootDistButton" .. i .. "Response"]:SetText(response);
+					_G["LootDistButton" .. i .. "Response"]:SetText(reason);
 					_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 					_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -207,7 +208,7 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 						_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 						_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-						_G["LootDistButton" .. i .. "Response"]:SetText(response);
+						_G["LootDistButton" .. i .. "Response"]:SetText(reason);
 						_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 						_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 						_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -239,7 +240,7 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 					_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 					_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-					_G["LootDistButton" .. i .. "Response"]:SetText(response);
+					_G["LootDistButton" .. i .. "Response"]:SetText(reason);
 					_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 					_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);
@@ -274,7 +275,7 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 			_G["LootDistButton" .. i .. "Class"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "Rank"]:SetText(tempTable[i][3]);
 			_G["LootDistButton" .. i .. "Rank"]:SetTextColor(colour.r, colour.g, colour.b);
-			_G["LootDistButton" .. i .. "Response"]:SetText(response);
+			_G["LootDistButton" .. i .. "Response"]:SetText(reason);
 			_G["LootDistButton" .. i .. "Response"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["LootDistButton" .. i .. "EP"]:SetText(tempTable[i][5]);
 			_G["LootDistButton" .. i .. "EP"]:SetTextColor(EPcolour.r, EPcolour.g, EPcolour.b);

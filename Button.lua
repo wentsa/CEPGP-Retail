@@ -221,12 +221,13 @@ function CEPGP_ListButton_OnClick(obj, button)
 		
 		--[[ Distribution Menu ]]--
 		if strfind(obj, "LootDistButton") then --A player in the distribution menu is clicked
-			local discount, response;
+			local discount, response, reason;
 			if _G[obj]:GetAttribute("response") then
-				local attr = tonumber(_G[obj]:GetAttribute("response")) or _G[obj]:GetAttribute("response");
+				local attr = _G[obj]:GetAttribute("response");
 				response = _G[obj]:GetAttribute("responseName");
+				reason = CEPGP_response_buttons[attr] and CEPGP_response_buttons[attr][2] or response;
 				discount = (CEPGP.Loot.ExtraKeywords.Keywords[attr] and CEPGP_getDiscount(attr)) or (CEPGP_response_buttons[attr] and CEPGP_response_buttons[attr][3]);
-				CEPGP_distribute_popup:SetAttribute("responseName", response);
+				CEPGP_distribute_popup:SetAttribute("responseName", reason);
 				CEPGP_distribute_popup:SetAttribute("response", attr);
 			else
 				discount = 0;
@@ -242,23 +243,23 @@ function CEPGP_ListButton_OnClick(obj, button)
 				if CEPGP.Exclusions[rankIndex+1] then
 					discGP = 0;
 					discount = 100;
-					response = "Exclusion List";
+					reason = "Exclusion List";
 					CEPGP_distribute_popup:SetAttribute("responseName", "Exclusion List");
 				end
 			end
 			ShowUIPanel(CEPGP_distribute_popup);
-			if response then
-				if response == "Exclusion List" then
+			if reason then
+				if reason == "Exclusion List" then
 					CEPGP_distribute_popup_title:SetText(player .. " (Exclusion List)");
 					CEPGP_distribute_popup_gp_full:Hide();
 					CEPGP_distribute_popup_gp:Show();
-					CEPGP_distribute_popup_gp:SetText("Give for " .. discGP .. "\n(" .. response .. ")");
+					CEPGP_distribute_popup_gp:SetText("Give for " .. discGP .. "\n(" .. reason .. ")");
 				else
-					CEPGP_distribute_popup_title:SetText(player .. " (" .. response .. ")");
+					CEPGP_distribute_popup_title:SetText(player .. " (" .. reason .. ")");
 					CEPGP_distribute_popup_gp_full:Show();
 					CEPGP_distribute_popup_gp_full:SetText("Give for " .. gp .. "\n(Standard Price)");
 					if discount ~= 0 then
-						CEPGP_distribute_popup_gp:SetText("Give for " .. discGP .. "\n(" .. response .. ")");
+						CEPGP_distribute_popup_gp:SetText("Give for " .. discGP .. "\n(" .. reason .. ")");
 						CEPGP_distribute_popup_gp:Show();
 					else
 						CEPGP_distribute_popup_gp:Hide();
@@ -274,7 +275,7 @@ function CEPGP_ListButton_OnClick(obj, button)
 				CEPGP_distPlayer = _G[_G[obj]:GetName() .. "Info"]:GetText();
 				CEPGP_distribute_popup:SetID(CEPGP_distribute:GetID()); --CEPGP_distribute:GetID gets the ID of the LOOT SLOT. Not the player.
 				CEPGP_rate = (100-discount)/100;
-				if response == "Exclusion List" then
+				if reason == "Exclusion List" then
 					CEPGP_distGP = false;
 				else
 					CEPGP_distGP = true;
@@ -284,8 +285,8 @@ function CEPGP_ListButton_OnClick(obj, button)
 				CEPGP_distribute_popup_give();
 			end);
 			CEPGP_distribute_popup_gp_full:SetScript('OnClick', function()
-				response = "Full Price";
-				CEPGP_distribute_popup:SetAttribute("responseName", response);
+				reason = "Full Price";
+				CEPGP_distribute_popup:SetAttribute("responseName", reason);
 				CEPGP_distribute_popup:SetAttribute("response", tonumber(_G[obj]:GetAttribute("response")));
 				CEPGP_distPlayer = _G[_G[obj]:GetName() .. "Info"]:GetText();
 				CEPGP_distribute_popup:SetID(CEPGP_distribute:GetID());
