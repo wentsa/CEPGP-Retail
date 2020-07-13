@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.18.Release"
+CEPGP_VERSION = "1.12.19.Release"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -81,7 +81,7 @@ CEPGP_show_passes = false;
 CEPGP_PR_sort = true;
 
 CEPGP_Info = {
-	Version = 				"1.12.18",
+	Version = 				"1.12.19",
 	Build = 				"Release",
 	Active = 				{false, false},	--	Active state, queried for current raid
 	SharingTraffic = 		false,

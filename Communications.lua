@@ -129,7 +129,7 @@ function CEPGP_IncAddonMsg(message, sender)
 		
 		--Raid assists receiving !need responses in the format of !need;playername;itemID (of item being distributed)
 	elseif args[1] == "!need" then
-		if sender == UnitName("player") then
+		if args[2] == UnitName("player") then
 			CEPGP_respond:Hide();
 		else
 			local player = args2;
