@@ -100,10 +100,10 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 				b = 0
 			};
 		else
-			EPcolour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
+			EPcolour = CEPGP_Info.ClassColours[string.upper(tempTable[i][10])];
 		end
 		
-		local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][10])];
+		local colour = CEPGP_Info.ClassColours[string.upper(tempTable[i][10])];
 		if not colour then
 			colour = {
 				r = 1,
@@ -349,7 +349,7 @@ function CEPGP_UpdateGuildScrollBar()
 					_G["GuildButton" .. i]:SetPoint("TOPLEFT", _G["CEPGP_guild_scrollframe_container"], "TOPLEFT", 0, -10);
 				end
 			end
-			local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][8])];
+			local colour = CEPGP_Info.ClassColours[string.upper(tempTable[i][8])];
 			if not colour then
 				colour = {
 				r = 1,
@@ -412,7 +412,7 @@ function CEPGP_UpdateRaidScrollBar()
 				_G["RaidButton" .. i]:SetPoint("TOPLEFT", _G["CEPGP_raid_scrollframe_container"], "TOPLEFT", 0, -10);
 			end
 		end
-		local colour = RAID_CLASS_COLORS[string.upper(tempTable[i][8])];
+		local colour = CEPGP_Info.ClassColours[string.upper(tempTable[i][8])];
 		if not colour then
 			colour = {
 			r = 1,
@@ -484,7 +484,7 @@ function CEPGP_UpdateVersionScrollBar()
 			_G["versionButton" .. i]:Show();
 			local name = tempTable[i][1];
 			local classFile = tempTable[i][4];
-			local colour = RAID_CLASS_COLORS[classFile];
+			local colour = CEPGP_Info.ClassColours[classFile];
 			if not colour then
 				colour = {
 				r = 1,
@@ -507,7 +507,7 @@ function CEPGP_UpdateVersionScrollBar()
 					version = tempTable[i][2];
 					class = tempTable[i][3];
 					classFile = tempTable[i][4];
-					local colour = RAID_CLASS_COLORS[classFile];
+					local colour = CEPGP_Info.ClassColours[classFile];
 					if not colour then
 						colour = {
 						r = 1,
@@ -778,7 +778,7 @@ function CEPGP_UpdateStandbyScrollBar()
 		};
 		local colour;
 		if tempTable[i][9] then
-			colour = RAID_CLASS_COLORS[tempTable[i][8]];
+			colour = CEPGP_Info.ClassColours[tempTable[i][8]];
 			_G["StandbyButton" .. i]:SetScript('OnEnter', function() end);
 		else
 			colour = {
@@ -971,7 +971,7 @@ function CEPGP_UpdateAttendanceScrollBar()
 			avg = math.floor(avg*100)/100;
 		end
 		if tempTable[i][10] then
-			colour = RAID_CLASS_COLORS[tempTable[i][10]];
+			colour = CEPGP_Info.ClassColours[tempTable[i][10]];
 		end
 		if not colour then
 			colour = {
@@ -1044,7 +1044,7 @@ function CEPGP_UpdateAttendanceScrollBar()
 		local avg = standbyTable[i][4]/#CEPGP_raid_logs;
 		avg = math.floor(avg*100)/100;
 		if standbyTable[i][10] then
-			colour = RAID_CLASS_COLORS[standbyTable[i][10]];
+			colour = CEPGP_Info.ClassColours[standbyTable[i][10]];
 		end
 		if not colour then
 			colour = {
@@ -1139,7 +1139,7 @@ function CEPGP_UpdateAltScrollBar()
 				frame = _G["AltFrame" .. i];
 			end
 			
-			local colour = RAID_CLASS_COLORS[class];
+			local colour = CEPGP_Info.ClassColours[class];
 			if not colour then
 				colour = {
 				r = 1,

@@ -115,6 +115,62 @@ CEPGP_Info = {
 		TrafficSB = 		0,
 		VersionSB = 		0,
 		ItemCall = 			time()
+	},
+	ClassColours = {
+		["DRUID"] = {
+			r = 1,
+			g = 0.49,
+			b = 0.04,
+			colorStr = "#FF7D0A"
+		},
+		["HUNTER"] = {
+			r = 0.67,
+			g = 0.83,
+			b = 0.45,
+			colorStr = "#A9D271"
+		},
+		["MAGE"] = {
+			r = 0.25,
+			g = 0.78,
+			b = 0.92,
+			colorStr = "#40C7EB"
+		},
+		["PALADIN"] = {
+			r = 0.96,
+			g = 0.55,
+			b = 0.73,
+			colorStr = "#F58CBA"
+		},
+		["PRIEST"] = {
+			r = 1,
+			g = 1,
+			b = 1,
+			colorStr = "#FFFFFF"
+		},
+		["ROGUE"] = {
+			r = 1,
+			g = 0.96,
+			b = 0.41,
+			colorStr = "#FFF569"
+		},
+		["SHAMAN"] = {
+			r = 0,
+			g = 0.44,
+			b = 0.87,
+			colorStr = "#0070DE"
+		},
+		["WARLOCK"] = {
+			r = 0.53,
+			g = 0.53,
+			b = 0.93,
+			colorStr = "#8787ED"
+		},
+		["WARRIOR"] = {
+			r = 0.78,
+			g = 0.61,
+			b = 0.43,
+			colorStr = "#C79C6E"
+		}
 	}
 };
 

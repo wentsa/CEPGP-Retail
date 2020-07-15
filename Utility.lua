@@ -1938,14 +1938,14 @@ function CEPGP_getPlayerClass(name, index)
 	end
 	if index then
 		_, _, _, _, _, _, _, _, _, _, classFileName = GetGuildRosterInfo(index);
-		return class, RAID_CLASS_COLORS[classFileName];
+		return class, CEPGP_Info.ClassColours[classFileName];
 	else
 		index = CEPGP_getIndex(name);
 		if not index then
 			return nil;
 		else
 			_, _, _, _, _, _, _, _, _, _, classFileName = GetGuildRosterInfo(index);
-			return class, RAID_CLASS_COLORS[classFileName];
+			return class, CEPGP_Info.ClassColours[classFileName];
 		end
 	end
 end
