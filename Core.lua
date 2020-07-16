@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.19.Release"
+CEPGP_VERSION = "1.12.20.Alpha 1"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -81,8 +81,8 @@ CEPGP_show_passes = false;
 CEPGP_PR_sort = true;
 
 CEPGP_Info = {
-	Version = 				"1.12.19",
-	Build = 				"Release",
+	Version = 				"1.12.20",
+	Build = 				"Alpha 1",
 	Active = 				{false, false},	--	Active state, queried for current raid
 	SharingTraffic = 		false,
 	ImportingTraffic = 		false,
@@ -412,14 +412,27 @@ function SlashCmdList.CEPGP(msg, editbox)
 		CEPGP_print("Classic EPGP Usage");
 		CEPGP_print("|cFF80FF80show|r - |cFFFF8080Manually shows the CEPGP window|r");
 		CEPGP_print("|cFF80FF80version|r - |cFFFF8080Checks the version of the addon everyone in your raid is running|r");
+		CEPGP_print("|cFF80FF80options or config|r - |cFFFF8080Opens the configuration menu for CEPGP|r");
+		CEPGP_print("|cFF80FF80traffic|r - |cFFFF8080Opens the CEPGP traffic window|r");
+		CEPGP_print("|cFF80FF80changelog|r - |cFFFF8080Shows the latest changelog|r");
 	
-	elseif msg == "show" then
+	elseif msg == "show" or msg == "open" then
 		CEPGP_populateFrame();
 		ShowUIPanel(CEPGP_frame);
 		CEPGP_toggleFrame("");
 		CEPGP_updateGuild();
 	
-	elseif msg == "version" then
+	elseif msg == "options" or msg == "opt" or msg == "config" or msg == "conf" then
+		InterfaceOptionsFrame_Show();
+		InterfaceOptionsFrame_OpenToCategory("Classic EPGP");
+		
+	elseif msg == "change" or msg == "changelog" then
+		ShowUIPanel(CEPGP_changelog);
+		
+	elseif msg == "traffic" then
+		ShowUIPanel(CEPGP_traffic);
+	
+	elseif msg == "version" or msg == "ver" then
 		CEPGP_vInfo = {};
 		CEPGP_vSearch = "GUILD";
 		CEPGP_SendAddonMsg("version-check", "GUILD");
@@ -462,7 +475,7 @@ function SlashCmdList.CEPGP(msg, editbox)
 	elseif strfind(msg, "debug") then
 		CEPGP_debuginfo:Show();
 	
-	else	
+	else
 		CEPGP_print("|cFF80FF80" .. msg .. "|r |cFFFF8080is not a valid request. Type /CEPGP to check addon usage|r", true);
 	end
 end

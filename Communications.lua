@@ -75,7 +75,7 @@ function CEPGP_IncAddonMsg(message, sender)
 			[1] = itemID,
 			[2] = itemID2,
 			[3] = response,
-			[4] = roll
+			[4] = tonumber(roll)
 		};
 		CEPGP_UpdateLootScrollBar(true);
 	end
@@ -139,7 +139,7 @@ function CEPGP_IncAddonMsg(message, sender)
 				CEPGP_itemsTable[args[2]] = {};
 				CEPGP_itemsTable[args[2]][3] = response;
 				if roll then
-					CEPGP_itemsTable[args[2]][4] = roll;
+					CEPGP_itemsTable[args[2]][4] = tonumber(roll);
 				end
 				CEPGP_UpdateLootScrollBar(sort);
 			end
