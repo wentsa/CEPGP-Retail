@@ -129,6 +129,9 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		else
 			SendChatMessage("GP Value: " .. gp, "RAID", CEPGP_LANGUAGE);
 		end
+		if CEPGP.Loot.GUI.Timer > 0 then
+			SendChatMessage("Time to respond: " .. CEPGP.Loot.GUI.Timer .. " seconds");
+		end
 
 		SendChatMessage(CEPGP.Loot.Announcement, "RAID", CEPGP_LANGUAGE);
 		if not CEPGP.Loot.HideKeyphrases then
