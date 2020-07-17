@@ -57,7 +57,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						if not UnitInRaid("player") or CEPGP_debugMode then
+						if not UnitInRaid("player") or CEPGP_Info.Debug then
 							self:Hide();
 						end
 					</OnLoad>
@@ -105,7 +105,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						if not UnitInRaid("player") or CEPGP_debugMode then
+						if not UnitInRaid("player") or CEPGP_Info.Debug then
 							self:Hide();
 						end
 					</OnLoad>
@@ -8475,7 +8475,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="CEPGP_gp_options" hidden="true">
+	<Frame name="CEPGP_GP_options" hidden="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
 		</Anchors>
@@ -9109,6 +9109,7 @@
 								<FontString name="CEPGP_loot_options_show_passes" inherits="GameFontNormal" text="Show Passes in Loot Distribution: " />
 								<FontString name="CEPGP_loot_options_enforce_PR_sorting" inherits="GameFontNormal" text="Automate Sorting During Loot Distribution: " />
 								<FontString name="CEPGP_loot_options_dist_raidwide_text" inherits="GameFontNormal" text="Raid Wide Loot Visibility:" />
+								<FontString name="CEPGP_loot_options_autoshow_text" inherits="GameFontNormal" text="Auto Show Loot Distribution:" />
 								<FontString name="CEPGP_loot_options_min_threshold_text" inherits="GameFontNormal" text="Minimum Threshold for Auto Show:" />
 								<FontString name="CEPGP_loot_options_channel_text" inherits="GameFontNormal" text="Loot Response Channel:" />
 								<FontString name="CEPGP_loot_options_pass_roll_text" inherits="GameFontNormal" text="Auto Roll for Passes:" />
@@ -10363,6 +10364,7 @@
 										end
 										if tonumber(value) then
 											CEPGP_response_time = tonumber(value);
+											CEPGP.Loot.GUI.Timer = tonumber(value);
 											if value == "0" then
 												CEPGP_print("Disabled loot timeout");
 											else
@@ -10727,6 +10729,26 @@
 									</OnShow>
 								</Scripts>
 							</CheckButton>
+							<CheckButton name="CEPGP_loot_options_autoshow_check" inherits="UIOptionsCheckButtonTemplate">
+								<HitRectInsets>
+									<AbsInset left="0" right="0" top="0" bottom="0" />
+								</HitRectInsets>
+								<Anchors>
+									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="CEPGP_loot_options_autoshow_text" x="-5" />
+								</Anchors>
+								<Scripts>
+									<OnShow>
+										self:SetChecked(CEPGP.Loot.AutoShow);
+									</OnShow>
+									<OnClick>
+										CEPGP.Loot.AutoShow = self:GetChecked();
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+										GameTooltip:SetText("Personal Feature\nIf your loot master has 'Raid Wide Loot Visibility' enabled (or you're a raid assist) and you turn this feature on then CEPGP will automatically open\nto the loot distribution window when an item is announced.");
+									</OnEnter>
+								</Scripts>
+							</CheckButton>
 							<CheckButton name="CEPGP_loot_options_pass_roll_check" inherits="UIOptionsCheckButtonTemplate">
 								<HitRectInsets>
 									<AbsInset left="0" right="0" top="0" bottom="0" />
@@ -10937,7 +10959,8 @@
 				CEPGP_loot_options_show_passes:SetPoint("TOPLEFT", "CEPGP_loot_options_min_EP_text", "BOTTOMLEFT", 0, -10);
 				CEPGP_loot_options_enforce_PR_sorting:SetPoint("TOPLEFT", "CEPGP_loot_options_show_passes", "BOTTOMLEFT", 0, -10);
 				CEPGP_loot_options_dist_raidwide_text:SetPoint("TOPLEFT", "CEPGP_loot_options_enforce_PR_sorting", "BOTTOMLEFT", 0, -10);
-				CEPGP_loot_options_min_threshold_text:SetPoint("TOPLEFT", "CEPGP_loot_options_dist_raidwide_text", "BOTTOMLEFT", 0, -10);
+				CEPGP_loot_options_autoshow_text:SetPoint("TOPLEFT", "CEPGP_loot_options_dist_raidwide_text", "BOTTOMLEFT", 0, -10);
+				CEPGP_loot_options_min_threshold_text:SetPoint("TOPLEFT", "CEPGP_loot_options_autoshow_text", "BOTTOMLEFT", 0, -10);
 				CEPGP_loot_options_channel_text:SetPoint("TOPLEFT", "CEPGP_loot_options_min_threshold_text", "BOTTOMLEFT", 0, -17.5);
 				CEPGP_loot_options_pass_roll_text:SetPoint("TOPLEFT", "CEPGP_loot_options_channel_text", "BOTTOMLEFT", 0, -17.5);
 				CEPGP_loot_options_announce_roll_text:SetPoint("TOPLEFT", "CEPGP_loot_options_pass_roll_text", "BOTTOMLEFT", 0, -10);

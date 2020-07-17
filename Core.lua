@@ -13,7 +13,6 @@ CEPGP_target = nil;
 CEPGP_DistID = nil;
 CEPGP_distSlot = nil;
 CEPGP_distItemLink = nil;
-CEPGP_debugMode = false;
 CEPGP_critReverse = false; --Criteria reverse
 CEPGP_distributing = false;
 CEPGP_overwritelog = false;
@@ -83,6 +82,7 @@ CEPGP_PR_sort = true;
 CEPGP_Info = {
 	Version = 				"1.12.20",
 	Build = 				"Alpha 1",
+	Debug =					false,
 	Active = 				{false, false},	--	Active state, queried for current raid
 	SharingTraffic = 		false,
 	ImportingTraffic = 		false,
@@ -233,6 +233,7 @@ CEPGP = {
 	Loot = {
 		Announcement = 		"Whisper me for loot",
 		AutoPass = 			CEPGP_auto_pass,
+		AutoShow =			false,
 		AutoSort = 			CEPGP_PR_sort,
 		ExtraKeywords = 	{Keywords = {}},
 		Keyword = 			CEPGP_keyword,
@@ -309,7 +310,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 		return;
 		
 	elseif event == "PARTY_LOOT_METHOD_CHANGED" or event == "PLAYER_ROLES_ASSIGNED" then
-		if GetLootMethod() == "master" and IsInRaid("player") and (CEPGP_isML() == 0 or CEPGP_debugMode) and not CEPGP_Info.Active[2] then
+		if GetLootMethod() == "master" and IsInRaid("player") and (CEPGP_isML() == 0 or CEPGP_Info.Debug) and not CEPGP_Info.Active[2] then
 			_G["CEPGP_confirmation"]:Show();
 		else
 			_G["CEPGP_confirmation"]:Hide();
@@ -375,7 +376,7 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 		return;
 	end
 	
-	if CEPGP_Info.Active[1] or CEPGP_debugMode then --EPGP and loot distribution related 
+	if CEPGP_Info.Active[1] or CEPGP_Info.Debug then --EPGP and loot distribution related 
 		--	An encounter has been defeated
 		local function handleEncounter(event, arg1, arg5)
 			
@@ -465,8 +466,8 @@ function SlashCmdList.CEPGP(msg, editbox)
 		CEPGP_print("Current channel to report: " .. getCurChannel());
 		
 	elseif strfind(msg, "debugmode") then
-		CEPGP_debugMode = not CEPGP_debugMode;
-		if CEPGP_debugMode then
+		CEPGP_Info.Debug = not CEPGP_Info.Debug;
+		if CEPGP_Info.Debug then
 			CEPGP_print("Debug Mode Enabled");
 		else
 			CEPGP_print("Debug Mode Disabled");
@@ -487,6 +488,7 @@ function CEPGP_RaidAssistLootClosed()
 		HideUIPanel(CEPGP_distributing_button);
 		HideUIPanel(CEPGP_loot_distributing);
 		HideUIPanel(CEPGP_distributing_button);
+		HideUIPanel(CEPGP_frame);
 		CEPGP_distribute_item_tex:SetBackdrop(nil);
 		_G["CEPGP_distribute_item_tex"]:SetScript('OnEnter', function() end);
 		_G["CEPGP_distribute_item_name_frame"]:SetScript('OnClick', function() end);
@@ -536,6 +538,11 @@ function CEPGP_RaidAssistLootDist(link, gp, raidwide) --raidwide refers to wheth
 			_G["CEPGP_distribute_item_tex"]:SetScript('OnLeave', function() GameTooltip:Hide() end);
 			_G["CEPGP_distribute_GP_value"]:SetText(gp);
 		end
+	end
+	
+	if raidwide and CEPGP.Loot.AutoShow then
+		ShowUIPanel(CEPGP_frame);
+		CEPGP_toggleFrame("CEPGP_distribute");
 	end
 end
 

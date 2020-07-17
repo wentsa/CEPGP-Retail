@@ -213,7 +213,7 @@
 			</OnLoad>
 			<OnClick>
 				PlaySound(856);
-				if CEPGP_isML() == 0 or CEPGP_debugMode then
+				if CEPGP_isML() == 0 or CEPGP_Info.Debug then
 					CEPGP_roll_award_confirm:Hide();
 					CEPGP_ListButton_OnClick(self:GetName(), button);
 				end

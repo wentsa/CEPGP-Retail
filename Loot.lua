@@ -52,7 +52,7 @@ function CEPGP_LootFrame_Update()
 		end
 	end
 	for k, v in pairs(items) do -- k = loot slot number, v is the table result
-		if (UnitInRaid("player") or CEPGP_debugMode) and (v[3] >= CEPGP_min_threshold) or (CEPGP_inOverride(v[2]) or CEPGP_inOverride(v[4])) then
+		if (UnitInRaid("player") or CEPGP_Info.Debug) and (v[3] >= CEPGP_min_threshold) or (CEPGP_inOverride(v[2]) or CEPGP_inOverride(v[4])) then
 			if CEPGP_isML() == 0 then
 				CEPGP_frame:Show();
 				CEPGP_mode = "loot";
@@ -65,7 +65,7 @@ function CEPGP_LootFrame_Update()
 end
 
 function CEPGP_announce(link, x, slotNum, quantity)
-	if (GetLootMethod() == "master" and CEPGP_isML() == 0) or CEPGP_debugMode then
+	if (GetLootMethod() == "master" and CEPGP_isML() == 0) or CEPGP_Info.Debug then
 		local iString = CEPGP_getItemString(link);
 		local name, _, _, _, _, _, _, _, slot, tex = GetItemInfo(iString);
 		local id = CEPGP_getItemID(iString);
@@ -130,7 +130,7 @@ function CEPGP_announce(link, x, slotNum, quantity)
 			SendChatMessage("GP Value: " .. gp, "RAID", CEPGP_LANGUAGE);
 		end
 		if CEPGP.Loot.GUI.Timer > 0 then
-			SendChatMessage("Time to respond: " .. CEPGP.Loot.GUI.Timer .. " seconds");
+			SendChatMessage("Time to respond: " .. CEPGP.Loot.GUI.Timer .. (CEPGP.Loot.GUI.Timer > 1 and " seconds" or " second"), "RAID", CEPGP_LANGUAGE);
 		end
 
 		SendChatMessage(CEPGP.Loot.Announcement, "RAID", CEPGP_LANGUAGE);

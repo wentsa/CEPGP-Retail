@@ -465,7 +465,7 @@ function CEPGP_initInterfaceOptions()
 	panel.ep.name = "EP Management";
 	panel.ep.parent = panel.main.name;
 	
-	panel.gp = _G["CEPGP_gp_options"];
+	panel.gp = _G["CEPGP_GP_options"];
 	panel.gp.name = "GP Management";
 	panel.gp.parent = panel.main.name;
 	
@@ -581,7 +581,7 @@ function CEPGP_calcGP(link, quantity, id)
 			if classID == 2 and subClassID == 19 then slot = "INVTYPE_WAND" end;
 			if classID == 2 and (subClassID == 2 or subClassID == 3 or subClassID == 18) then slot = "INVTYPE_RANGED" end;
 			
-			if CEPGP_debugMode then
+			if CEPGP_Info.Debug then
 				local quality = rarity == 0 and "Poor" or rarity == 1 and "Common" or rarity == 2 and "Uncommon" or rarity == 3 and "Rare" or rarity == 4 and "Epic" or "Legendary";
 				CEPGP_print("Name: " .. name);
 				CEPGP_print("Rarity: " .. quality);
@@ -634,7 +634,7 @@ function CEPGP_calcGP(link, quantity, id)
 		if classID == 2 and (subClassID == 2 or subClassID == 3 or subClassID == 18) then slot = "INVTYPE_RANGED" end;
 		
 		
-		if CEPGP_debugMode then
+		if CEPGP_Info.Debug then
 			local quality = rarity == 0 and "Poor" or rarity == 1 and "Common" or rarity == 2 and "Uncommon" or rarity == 3 and "Rare" or rarity == 4 and "Epic" or "Legendary";
 			CEPGP_print("Name: " .. name);
 			CEPGP_print("Rarity: " .. quality);
@@ -1556,10 +1556,10 @@ function CEPGP_updateGuild()
 	GuildRoster();
 end
 
-function CEPGP_tSort(t, index, inverse)
+function CEPGP_tSort(_t, index, inverse)
+	local t = _t;
 	if not t then return; end
 	if #t == 1 then return t; end
-	
 	if index then	--	2 dimensional table
 		for x = 1, #t do
 			for z = x+1, #t do
@@ -1951,7 +1951,7 @@ function CEPGP_getPlayerClass(name, index)
 end
 
 function CEPGP_recordAttendance()
-	if not UnitInRaid("player") and not CEPGP_debugMode then
+	if not UnitInRaid("player") and not CEPGP_Info.Debug then
 		CEPGP_print("You are not in a raid group", true);
 		return;
 	end

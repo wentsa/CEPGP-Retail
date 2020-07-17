@@ -138,7 +138,7 @@ function CEPGP_ListButton_OnClick(obj, button)
 			return;
 		end
 		
-		if obj == "CEPGP_standby_ep_list_add" and (CanEditOfficerNote() or CEPGP_debugMode) then
+		if obj == "CEPGP_standby_ep_list_add" and (CanEditOfficerNote() or CEPGP_Info.Debug) then
 			ShowUIPanel(CEPGP_context_popup);
 			CEPGP_context_popup_EP_check:Hide();
 			CEPGP_context_popup_GP_check:Hide();
@@ -214,7 +214,7 @@ function CEPGP_ListButton_OnClick(obj, button)
 			CEPGP_UpdateStandbyScrollBar();
 		end
 		
-		if not CanEditOfficerNote() and not CEPGP_debugMode then
+		if not CanEditOfficerNote() and not CEPGP_Info.Debug then
 			CEPGP_print("You don't have access to modify EPGP", 1);
 			return;
 		end

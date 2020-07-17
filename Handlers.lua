@@ -45,7 +45,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 			if name == arg2 then return; end
 		end
 		
-		if CEPGP_debugMode then
+		if CEPGP_Info.Debug then
 			CEPGP_print(arg2 .. " registered (" .. CEPGP_keyword .. ")");
 		end
 		local _, _, _, _, _, _, _, _, slot = GetItemInfo(CEPGP_DistID);
@@ -267,7 +267,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 end
 
 function CEPGP_handleCombat(name)
-	if (((GetLootMethod() == "master" and CEPGP_isML() == 0) or (GetLootMethod() == "group" and UnitIsGroupLeader("player"))) and CEPGP_ntgetn(CEPGP_roster) > 0) or CEPGP_debugMode then
+	if (((GetLootMethod() == "master" and CEPGP_isML() == 0) or (GetLootMethod() == "group" and UnitIsGroupLeader("player"))) and CEPGP_ntgetn(CEPGP_roster) > 0) or CEPGP_Info.Debug then
 		local localName = L[name];
 		local EP = EPVALS[name];
 		local plurals = name == "The Four Horsemen" or name == "Silithid Royalty" or name == "Twin Emperors";
@@ -350,7 +350,7 @@ function CEPGP_handleLoot(event, arg1, arg2)
 			CEPGP_UpdateLootScrollBar();
 		end
 		
-	elseif event == "LOOT_OPENED" then --and (UnitInRaid("player") or CEPGP_debugMode) then
+	elseif event == "LOOT_OPENED" then --and (UnitInRaid("player") or CEPGP_Info.Debug) then
 		CEPGP_Info.IgnoreUpdates = true;	--	Prevents the CEPGP roster from rebuilding while distributing loot
 		CEPGP_LootFrame_Update();
 		ShowUIPanel(CEPGP_button_loot_dist);
