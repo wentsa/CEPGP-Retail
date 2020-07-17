@@ -491,14 +491,21 @@ function CEPGP_distribute_popup_give()
 	CEPGP_distPlayer = "";
 end
 
-function CEPGP_distribute_popup_OnEvent(event, msg, name)
+function CEPGP_distribute_popup_OnEvent(eCode)
+	
+	--[[	Error Codes:
+		2		Player's inventory is full
+		22		Player already has one of the unique item
+	]]
+	
 	if CEPGP_distributing then
-		if event == "UI_ERROR_MESSAGE" and arg1 == "Inventory is full." and CEPGP_distPlayer ~= "" then
+		if eCode == 2 then
 			CEPGP_print(CEPGP_distPlayer .. "'s inventory is full", 1);
 			CEPGP_distribute_popup:Hide();
 			CEPGP_distPlayer = "";
 			CEPGP_award = false;
-		elseif event == "UI_ERROR_MESSAGE" and arg1 == "You can't carry any more of those items." and CEPGP_distPlayer ~= "" then
+			
+		elseif eCode == 22 then
 			CEPGP_print(CEPGP_distPlayer .. " can't carry any more of this unique item", 1);
 			CEPGP_distribute_popup:Hide();
 			CEPGP_distPlayer = "";

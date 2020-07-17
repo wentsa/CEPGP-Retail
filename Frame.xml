@@ -1469,15 +1469,15 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("UI_ERROR_MESSAGE");
-				self:RegisterEvent("CHAT_MSG_LOOT");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnShow>
 			</OnShow>
 			<OnEvent>
-				local msg = select(1, ...);
-				local name = select(5, ...);
-				CEPGP_distribute_popup_OnEvent(event, msg, name);
+				if CEPGP_distPlayer ~= "" then
+					local eCode = select(1, ...);
+					CEPGP_distribute_popup_OnEvent(eCode);
+				end
 			</OnEvent>
 			<OnHide>
 				CEPGP_distribute_popup_title:SetText("");
