@@ -2147,6 +2147,28 @@ function CEPGP_calcAttIntervals()
 	return week, fn, mon, twoMon, threeMon;
 end
 
+function CEPGP_getTradeableItems()
+	local items = {};
+	for bagID = 0, 4 do
+		local numSlots = GetContainerNumSlots(bagID);
+		if numSlots > 0 then	--	If no bag is present, this returns 0
+			for slotID = 1, numSlots do
+				if GetContainerItemInfo(bagID, slotID) then
+					local itemID = GetContainerItemID(bagID, slotID);
+					local location = ItemLocation:CreateFromBagAndSlot(bagID, slotID);
+					local isBound = C_Item.IsBound(location);
+					local itemGUID;
+					if not isBound then
+						itemGUID = C_Item.GetItemGUID(location);
+						table.insert(items, {[1] = itemID, [2] = itemGUID});
+					end
+				end					
+			end
+		end
+	end
+	return items;
+end
+
 function CEPGP_callItem(id, gp, buttons, timeout)
 	if not id then return; end
 	id = tonumber(id); -- Must be in a numerical format

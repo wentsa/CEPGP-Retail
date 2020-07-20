@@ -792,7 +792,8 @@ function CEPGP_IncAddonMsg(message, sender)
 		
 	elseif strfind(message, "MainSpec") or args[1] == "LootRsp" then
 		local response = args[2];
-		CEPGP_handleComms("CHAT_MSG_WHISPER", nil, sender, response);	
+		local GUID = args[3];
+		CEPGP_handleComms("CHAT_MSG_WHISPER", nil, sender, response, GUID);
 	
 	elseif args[1] == "CEPGP_TRAFFICSyncStart" and sender ~= UnitName("player") then
 		CEPGP_Info.SharingTraffic = true;

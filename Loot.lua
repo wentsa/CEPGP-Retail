@@ -211,3 +211,7 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		CEPGP_print("The loot method is not Master Looter", 1);
 	end
 end
+
+function CEPGP_announceFromBag()
+	
+end
