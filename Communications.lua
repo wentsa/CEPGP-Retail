@@ -2,13 +2,13 @@ local L = CEPGP_Locale:GetLocale("CEPGP")
 
 function CEPGP_IncAddonMsg(message, sender)
 	local args = CEPGP_split(message, ";"); -- The broken down message, delimited by semi-colons
-	if sender == UnitName("player") then
+	--[[if sender == UnitName("player") then
 		for index, msg in pairs(CEPGP_Info.MessageStack) do
 			if message == msg[1] then
 				CEPGP_Info.MessageStack[index] = nil;
 			end
 		end
-	end
+	end]]
 	
 	if args[1] == "message" and args[2] == UnitName("player") then
 		CEPGP_print(args[3]);
@@ -1124,7 +1124,7 @@ function CEPGP_IncAddonMsg(message, sender)
 	end
 end
 
-function CEPGP_SendAddonMsg(message, channel)
+function CEPGP_SendAddonMsg(message, channel, player, logged)
 
 	local function hasSent()
 		for index, msg in ipairs(CEPGP_Info.MessageStack) do
@@ -1136,20 +1136,29 @@ function CEPGP_SendAddonMsg(message, channel)
 	end
 	
 	local function send()
-			--	Changed from C_ChatInfo.SendAddonMessage to C_ChatInfo.SendAddonMessageLogged in 1.12.17 Alpha 5
+		local sent;
 		if channel == "GUILD" and IsInGuild() then
-			C_ChatInfo.SendAddonMessage("CEPGP", message, "GUILD");
-		elseif (channel == "RAID" or not channel) and IsInRaid("player") then --Player is in a raid group
-			C_ChatInfo.SendAddonMessage("CEPGP", message, "RAID");
-		elseif GetNumGroupMembers() > 0 and not IsInRaid("player") then --Player is in a party but not a raid
-			C_ChatInfo.SendAddonMessage("CEPGP", message, "PARTY");
+			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "GUILD");
+		elseif (channel == "RAID" or not channel) and IsInRaid() then --Player is in a raid group
+			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "RAID");
+		elseif channel == "WHISPER" and player and logged then
+			sent = C_ChatInfo.SendAddonMessageLogged("CEPGP", message, "WHISPER", player);
+		elseif channel == "WHISPER" and player then
+			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "WHISPER", player);
+		elseif GetNumGroupMembers() > 0 and not IsInRaid() then --Player is in a party but not a raid
+			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "PARTY");
 		elseif IsInGuild() then --If channel is not specified then assume guild
-			C_ChatInfo.SendAddonMessage("CEPGP", message, "GUILD");
+			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "GUILD");
+		end
+		if not sent then
+			send();
 		end
 	end
 	
+	send();
 	
-	if #CEPGP_Info.MessageStack == 0 then
+	
+	--[[if #CEPGP_Info.MessageStack == 0 then
 		table.insert(CEPGP_Info.MessageStack, {message, channel});
 		send();
 	else
@@ -1173,7 +1182,7 @@ function CEPGP_SendAddonMsg(message, channel)
 				callback._remainingIterations = 2;			
 			end
 		end, 1);
-	end);
+	end);]]
 end
 
 function CEPGP_ShareTraffic(ID, GUID)
@@ -1210,4 +1219,55 @@ function CEPGP_ShareTraffic(ID, GUID)
 		CEPGP_print(failMsg);
 	end
 	
+end
+
+	--	group = party|raid|assists
+function CEPGP_messageGroup(msg, group, logged)
+	if group == "party" then
+		if not IsInGroup() then
+			return;
+		end
+		
+		local names = {};
+		
+		for i = 1, GetNumGroupMembers() do
+			local player = select(1, GetRaidRosterInfo(i));
+			local online = select(8, GetRaidRosterInfo(i));
+			
+			if online then
+				table.insert(names, player);
+			end
+		end
+		
+		for _, name in ipairs(names) do
+			CEPGP_SendAddonMsg(msg, "WHISPER", name, logged);
+		end
+		
+	elseif group == "raid" or group == "assists" then
+		if not IsInRaid() then
+			return;
+		end
+		
+		local names = {};
+		
+		for i = 1, #CEPGP_raidRoster do
+			local player = CEPGP_raidRoster[i][1];
+			local leader = (CEPGP_raidRoster[i][3] == 2);
+			local assist = (CEPGP_raidRoster[i][3] == 1);
+			local online = select(8, GetRaidRosterInfo(i));
+			
+			if not online then
+				return;
+			elseif player == UnitName("player") then
+				break;
+			elseif (group == "assist" and (leader or assist)) or group == "raid" then
+				table.insert(names, player);
+			end
+			
+		end
+		
+		for _, name in ipairs(names) do
+			CEPGP_SendAddonMsg(msg, "WHISPER", name, logged);
+		end
+	end
 end

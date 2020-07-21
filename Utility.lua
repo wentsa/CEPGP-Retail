@@ -425,7 +425,7 @@ function CEPGP_initialise()
 			CEPGP_notice_frame:Show();
 		end
 		
-		if IsInRaid("player") and CEPGP_isML() == 0 then
+		if IsInRaid() and CEPGP_isML() == 0 then
 			_G["CEPGP_confirmation"]:Show();
 		end
 		
@@ -1013,7 +1013,7 @@ function CEPGP_rosterUpdate(event)
 		end, limit);
 		
 	elseif event == "GROUP_ROSTER_UPDATE" then
-		if IsInRaid("player") then
+		if IsInRaid() then
 			_G["CEPGP_button_raid"]:Show();
 		else
 			_G["CEPGP_button_raid"]:Hide();
@@ -1043,7 +1043,7 @@ function CEPGP_rosterUpdate(event)
 				CEPGP_toggleFrame("CEPGP_guild");
 				
 			end
-			if _G["CEPGP_guild"]:IsVisible() then
+			if _G["CEPGP_raid"]:IsVisible() then
 				CEPGP_UpdateRaidScrollBar();
 			end
 		end

@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.20.Alpha 1"
+CEPGP_VERSION = "1.12.20.Alpha 2"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -81,7 +81,7 @@ CEPGP_PR_sort = true;
 
 CEPGP_Info = {
 	Version = 				"1.12.20",
-	Build = 				"Alpha 1",
+	Build = 				"Alpha 2",
 	Debug =					false,
 	Active = 				{false, false},	--	Active state, queried for current raid
 	SharingTraffic = 		false,
@@ -310,13 +310,13 @@ function CEPGP_OnEvent(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, ar
 		return;
 		
 	elseif event == "PARTY_LOOT_METHOD_CHANGED" or event == "PLAYER_ROLES_ASSIGNED" then
-		if GetLootMethod() == "master" and IsInRaid("player") and (CEPGP_isML() == 0 or CEPGP_Info.Debug) and not CEPGP_Info.Active[2] then
+		if GetLootMethod() == "master" and IsInRaid() and (CEPGP_isML() == 0 or CEPGP_Info.Debug) and not CEPGP_Info.Active[2] then
 			_G["CEPGP_confirmation"]:Show();
 		else
 			_G["CEPGP_confirmation"]:Hide();
 		end
 		
-		if GetLootMethod() ~= "master" or not IsInRaid("player") or CEPGP_isML() ~= 0 then
+		if GetLootMethod() ~= "master" or not IsInRaid() or CEPGP_isML() ~= 0 then
 			CEPGP_Info.Active[1] = false;
 			CEPGP_Info.Active[2] = false;	--	Whenever the loot method, loot master or group type is changed, this will enable the check again
 		end
