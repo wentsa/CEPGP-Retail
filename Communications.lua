@@ -10,6 +10,11 @@ function CEPGP_IncAddonMsg(message, sender)
 		end
 	end]]
 	
+	if args[1] == "table" then
+		
+		return;
+	end
+	
 	if args[1] == "message" and args[2] == UnitName("player") then
 		CEPGP_print(args[3]);
 	end
@@ -127,7 +132,6 @@ function CEPGP_IncAddonMsg(message, sender)
 		end
 		
 		
-		--Raid assists receiving !need responses in the format of !need;playername;itemID (of item being distributed)
 	elseif args[1] == "!need" then
 		if args[2] == UnitName("player") then
 			CEPGP_respond:Hide();
@@ -193,7 +197,10 @@ function CEPGP_IncAddonMsg(message, sender)
 	elseif args[1] == "!info" and args[2] == UnitName("player") then--strfind(message, "!info"..UnitName("player")) then
 		CEPGP_print(args[3]);
 		
-		
+	elseif args[1] == "lootschema" then
+		for i = 2, #args, 2 do
+			CEPGP_Info.LootSchema[args[i]] = args[i+1];
+		end
 		
 		--[[	IMPORTS		]]--
 	
@@ -1227,18 +1234,14 @@ function CEPGP_messageGroup(msg, group, logged)
 		if not IsInGroup() then
 			return;
 		end
-		
 		local names = {};
-		
 		for i = 1, GetNumGroupMembers() do
 			local player = select(1, GetRaidRosterInfo(i));
 			local online = select(8, GetRaidRosterInfo(i));
-			
 			if online then
 				table.insert(names, player);
 			end
 		end
-		
 		for _, name in ipairs(names) do
 			CEPGP_SendAddonMsg(msg, "WHISPER", name, logged);
 		end
@@ -1247,15 +1250,12 @@ function CEPGP_messageGroup(msg, group, logged)
 		if not IsInRaid() then
 			return;
 		end
-		
 		local names = {};
-		
 		for i = 1, #CEPGP_raidRoster do
 			local player = CEPGP_raidRoster[i][1];
 			local leader = (CEPGP_raidRoster[i][3] == 2);
 			local assist = (CEPGP_raidRoster[i][3] == 1);
 			local online = select(8, GetRaidRosterInfo(i));
-			
 			if not online then
 				return;
 			elseif player == UnitName("player") then
@@ -1263,9 +1263,7 @@ function CEPGP_messageGroup(msg, group, logged)
 			elseif (group == "assist" and (leader or assist)) or group == "raid" then
 				table.insert(names, player);
 			end
-			
 		end
-		
 		for _, name in ipairs(names) do
 			CEPGP_SendAddonMsg(msg, "WHISPER", name, logged);
 		end

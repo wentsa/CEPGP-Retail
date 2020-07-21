@@ -225,8 +225,9 @@ function CEPGP_ListButton_OnClick(obj, button)
 			if _G[obj]:GetAttribute("response") then
 				local attr = _G[obj]:GetAttribute("response");
 				response = _G[obj]:GetAttribute("responseName");
+				response = CEPGP_indexToLabel(response);
 				reason = CEPGP_response_buttons[attr] and CEPGP_response_buttons[attr][2] or response;
-				discount = (CEPGP.Loot.ExtraKeywords.Keywords[attr] and CEPGP_getDiscount(attr)) or (CEPGP_response_buttons[attr] and CEPGP_response_buttons[attr][3]);
+				discount = (CEPGP.Loot.ExtraKeywords.Keywords[attr] and CEPGP_getDiscount(attr)) or (CEPGP_response_buttons[attr] and CEPGP_response_buttons[attr][3]) or CEPGP_getDiscount(CEPGP_indexToLabel(attr));
 				CEPGP_distribute_popup:SetAttribute("responseName", reason);
 				CEPGP_distribute_popup:SetAttribute("response", attr);
 			else

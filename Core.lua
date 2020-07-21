@@ -116,6 +116,7 @@ CEPGP_Info = {
 		VersionSB = 		0,
 		ItemCall = 			time()
 	},
+	LootSchema = {},
 	ClassColours = {
 		["DRUID"] = {
 			r = 1,

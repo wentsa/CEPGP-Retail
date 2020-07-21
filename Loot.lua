@@ -69,6 +69,37 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		local iString = CEPGP_getItemString(link);
 		local name, _, _, _, _, _, _, _, slot, tex = GetItemInfo(iString);
 		local id = CEPGP_getItemID(iString);
+		for i = 1, 4 do
+			CEPGP_Info.LootSchema[i] = CEPGP_response_buttons[i][2];
+		end
+		CEPGP_Info.LootSchema[5] = "";
+		CEPGP_Info.LootSchema[6] = "Pass";
+		
+		local temp = {};
+		for label, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
+			for _, disc in pairs(v) do
+				local entry = {[1] = label, [2] = disc};
+				table.insert(temp, entry);
+			end
+		end
+		
+		temp = CEPGP_tSort(temp, 2, true);
+		
+		for index, t in ipairs(temp) do
+			CEPGP_Info.LootSchema[index+6] = t[1];
+		end
+		
+		local schema = "lootschema;";
+		for index, response in ipairs(CEPGP_Info.LootSchema) do
+			schema = schema .. index .. ";" .. response;
+		end
+		
+		if CEPGP.Loot.RaidVisibility then
+			CEPGP_SendAddonMsg(schema, "RAID");
+		else
+			CEPGP_messageGroup(schema, "assists", false);
+		end
+		
 		CEPGP_distributing = true;
 		CEPGP_toggleGPEdit(false);
 		CEPGP_itemsTable = {};

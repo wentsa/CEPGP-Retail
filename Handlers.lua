@@ -3,19 +3,14 @@ local L = CEPGP_Locale:GetLocale("CEPGP")
 function CEPGP_handleComms(event, arg1, arg2, response)
 	--	arg1 - message | arg2 - sender
 	if arg1 then
-		for i = 1, 4 do
-			if string.lower(arg1) == string.lower(CEPGP_response_buttons[i][4]) then
-				response = i;
-				break;
-			end
-		end
+		response = CEPGP_getLabelIndex(CEPGP_getResponse(arg1));
 	end
 	response = tonumber(response);
 	--if not response then response = arg1; end
 	if not response and (arg1 ~= "!info" and arg1 ~= "!infoclass" and arg1 ~= "!infoguild" and arg1 ~= "!inforaid") then
 		response = arg1;
 	end
-	local reason = CEPGP_response_buttons[response] and CEPGP_response_buttons[response][2] or CEPGP_getResponse(response);
+	local reason = CEPGP_response_buttons[response] and CEPGP_response_buttons[response][2] or CEPGP_Info.LootSchema[response];
 	local index = CEPGP_getIndex(arg2);
 
 	if event == "CHAT_MSG_WHISPER" and response then

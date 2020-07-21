@@ -51,19 +51,19 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 						local rankIndex = 11;
 						local classFile = select(6, GetRaidRosterInfo(i));
 						tempTable[count] = {
-						[1] = name,
-						[2] = class,
-						[3] = rank,
-						[4] = rankIndex,
-						[5] = EP,
-						[6] = GP,
-						[7] = math.floor((tonumber(EP)*100/tonumber(GP)))/100,
-						[8] = CEPGP_itemsTable[name][1] or "noitem",
-						[9] = CEPGP_itemsTable[name][2] or "noitem",
-						[10] = classFile,
-						[11] = CEPGP_itemsTable[name][3], -- Loot response
-						[12] = CEPGP_itemsTable[name][4]
-					};
+							[1] = name,
+							[2] = class,
+							[3] = rank,
+							[4] = rankIndex,
+							[5] = EP,
+							[6] = GP,
+							[7] = math.floor((tonumber(EP)*100/tonumber(GP)))/100,
+							[8] = CEPGP_itemsTable[name][1] or "noitem",
+							[9] = CEPGP_itemsTable[name][2] or "noitem",
+							[10] = classFile,
+							[11] = CEPGP_itemsTable[name][3], -- Loot response
+							[12] = CEPGP_itemsTable[name][4]
+						};
 					end
 				end
 			end
@@ -91,7 +91,7 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 		end
 		--tempTable[i][11] = (CEPGP_response_buttons[tonumber(tempTable[i][11])] and CEPGP_response_buttons[tonumber(tempTable[i][11])][2]) or tempTable[i][11];
 		local response = tempTable[i][11];
-		local reason = CEPGP_response_buttons[response] and CEPGP_response_buttons[response][2] or tempTable[i][11];
+		local reason = CEPGP_response_buttons[response] and CEPGP_response_buttons[response][2] or CEPGP_Info.LootSchema[tempTable[i][11]];
 		local EPcolour;
 		if CEPGP.Loot.MinReq[1] and CEPGP.Loot.MinReq[2] > tonumber(tempTable[i][5]) then
 			EPcolour = {

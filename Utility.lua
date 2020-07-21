@@ -516,15 +516,21 @@ function CEPGP_initDropdown(frame, initFunction, displayMode, level, menuList)
 end
 
 function CEPGP_addResponse(player, response, roll)
-	local reason = CEPGP_getResponse(response) or response;
 	CEPGP_itemsTable[player] = {};
-	CEPGP_itemsTable[player][3] = reason;
+	CEPGP_itemsTable[player][3] = response;
 	
 	if CEPGP_getResponse(response) or (CEPGP.Loot.PassRolls and response == 6) or response < 6 then
 		CEPGP_itemsTable[player][4] = roll;
 	end
 	
-	CEPGP_SendAddonMsg("!need;"..player..";"..CEPGP_DistID..";"..reason..";"..roll, "RAID"); --!need;playername;itemID (of the item being distributed) is sent for sharing with raid assist
+	local message = "!need;"..player..";"..CEPGP_DistID..";"..response..";"..roll;
+	
+		--	Shares the loot distribution results with the raid / assists
+	if CEPGP.Loot.RaidVisibility then
+		CEPGP_SendAddonMsg(message, "RAID");
+	else
+		CEPGP_messageGroup(message, "assists");
+	end
 end
 
 function CEPGP_getDiscount(label)
@@ -537,13 +543,39 @@ function CEPGP_getDiscount(label)
 	end
 end
 
+function CEPGP_indexToLabel(index)
+	if CEPGP.Loot.GUI.Buttons[index] then
+		return CEPGP.Loot.GUI.Buttons[index][2];
+	else
+		return CEPGP_Info.LootSchema[index];
+	end
+end
+
 function CEPGP_getResponse(keyword)
 	if not keyword then return false; end
+	for index, v in ipairs(CEPGP.Loot.GUI.Buttons) do
+		if keyword == index then
+			return v[2];
+		end
+	end
 	for label, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
 		for key, _ in pairs(v) do
 			if string.lower(keyword) == string.lower(key) then
 				return label;
 			end
+		end
+	end
+end
+
+function CEPGP_getLabelIndex(_label)
+	for index, v in ipairs(CEPGP.Loot.GUI.Buttons) do
+		if _label == v[2] then
+			return index;
+		end
+	end
+	for index, label in ipairs(CEPGP_Info.LootSchema) do
+		if _label == label then
+			return index;
 		end
 	end
 end
@@ -1603,28 +1635,17 @@ function CEPGP_sortDistList(list)
 		[6] = {}
 	};
 	
-	local keyMap = {}
-	for label, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do
-		for _, disc in pairs(v) do
-			local entry = {[1] = label, [2] = disc};
-			table.insert(keyMap, entry);
-		end
+	for i = 7, #CEPGP_Info.LootSchema+7 do
+		temp[i] = {};
 	end
 	
-	keyMap = CEPGP_tSort(keyMap, 2, true);
-	
 	local function getKeyIndex(key)
-		for index, v in pairs(keyMap) do
-			if v[1] == key then
+		for index, label in pairs(CEPGP_Info.LootSchema) do
+			if label == key then
 				return index;
 			end
 		end
 	end
-	
-	for k, v in ipairs(keyMap) do
-		table.insert(temp, {});
-	end
-	
 	for i = 1, #list do
 		if tonumber(list[i][11]) and tonumber(list[i][11]) <= 6 then
 			local index = tonumber(list[i][11]);
@@ -1643,7 +1664,7 @@ function CEPGP_sortDistList(list)
 				[12] = list[i][12]
 			}
 			table.insert(temp[index], entry);
-		elseif CEPGP.Loot.ExtraKeywords.Keywords[list[i][11]] then
+		elseif CEPGP_Info.LootSchema[list[i][11]] then
 			local entry = {
 				[1] = list[i][1],
 				[2] = list[i][2],
@@ -1658,8 +1679,9 @@ function CEPGP_sortDistList(list)
 				[11] = list[i][11],
 				[12] = list[i][12]
 			};
-			local index = getKeyIndex(list[i][11]);
-			table.insert(temp[index+6], entry);
+			--local index = getKeyIndex(list[i][11]);
+			local index = tonumber(list[i][11]+6);
+			table.insert(temp[index], entry);
 		end
 	end
 	for i = 1, #temp do
