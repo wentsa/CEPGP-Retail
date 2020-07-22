@@ -344,6 +344,10 @@ function CEPGP_initialise()
 			end
 		end
 		
+		if type(CEPGP_raid_wide_dist) == "boolean" then
+			CEPGP_raid_wide_dist = {[1] = true, [2] = CEPGP_raid_wide_dist};
+		end
+		
 		if not CEPGP.Loot then
 			CEPGP.Loot = {
 				Announcement = "Whisper me for loot",
@@ -352,7 +356,7 @@ function CEPGP_initialise()
 				Keyword = CEPGP_keyword,
 				MinThreshold = CEPGP_min_threshold,
 				MinReq = CEPGP_minEP,
-				RaidVisibility = CEPGP_raid_wide_dist,
+				RaidVisibility = {[1] = true, [2] = CEPGP_raid_wide_dist[2]},
 				ShowPass = CEPGP_show_passes,
 				SuppressResponses = CEPGP_suppress_announcements,
 				GUI = {
@@ -367,6 +371,10 @@ function CEPGP_initialise()
 		CEPGP.Loot.MinThreshold = CEPGP.Loot.MinThreshold or CEPGP_min_threshold;
 		CEPGP.Loot.MinReq = CEPGP.Loot.MinReq or CEPGP_minEP;
 		CEPGP.Loot.RaidVisibility = CEPGP.Loot.RaidVisibility or CEPGP_raid_wide_dist;
+		
+		if type(CEPGP.Loot.RaidVisibility) == "boolean" then
+			CEPGP.Loot.RaidVisibility = {[1] = true, [2] = CEPGP.Loot.RaidVisibility};
+		end
 		
 		if not CEPGP.Loot.GUI then
 			CEPGP.Loot.GUI = {
@@ -526,9 +534,9 @@ function CEPGP_addResponse(player, response, roll)
 	local message = "!need;"..player..";"..CEPGP_DistID..";"..response..";"..roll;
 	
 		--	Shares the loot distribution results with the raid / assists
-	if CEPGP.Loot.RaidVisibility then
+	if CEPGP.Loot.RaidVisibility[2] then
 		CEPGP_SendAddonMsg(message, "RAID");
-	else
+	elseif CEPGP.Loot.RaidVisibility[1] then
 		CEPGP_messageGroup(message, "assists");
 	end
 end
@@ -1834,7 +1842,7 @@ function CEPGP_getDebugInfo()
 	else
 		info = info .. "Auto Pass on Ineligible Items: false<br />\n";
 	end
-	if CEPGP_raid_wide_dist then
+	if CEPGP_raid_wide_dist[2] then
 		info = info .. "Full Raid Loot Visibility: true<br />\n";
 	else
 		info = info .. "Full Raid Loot Visibility: false<br />\n";
@@ -2386,7 +2394,7 @@ function CEPGP_toggleGPEdit(mode)
 		CEPGP_loot_options_min_EP_amount:Enable();
 		CEPGP_loot_options_show_passes_check:Enable();
 		CEPGP_loot_options_enforce_PR_sorting_check:Enable();
-		CEPGP_loot_options_dist_raidwide_check:Enable();
+		CEPGP_loot_options_dist_assist_check:Enable();
 		CEPGP_loot_options_pass_roll_check:Enable();
 		CEPGP_loot_options_announce_roll_check:Enable();
 		CEPGP_loot_options_resolve_roll_check:Enable();
@@ -2404,7 +2412,7 @@ function CEPGP_toggleGPEdit(mode)
 		CEPGP_loot_options_min_EP_amount:Disable();
 		CEPGP_loot_options_show_passes_check:Disable();
 		CEPGP_loot_options_enforce_PR_sorting_check:Disable();
-		CEPGP_loot_options_dist_raidwide_check:Disable();
+		CEPGP_loot_options_dist_assist_check:Disable();
 		CEPGP_loot_options_pass_roll_check:Disable();
 		CEPGP_loot_options_announce_roll_check:Disable();
 		CEPGP_loot_options_resolve_roll_check:Disable();

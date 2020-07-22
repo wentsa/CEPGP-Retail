@@ -9108,7 +9108,7 @@
 								<FontString name="CEPGP_loot_options_min_EP_text" inherits="GameFontNormal" text="Require Minimum EP for Loot: " />
 								<FontString name="CEPGP_loot_options_show_passes" inherits="GameFontNormal" text="Show Passes in Loot Distribution: " />
 								<FontString name="CEPGP_loot_options_enforce_PR_sorting" inherits="GameFontNormal" text="Automate Sorting During Loot Distribution: " />
-								<FontString name="CEPGP_loot_options_dist_raidwide_text" inherits="GameFontNormal" text="Raid Wide Loot Visibility:" />
+								<FontString name="CEPGP_loot_options_dist_raidwide_text" inherits="GameFontNormal" text="Allow Others to See Loot Distribution:" />
 								<FontString name="CEPGP_loot_options_autoshow_text" inherits="GameFontNormal" text="Auto Show Loot Distribution:" />
 								<FontString name="CEPGP_loot_options_min_threshold_text" inherits="GameFontNormal" text="Minimum Threshold for Auto Show:" />
 								<FontString name="CEPGP_loot_options_channel_text" inherits="GameFontNormal" text="Loot Response Channel:" />
@@ -10689,44 +10689,97 @@
 									</OnLeave>
 								</Scripts>
 							</CheckButton>
-							<CheckButton name="CEPGP_loot_options_dist_raidwide_check" inherits="UIOptionsCheckButtonTemplate">
+							<CheckButton name="CEPGP_loot_options_dist_assist_check" inherits="UIOptionsCheckButtonTemplate">
 								<HitRectInsets>
 									<AbsInset left="0" right="0" top="0" bottom="0" />
 								</HitRectInsets>
 								<Anchors>
 									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="CEPGP_loot_options_dist_raidwide_text">
 										<Offset>
-											<AbsDimension x="-5" y="0" />
+											<AbsDimension x="10" y="0" />
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString name="$parent_string" inherits="GameFontNormal" text="Assists">
+											<Anchors>
+												<Anchor point="LEFT" relativePoint="RIGHT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
 								<Scripts>
 									<OnClick>
 										if self:GetChecked() then
-											CEPGP_raid_wide_dist = true;
-											CEPGP.Loot.RaidVisibility = true;
-											CEPGP_print("All raid members can now see item distribution window.");
+											CEPGP_raid_wide_dist[1] = true;
+											CEPGP.Loot.RaidVisibility[1] = true;
+											
+											CEPGP_loot_options_dist_raidwide_check:Show();
 										else
-											CEPGP_raid_wide_dist = false;
-											CEPGP.Loot.RaidVisibility = false;
-											CEPGP_print("Only raid assists can now see the item distribution window.");
+											CEPGP_raid_wide_dist[1] = false;
+											CEPGP.Loot.RaidVisibility[1] = false;
 											CEPGP_SendAddonMsg("RaidAssistLootClosed", "RAID");
+											
+											CEPGP_loot_options_dist_raidwide_check:SetChecked(false);
+											CEPGP.Loot.RaidVisibility[2] = false;
+											CEPGP_loot_options_dist_raidwide_check:Hide();
 										end
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-										GameTooltip:SetText("Loot Master Feature\nAllow all raid members to view the loot distribution window, not just raid assists.");
+										GameTooltip:SetText("Loot Master Feature\nAllow raid assists to view the loot distribution window.");
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
 									</OnLeave>
 									<OnShow>
-										if CEPGP_raid_wide_dist then
+										if CEPGP_raid_wide_dist[1] then
 											self:SetChecked(true);
 										else
 											self:SetChecked(false);
+											CEPGP_loot_options_dist_raidwide_check:Hide();
 										end
 									</OnShow>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="CEPGP_loot_options_dist_raidwide_check" inherits="UIOptionsCheckButtonTemplate">
+								<HitRectInsets>
+									<AbsInset left="0" right="0" top="0" bottom="0" />
+								</HitRectInsets>
+								<Anchors>
+									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="CEPGP_loot_options_dist_assist_check_string">
+										<Offset>
+											<AbsDimension x="10" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString name="$parent_string" inherits="GameFontNormal" text="Raid-Wide">
+											<Anchors>
+												<Anchor point="LEFT" relativePoint="RIGHT" />
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnClick>
+										if self:GetChecked() then
+											CEPGP_raid_wide_dist[2] = true;
+											CEPGP.Loot.RaidVisibility[2] = true;
+										else
+											CEPGP_raid_wide_dist[2] = false;
+											CEPGP.Loot.RaidVisibility[2] = false;
+										end
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+										GameTooltip:SetText("Loot Master Feature\nAllow all raid members to view the loot distribution window.");
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
 								</Scripts>
 							</CheckButton>
 							<CheckButton name="CEPGP_loot_options_autoshow_check" inherits="UIOptionsCheckButtonTemplate">
@@ -10997,7 +11050,9 @@
 				end
 				CEPGP_loot_options_show_passes_check:SetChecked(CEPGP.Loot.ShowPass);
 				CEPGP_loot_options_enforce_PR_sorting_check:SetChecked(CEPGP.Loot.AutoSort);
-				CEPGP_loot_options_dist_raidwide_check:SetChecked(CEPGP.Loot.RaidVisibility);
+				CEPGP_loot_options_dist_assist_check:SetChecked(CEPGP.Loot.RaidVisibility[1]);
+				CEPGP_loot_options_dist_raidwide_check:SetChecked(CEPGP.Loot.RaidVisibility[2]);
+				
 			</OnShow>
 		</Scripts>
 	</Frame>

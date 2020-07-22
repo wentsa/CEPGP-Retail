@@ -59,7 +59,7 @@ CEPGP_standby_manual = false;
 CEPGP_notice = false;
 CEPGP_loot_GUI = false;
 CEPGP_auto_pass = false;
-CEPGP_raid_wide_dist = false;
+CEPGP_raid_wide_dist = {[1] = true, [2] = false};
 CEPGP_gp_tooltips = false;
 CEPGP_suppress_announcements = false;
 STANDBYPERCENT = 100;
@@ -241,7 +241,7 @@ CEPGP = {
 		HideKeyphrases = 	false,
 		MinThreshold = 		CEPGP_min_threshold,
 		MinReq = 			CEPGP_minEP,
-		RaidVisibility = 	CEPGP_raid_wide_dist,
+		RaidVisibility = 	{[1] = true, [2] = CEPGP_raid_wide_dist[2]},
 		RaidWarning = 		false,
 		ShowPass = 			CEPGP_show_passes,
 		SuppressResponses = CEPGP_suppress_announcements,

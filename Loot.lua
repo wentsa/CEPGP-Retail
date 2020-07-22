@@ -89,15 +89,24 @@ function CEPGP_announce(link, x, slotNum, quantity)
 			CEPGP_Info.LootSchema[index+6] = t[1];
 		end
 		
-		local schema = "lootschema;";
+		local schema = "lootschema";
+		local temp = {};	--	Only used if schema needs to be separated due to length
 		for index, response in ipairs(CEPGP_Info.LootSchema) do
-			schema = schema .. index .. ";" .. response;
+			if #(schema .. index .. ";" .. response) > 254 then
+				table.insert(temp, schema);
+				schema = "lootschema;" .. index .. ";" .. response;
+		   else
+				schema = schema .. ";" .. index .. ";" .. response;
+			end
 		end
+		table.insert(temp, schema);
 		
-		if CEPGP.Loot.RaidVisibility then
-			CEPGP_SendAddonMsg(schema, "RAID");
-		else
-			CEPGP_messageGroup(schema, "assists", false);
+		for _, schema in ipairs(temp) do
+			if CEPGP.Loot.RaidVisibility[2] then
+				CEPGP_SendAddonMsg(schema, "RAID");
+			elseif CEPGP.Loot.RaidVisibility[1] then
+				CEPGP_messageGroup(schema, "assists");
+			end
 		end
 		
 		CEPGP_distributing = true;
@@ -128,7 +137,7 @@ function CEPGP_announce(link, x, slotNum, quantity)
 				_, rank = GetRaidRosterInfo(i);
 			end
 		end
-		if CEPGP_raid_wide_dist then
+		if CEPGP_raid_wide_dist[2] then
 			CEPGP_SendAddonMsg("RaidAssistLootDist;"..link..";"..gp..";true", "RAID");
 		else
 			CEPGP_SendAddonMsg("RaidAssistLootDist;"..link..";"..gp..";false", "RAID");

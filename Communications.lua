@@ -390,10 +390,10 @@ function CEPGP_IncAddonMsg(message, sender)
 												else
 													CEPGP_SendAddonMsg(target..";impresponse;CEPGP_auto_pass;false", lane);
 												end
-												if CEPGP_raid_wide_dist then
-													CEPGP_SendAddonMsg(target..";impresponse;CEPGP_raid_wide_dist;true", lane);
+												if CEPGP_raid_wide_dist[2] then
+													--CEPGP_SendAddonMsg(target..";impresponse;CEPGP_raid_wide_dist[2];true", lane);
 												else
-													CEPGP_SendAddonMsg(target..";impresponse;CEPGP_raid_wide_dist;false", lane);
+													--CEPGP_SendAddonMsg(target..";impresponse;CEPGP_raid_wide_dist[2];false", lane);
 												end
 												if CEPGP_suppress_announcements then
 													CEPGP_SendAddonMsg(target..";impresponse;CEPGP_suppress_announcements;true", lane);
@@ -721,14 +721,14 @@ function CEPGP_IncAddonMsg(message, sender)
 				CEPGP.Loot.AutoPass = false;
 			end
 		
-			elseif option == "CEPGP_raid_wide_dist" then
-				if args[4] == "true" then
-					CEPGP_raid_wide_dist = true;
+			--elseif option == "CEPGP_raid_wide_dist[2]" then
+				--[[if args[4] == "true" then
+					CEPGP_raid_wide_dist[2] = true;
 					CEPGP.Loot.RaidVisibility = true;
 				else
-					CEPGP_raid_wide_dist = false;
+					CEPGP_raid_wide_dist[2] = false;
 					CEPGP.Loot.RaidVisibility = false;
-				end
+				end]]
 			
 			elseif option == "CEPGP_suppress_announcements" then
 				if args[4] == "true" then
@@ -1256,9 +1256,7 @@ function CEPGP_messageGroup(msg, group, logged)
 			local leader = (CEPGP_raidRoster[i][3] == 2);
 			local assist = (CEPGP_raidRoster[i][3] == 1);
 			local online = select(8, GetRaidRosterInfo(i));
-			if not online then
-				return;
-			elseif player == UnitName("player") then
+			if not online or player == UnitName("player") then
 				break;
 			elseif (group == "assist" and (leader or assist)) or group == "raid" then
 				table.insert(names, player);
