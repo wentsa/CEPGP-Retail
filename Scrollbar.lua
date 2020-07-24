@@ -1,6 +1,9 @@
 function CEPGP_UpdateLootScrollBar(PRsort, sort)
 	local tempTable = {};
 	local count = 1;
+	CEPGP_Info.LastRun.DistSB = GetTime();
+	local call = CEPGP_Info.LastRun.DistSB;
+	local quit = false;
 	for name, _ in pairs(CEPGP_itemsTable) do
 		local roll = math.ceil(math.random(0, 100));
 		local EP, GP;
@@ -81,6 +84,11 @@ function CEPGP_UpdateLootScrollBar(PRsort, sort)
 		child:Hide();
 	end
 	for i = 1, #tempTable do
+		if quit then return; end
+		if CEPGP_Info.LastRun.DistSB ~= call then
+			quit = true;
+			return;
+		end
 		if not _G["LootDistButton" .. i] then
 			local frame = CreateFrame('Button', "LootDistButton" .. i, _G["CEPGP_dist_scrollframe_container"], "LootDistButtonTemplate");
 			if i > 1 then

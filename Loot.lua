@@ -74,6 +74,7 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		end
 		CEPGP_Info.LootSchema[5] = "";
 		CEPGP_Info.LootSchema[6] = "Pass";
+		CEPGP_Info.LootRespondants = 0;
 		
 		local temp = {};
 		for label, v in pairs(CEPGP.Loot.ExtraKeywords.Keywords) do

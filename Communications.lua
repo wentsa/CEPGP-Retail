@@ -818,7 +818,7 @@ function CEPGP_IncAddonMsg(message, sender)
 					if not sigs[v[10]] then
 						sigs[v[10]] = {[1] = v[11]};
 					else
-						table.insert(sigs[10], v[11]);
+						table.insert(sigs[v[10]], v[11]);
 					end
 				end
 			end

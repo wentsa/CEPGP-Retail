@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.20.Alpha 2"
+CEPGP_VERSION = "1.12.20.Alpha 3"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -81,7 +81,7 @@ CEPGP_PR_sort = true;
 
 CEPGP_Info = {
 	Version = 				"1.12.20",
-	Build = 				"Alpha 2",
+	Build = 				"Alpha 3",
 	Debug =					false,
 	Active = 				{false, false},	--	Active state, queried for current raid
 	SharingTraffic = 		false,
@@ -110,12 +110,14 @@ CEPGP_Info = {
 	TrafficImport = 		{},
 	TrafficScope = 			1,
 	LastRun = {
+		DistSB =			0,
 		GuildSB = 			0,
 		RaidSB = 			0,
 		TrafficSB = 		0,
 		VersionSB = 		0,
 		ItemCall = 			time()
 	},
+	LootRespondants = 0,
 	LootSchema = {},
 	ClassColours = {
 		["DRUID"] = {
@@ -236,6 +238,7 @@ CEPGP = {
 		AutoPass = 			CEPGP_auto_pass,
 		AutoShow =			false,
 		AutoSort = 			CEPGP_PR_sort,
+		DelayResponses =	false,
 		ExtraKeywords = 	{Keywords = {}},
 		Keyword = 			CEPGP_keyword,
 		HideKeyphrases = 	false,

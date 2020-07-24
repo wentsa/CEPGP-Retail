@@ -534,10 +534,64 @@ function CEPGP_addResponse(player, response, roll)
 	local message = "!need;"..player..";"..CEPGP_DistID..";"..response..";"..roll;
 	
 		--	Shares the loot distribution results with the raid / assists
-	if CEPGP.Loot.RaidVisibility[2] then
+	if CEPGP.Loot.RaidVisibility[2] and not CEPGP.Loot.DelayResponses then
 		CEPGP_SendAddonMsg(message, "RAID");
-	elseif CEPGP.Loot.RaidVisibility[1] then
+	elseif CEPGP.Loot.RaidVisibility[1] and not CEPGP.Loot.DelayResponses then
 		CEPGP_messageGroup(message, "assists");
+	end
+	
+	if (CEPGP_ntgetn(CEPGP_itemsTable) == CEPGP_GetNumOnlineGroupMembers()) or (CEPGP_Info.LootRespondants == CEPGP_GetNumOnlineGroupMembers()) and CEPGP.Loot.DelayResponses then
+		CEPGP_announceResponses();
+	end
+end
+
+function CEPGP_GetNumOnlineGroupMembers()
+	local count = 0;
+	local limit = GetNumGroupMembers();
+	for i = 1, limit do
+		local online = select(8, GetRaidRosterInfo(i));
+		if online then count = count + 1; end
+	end
+	return count;
+end
+
+function CEPGP_announceResponses()
+	local responses = {};
+		
+	for _, label in ipairs(CEPGP_Info.LootSchema) do
+		responses[label] = {};
+	end
+	
+	for name, v in pairs(CEPGP_itemsTable) do
+		local label = CEPGP_Info.LootSchema[v[3]];
+		table.insert(responses[label], name);
+	end
+	
+	for label, _ in pairs(responses) do
+		responses[label] = CEPGP_tSort(responses[label], nil, false);
+	end
+	
+	for _, label in ipairs(CEPGP_Info.LootSchema) do
+		local msg = label .. ": ";
+		for index, name in ipairs(responses[label]) do
+			if CEPGP_itemsTable[name][3] ~= 5 and CEPGP_itemsTable[name][3] ~= 6 then	--	Ensures that misc responses and passes are not announced
+				if #(msg .. ", " .. name) > 254 then
+					SendChatMessage(msg, "RAID", CEPGP_LANGUAGE);
+					msg = label .. " (Continued): " .. name;
+				else
+					msg = msg .. name .. ((index < #responses[label]) and ", " or "");
+				end
+				local message = "!need;"..name..";"..CEPGP_DistID..";"..CEPGP_itemsTable[name][3]..";"..CEPGP_itemsTable[name][4];
+				if CEPGP.Loot.RaidVisibility[2] and not CEPGP.Loot.DelayResponses then
+					CEPGP_SendAddonMsg(message, "RAID");
+				elseif CEPGP.Loot.RaidVisibility[1] and not CEPGP.Loot.DelayResponses then
+					CEPGP_messageGroup(message, "assists");
+				end
+			end
+		end
+		if label ~= "" and label ~= "Pass" and msg ~= label .. ": " then
+			SendChatMessage(msg, "RAID", CEPGP_LANGUAGE);
+		end
 	end
 end
 
@@ -2215,8 +2269,15 @@ function CEPGP_callItem(id, gp, buttons, timeout)
 	CEPGP_distribute_time:SetText("Time Remaining: " .. timer);
 	
 	if tonumber(timeout) > 0 then
-		C_Timer.NewTicker(1, function()
+		local callback;
+		callback = C_Timer.NewTicker(1, function()
 			if CEPGP_Info.LastRun.ItemCall ~= timestamp then
+				callback._remainingIterations = 1;
+				return;
+			end
+			if (CEPGP_ntgetn(CEPGP_itemsTable) == CEPGP_GetNumOnlineGroupMembers()) or (CEPGP_Info.LootRespondants == CEPGP_GetNumOnlineGroupMembers()) then
+				CEPGP_distribute_time:SetText("All Responses Received");
+				callback._remainingIterations = 1;
 				return;
 			end
 			if timer == 0 then
