@@ -114,7 +114,7 @@ function CEPGP_IncAddonMsg(message, sender)
 		CEPGP_updateGuild();
 		if CEPGP_roster[sender] then
 			CEPGP_SendAddonMsg(sender .. ";versioncheck;" .. CEPGP_Info.Version .. "." .. CEPGP_Info.Build, "GUILD");
-		else
+		elseif IsInRaid() then
 			CEPGP_SendAddonMsg(sender .. ";versioncheck;" .. CEPGP_Info.Version .. "." .. CEPGP_Info.Build, "RAID");
 		end
 	end
