@@ -114,7 +114,7 @@ function CEPGP_IncAddonMsg(message, sender)
 		CEPGP_updateGuild();
 		if CEPGP_roster[sender] then
 			CEPGP_SendAddonMsg(sender .. ";versioncheck;" .. CEPGP_Info.Version .. "." .. CEPGP_Info.Build, "GUILD");
-		elseif IsInRaid() then
+		else
 			CEPGP_SendAddonMsg(sender .. ";versioncheck;" .. CEPGP_Info.Version .. "." .. CEPGP_Info.Build, "RAID");
 		end
 	end
@@ -1143,7 +1143,7 @@ function CEPGP_SendAddonMsg(message, channel, player, logged)
 	end
 	
 	local function send()
-		local sent;
+		local sent = true;
 		if channel == "GUILD" and IsInGuild() then
 			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "GUILD");
 		elseif (channel == "RAID" or not channel) and IsInRaid() then --Player is in a raid group
@@ -1157,7 +1157,7 @@ function CEPGP_SendAddonMsg(message, channel, player, logged)
 		elseif IsInGuild() then --If channel is not specified then assume guild
 			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "GUILD");
 		end
-		if not sent then
+		if not sent and ((channel == "GUILD" and IsInGuild()) or (channel == "RAID" and IsInRaid())) then
 			send();
 		end
 	end

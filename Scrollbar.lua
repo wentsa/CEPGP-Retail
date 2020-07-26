@@ -478,18 +478,19 @@ function CEPGP_UpdateVersionScrollBar()
 	
 	tempTable = CEPGP_tSort(tempTable, CEPGP_Info.Sorting.Version[1], CEPGP_Info.Sorting.Version[2]);
 	
-	if CEPGP_vSearch == "GUILD" then
-		for i = 1, #tempTable do
-			if call ~= CEPGP_Info.LastRun.VersionSB then return; end
-			if not _G["versionButton" .. i] then
-				local frame = CreateFrame('Button', "versionButton" .. i, _G["CEPGP_version_scrollframe_container"], "versionButtonTemplate"); -- Creates version frames if needed
-				if i > 1 then
-					_G["versionButton" .. i]:SetPoint("TOPLEFT", _G["versionButton" .. i-1], "BOTTOMLEFT", 0, -2);
-				else
-					_G["versionButton" .. i]:SetPoint("TOPLEFT", _G["CEPGP_version_scrollframe_container"], "TOPLEFT", 5, -6);
-				end
+	
+	for i = 1, #tempTable do
+		if call ~= CEPGP_Info.LastRun.VersionSB then return; end
+		if not _G["versionButton" .. i] then
+			local frame = CreateFrame('Button', "versionButton" .. i, _G["CEPGP_version_scrollframe_container"], "versionButtonTemplate"); -- Creates version frames if needed
+			if i > 1 then
+				_G["versionButton" .. i]:SetPoint("TOPLEFT", _G["versionButton" .. i-1], "BOTTOMLEFT", 0, -2);
+			else
+				_G["versionButton" .. i]:SetPoint("TOPLEFT", _G["CEPGP_version_scrollframe_container"], "TOPLEFT", 5, -6);
 			end
-			_G["versionButton" .. i]:Show();
+		end
+		_G["versionButton" .. i]:Show();
+		if CEPGP_vSearch == "GUILD" then
 			local name = tempTable[i][1];
 			local classFile = tempTable[i][4];
 			local colour = CEPGP_Info.ClassColours[classFile];
@@ -504,11 +505,7 @@ function CEPGP_UpdateVersionScrollBar()
 			_G["versionButton" .. i .. "name"]:SetTextColor(colour.r, colour.g, colour.b);
 			_G["versionButton" .. i .. "version"]:SetText(tempTable[i][2]);
 			_G["versionButton" .. i .. "version"]:SetTextColor(colour.r, colour.g, colour.b);
-		end
-	else
-		for i = 1, CEPGP_ntgetn(tempTable) do
-			if call ~= CEPGP_Info.LastRun.VersionSB then return; end
-			_G["versionButton" .. i]:Show();
+		else
 			for x = 1, GetNumGroupMembers() do
 				if tempTable[i][1] == GetRaidRosterInfo(x) then
 					name = tempTable[i][1];
@@ -527,7 +524,6 @@ function CEPGP_UpdateVersionScrollBar()
 					_G["versionButton" .. i .. "name"]:SetTextColor(colour.r, colour.g, colour.b);
 					_G["versionButton" .. i .. "version"]:SetText(version);
 					_G["versionButton" .. i .. "version"]:SetTextColor(colour.r, colour.g, colour.b);
-					break;
 				end
 			end
 		end
