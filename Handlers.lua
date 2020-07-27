@@ -308,6 +308,7 @@ function CEPGP_handleLoot(event, arg1, arg2)
 		if CEPGP_isML() == 0 then
 			CEPGP_SendAddonMsg("LootClosed;", "RAID");
 		end
+		CEPGP_DistID = nil;
 		CEPGP_distributing = false;
 		CEPGP_toggleGPEdit(true);
 		CEPGP_distItemLink = nil;
@@ -316,7 +317,11 @@ function CEPGP_handleLoot(event, arg1, arg2)
 		if CEPGP_mode == "loot" then
 			CEPGP_cleanTable();
 			if CEPGP_isML() == 0 then
-				CEPGP_SendAddonMsg("RaidAssistLootClosed", "RAID");
+				if CEPGP.Loot.RaidVisibility[2] then
+					CEPGP_SendAddonMsg("RaidAssistLootClosed;", "RAID");
+				elseif CEPGP.Loot.RaidVisibility[1] then
+					CEPGP_messageGroup("RaidAssistLootClosed", "assists");
+				end
 			end
 			HideUIPanel(CEPGP_frame);
 		end
@@ -380,7 +385,11 @@ function CEPGP_handleLoot(event, arg1, arg2)
 			local callback = function()				
 				if player ~= "" and award then
 					if CEPGP_isML() == 0 then
-						CEPGP_SendAddonMsg("RaidAssistLootClosed", "RAID");
+						if CEPGP.Loot.RaidVisibility[2] then
+							CEPGP_SendAddonMsg("RaidAssistLootClosed;", "RAID");
+						elseif CEPGP.Loot.RaidVisibility[1] then
+							CEPGP_messageGroup("RaidAssistLootClosed", "assists");
+						end
 						CEPGP_SendAddonMsg("LootClosed;", "RAID");
 					end
 					if response == "" then response = nil; end

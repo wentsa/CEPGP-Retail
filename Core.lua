@@ -488,14 +488,13 @@ end
 --[[ LOOT COUNCIL FUNCTIONS ]]--
 
 function CEPGP_RaidAssistLootClosed()
-		HideUIPanel(CEPGP_distribute_popup);
-		HideUIPanel(CEPGP_distributing_button);
-		HideUIPanel(CEPGP_loot_distributing);
-		HideUIPanel(CEPGP_distributing_button);
-		HideUIPanel(CEPGP_frame);
-		CEPGP_distribute_item_tex:SetBackdrop(nil);
-		_G["CEPGP_distribute_item_tex"]:SetScript('OnEnter', function() end);
-		_G["CEPGP_distribute_item_name_frame"]:SetScript('OnClick', function() end);
+	HideUIPanel(CEPGP_distribute_popup);
+	HideUIPanel(CEPGP_distributing_button);
+	HideUIPanel(CEPGP_loot_distributing);
+	HideUIPanel(CEPGP_frame);
+	CEPGP_distribute_item_tex:SetBackdrop(nil);
+	_G["CEPGP_distribute_item_tex"]:SetScript('OnEnter', function() end);
+	_G["CEPGP_distribute_item_name_frame"]:SetScript('OnClick', function() end);
 end
 
 function CEPGP_RaidAssistLootDist(link, gp, raidwide) --raidwide refers to whether or not the ML would like everyone in the raid to be able to see the distribution window

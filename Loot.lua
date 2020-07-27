@@ -138,11 +138,16 @@ function CEPGP_announce(link, x, slotNum, quantity)
 				_, rank = GetRaidRosterInfo(i);
 			end
 		end
-		if CEPGP_raid_wide_dist[2] then
-			CEPGP_SendAddonMsg("RaidAssistLootDist;"..link..";"..gp..";true", "RAID");
-		else
-			CEPGP_SendAddonMsg("RaidAssistLootDist;"..link..";"..gp..";false", "RAID");
-		end
+		
+		--	Messages are much faster when sent via the WHISPER channel, so a delay is needed so the distribution ID can be set in time
+		C_Timer.After(1, function()
+			if CEPGP.Loot.RaidVisibility[2] then
+				CEPGP_SendAddonMsg("RaidAssistLootDist;"..link..";"..gp..";true", "RAID");
+			elseif CEPGP.Loot.RaidVisibility[1] then
+				CEPGP_messageGroup("RaidAssistLootDist;"..link..";"..gp..";true", "assists");
+			end
+		end);
+		
 		SendChatMessage("--------------------------", "RAID", CEPGP_LANGUAGE);
 		if rank > 0 then
 			if quantity > 1 then
@@ -201,7 +206,7 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		keywords = CEPGP_tSort(keywords, 3, true);
 		
 		for k, v in ipairs(keywords) do
-			SendChatMessage(v[1] .. " : " .. v[2], "RAID", CEPGP_LANGUAGE);
+			SendChatMessage(v[2] .. " : " .. v[1], "RAID", CEPGP_LANGUAGE);
 		end
 	
 		SendChatMessage("--------------------------", "RAID", CEPGP_LANGUAGE);

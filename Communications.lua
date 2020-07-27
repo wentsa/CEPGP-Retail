@@ -2,16 +2,15 @@ local L = CEPGP_Locale:GetLocale("CEPGP")
 
 function CEPGP_IncAddonMsg(message, sender)
 	local args = CEPGP_split(message, ";"); -- The broken down message, delimited by semi-colons
-	--[[if sender == UnitName("player") then
-		for index, msg in pairs(CEPGP_Info.MessageStack) do
-			if message == msg[1] then
-				CEPGP_Info.MessageStack[index] = nil;
+	if sender == UnitName("player") then
+		for i = 1, #CEPGP_Info.MessageStack do
+			if CEPGP_Info.MessageStack[i] == message then
+				table.remove(CEPGP_Info.MessageStack, i);
 			end
 		end
-	end]]
+	end
 	
 	if args[1] == "table" then
-		
 		return;
 	end
 	
@@ -1132,18 +1131,42 @@ function CEPGP_IncAddonMsg(message, sender)
 end
 
 function CEPGP_SendAddonMsg(message, channel, player, logged)
-
-	local function hasSent()
-		for index, msg in ipairs(CEPGP_Info.MessageStack) do
-			if msg[1] == message then
-				return false;
-			end
+	
+	local conditions = {
+		["CallItem"] = function(id)
+			return (id == CEPGP_DistID and CEPGP_distributing);
+		end,
+		["LootClosed"] = function()
+			return CEPGP_frame:IsVisible();
+		end,
+		["RaidAssistLootDist"] = function()
+			return CEPGP_distributing;
+		end,
+		["RaidAssistLootClosed"] = function()
+			return not CEPGP_distributing;
+		end,
+		["IgnoreUpdates"] = function(state)
+			return CEPGP_Info.IgnoreUpdates == state;
 		end
-		return true;
-	end
+	}
 	
 	local function send()
 		local sent = true;
+		local args = CEPGP_split(message, ";");
+		if conditions[args[1]] then
+			local func = conditions[args[1]];
+			
+			if not func(args[2]) then
+				for i = 1, #CEPGP_Info.MessageStack do
+					if CEPGP_Info.MessageStack[i] == message then
+						table.remove(CEPGP_Info.MessageStack, i);
+						return;
+					end
+				end
+			end
+			
+		end
+		
 		if channel == "GUILD" and IsInGuild() then
 			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "GUILD");
 		elseif (channel == "RAID" or not channel) and IsInRaid() then --Player is in a raid group
@@ -1162,34 +1185,38 @@ function CEPGP_SendAddonMsg(message, channel, player, logged)
 		end
 	end
 	
-	send();
-	
-	
-	--[[if #CEPGP_Info.MessageStack == 0 then
-		table.insert(CEPGP_Info.MessageStack, {message, channel});
-		send();
-	else
-		for _, msg in ipairs(CEPGP_Info.MessageStack) do
-			if message == msg[1] then
-				return;
+	local function hasSent()
+		for i = 1, #CEPGP_Info.MessageStack do
+			if CEPGP_Info.MessageStack[i] == message then
+				return false;
 			end
 		end
-		table.insert(CEPGP_Info.MessageStack, {message, channel});
-		send();
+		return true;
 	end
+	
+
+	if not hasSent() then return; end
+	
+	if channel ~= "WHISPER" then
+		table.insert(CEPGP_Info.MessageStack, message);
+	end
+	
+	send();
 	
 	local callback;
 	
-	C_Timer.After(2, function()
+	--		Necessary to include as the sent bool for SendAddonMessage returns true even if a message is throttled
+	C_Timer.After(0.1, function()
 		callback = C_Timer.NewTicker(1, function()
 			if hasSent() then
 				callback._remainingIterations = 1;
 			else
+				callback._remainingIterations = 2;
 				send();
-				callback._remainingIterations = 2;			
 			end
 		end, 1);
-	end);]]
+		
+	end);
 end
 
 function CEPGP_ShareTraffic(ID, GUID)
@@ -1228,7 +1255,7 @@ function CEPGP_ShareTraffic(ID, GUID)
 	
 end
 
-	--	group = party|raid|assists
+	--	group = party|assists
 function CEPGP_messageGroup(msg, group, logged)
 	if group == "party" then
 		if not IsInGroup() then
@@ -1246,19 +1273,18 @@ function CEPGP_messageGroup(msg, group, logged)
 			CEPGP_SendAddonMsg(msg, "WHISPER", name, logged);
 		end
 		
-	elseif group == "raid" or group == "assists" then
+	elseif group == "assists" then
 		if not IsInRaid() then
 			return;
 		end
 		local names = {};
-		for i = 1, #CEPGP_raidRoster do
-			local player = CEPGP_raidRoster[i][1];
-			local leader = (CEPGP_raidRoster[i][3] == 2);
-			local assist = (CEPGP_raidRoster[i][3] == 1);
+		for i = 1, GetNumGroupMembers() do
+			--	rank : 1 = assist, 2  = leader
+			local player, rank = GetRaidRosterInfo(i);
+			local leader = (rank == 2);
+			local assist = (rank == 1);
 			local online = select(8, GetRaidRosterInfo(i));
-			if not online or player == UnitName("player") then
-				break;
-			elseif (group == "assist" and (leader or assist)) or group == "raid" then
+			if player ~= UnitName("player") and (leader or assist) and online then
 				table.insert(names, player);
 			end
 		end

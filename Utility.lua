@@ -540,7 +540,7 @@ function CEPGP_addResponse(player, response, roll)
 		CEPGP_messageGroup(message, "assists");
 	end
 	
-	if (CEPGP_ntgetn(CEPGP_itemsTable) == CEPGP_GetNumOnlineGroupMembers()) or (CEPGP_Info.LootRespondants == CEPGP_GetNumOnlineGroupMembers()) and CEPGP.Loot.DelayResponses then
+	if ((CEPGP_ntgetn(CEPGP_itemsTable) == CEPGP_GetNumOnlineGroupMembers()) or (CEPGP_Info.LootRespondants == CEPGP_GetNumOnlineGroupMembers())) and CEPGP.Loot.DelayResponses then
 		CEPGP_announceResponses();
 	end
 end
@@ -582,9 +582,9 @@ function CEPGP_announceResponses()
 					msg = msg .. name .. ((index < #responses[label]) and ", " or "");
 				end
 				local message = "!need;"..name..";"..CEPGP_DistID..";"..CEPGP_itemsTable[name][3]..";"..CEPGP_itemsTable[name][4];
-				if CEPGP.Loot.RaidVisibility[2] and not CEPGP.Loot.DelayResponses then
+				if CEPGP.Loot.RaidVisibility[2] and CEPGP.Loot.DelayResponses then
 					CEPGP_SendAddonMsg(message, "RAID");
-				elseif CEPGP.Loot.RaidVisibility[1] and not CEPGP.Loot.DelayResponses then
+				elseif CEPGP.Loot.RaidVisibility[1] and CEPGP.Loot.DelayResponses then
 					CEPGP_messageGroup(message, "assists");
 				end
 			end

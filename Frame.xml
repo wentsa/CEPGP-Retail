@@ -1068,6 +1068,7 @@
 				self:RegisterEvent("GROUP_ROSTER_UPDATE");
 				self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE");
 				self:RegisterEvent("CHAT_MSG_ADDON");
+				self:RegisterEvent("CHAT_MSG_ADDON_LOGGED");
 				self:RegisterEvent("PLAYER_REGEN_DISABLED");
 				self:RegisterEvent("CHAT_MSG_MONSTER_YELL");
 				self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
@@ -10748,7 +10749,7 @@
 										else
 											CEPGP_raid_wide_dist[1] = false;
 											CEPGP.Loot.RaidVisibility[1] = false;
-											CEPGP_SendAddonMsg("RaidAssistLootClosed", "RAID");
+											CEPGP_messageGroup("RaidAssistLootClosed", "assists");
 											
 											CEPGP_loot_options_dist_raidwide_check:SetChecked(false);
 											CEPGP.Loot.RaidVisibility[2] = false;
@@ -10800,6 +10801,7 @@
 										else
 											CEPGP_raid_wide_dist[2] = false;
 											CEPGP.Loot.RaidVisibility[2] = false;
+											CEPGP_SendAddonMsg("RaidAssistLootClosed", "RAID");
 										end
 									</OnClick>
 									<OnEnter>
