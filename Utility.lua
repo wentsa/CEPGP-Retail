@@ -449,7 +449,8 @@ function CEPGP_initialise()
 			
 			DEFAULT_CHAT_FRAME:AddMessage("|c00FFC100Classic EPGP Version: " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build .. " Loaded|r");
 			if CEPGP.ChangelogVersion ~= CEPGP_Info.Version then
-				CEPGP_print("A new version has been installed. The changelog can be viewed in CEPGP options.");
+				CEPGP_print("A new version has been installed. The changelog can be viewed in CEPGP options or type /cep changelog.");
+				CEPGP_print("|c00FF0000Important Note!|r |c006969FFThis version contains changes to the way CEPGP communicates with other players. If you are experiencing issues, please ensure that other players are using the most recent version of CEPGP. You can check what version they are using by typing /cep version.");
 				CEPGP.ChangelogVersion = CEPGP_Info.Version;
 			end
 			
