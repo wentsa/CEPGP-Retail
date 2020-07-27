@@ -5721,6 +5721,7 @@
 	</Frame>
 	
 	<Frame name="CEPGP_changelog" hidden="true" enableMouse="true" frameStrata="DIALOG" movable="true" clampedToScreen="true">
+		<Size y="250" />>
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -5739,7 +5740,7 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString name="$parent_heading" inherits="GameFontNormal" />
-				<FontString name="$parent_content" inherits="GameFontNormalSmall" justifyH="LEFT"/>
+				<FontString name="$parent_content" inherits="GameFontNormalSmall" justifyH="LEFT" />
 			</Layer>
 		</Layers>
 		<Frames>
@@ -5774,7 +5775,7 @@
 				heading:SetPoint("TOP", 0, -20);
 				content:SetPoint("TOPLEFT", 20, -40);
 				heading:SetText("Classic EPGP Version " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build .. " Changelog");
-				local info = "- The license for CEPGP has changed\nThe license can be found in World of Warcraft\\_classic_\\Interface\\AddOns\\CEPGP\\License.txt\n\nNew Feature\n- Extra responses for loot can now be added in Loot Distribution options\n\nBugfixes/Changes\n- Updated interface version\n- Comms module will now check and resend failed messages\n- Corrected token slot for Imperial Qiraji Regalia\n- Added Vek'lor's Diadem and Vek'nilash's Circlet to token table\n- Rewrote the traffic sharing module with significant optimisations\n- Resolved duplicate check for loot responses\n- Hunters will no longer auto pass on daggers\n- Raid window will now update properly when EPGP standings change\n- Standby list should now be correctly recorded when taking an attendance snapshot";
+				local info = "- Responses can now be delayed until all responses have been received\n- Players can now opt to auto show the loot distribution window on item announcement\n- Refactored comms resending module\n- Resolved an issue where the response window would not appear when loot is announced\n- CEPGP should no longer spam 'you are not in a raid group' in battlegrounds\n- Corrected a typo preventing traffic sharing\n- Loot Masters can now choose if raid assists can see distribution\n- Optimised sharing of loot distribution\n- Resolved a bug where GP would be awarded even if a player already had a unique item or if their inventory was full\n- Corrected an issue preventing players from seeing themself in loot distribution\n- Response timer will now be included with loot announcements\n- Corrected an issue preventing awarding by highest roll\n- CEPGP now relies on an internal class colour reference\n- Reworked comms processing\n- Updated ReadMe\n- Corrected typos";
 				content:SetText(info);
 				self:SetWidth(content:GetStringWidth()+40);
 				self:SetHeight(heading:GetStringHeight() + content:GetStringHeight() + 50);
