@@ -359,7 +359,7 @@ function CEPGP_handleLoot(event, arg1, arg2)
 		if CEPGP_distributing and arg1 == CEPGP_lootSlot then --Confirms that an item is currently being distributed and that the item taken is the one in question
 			
 			if CEPGP_isML() == 0 then
-				CEPGP_SendAddonMsg("LootClosed;", "RAID");
+				CEPGP_SendAddonMsg("RaidAssistLootClosed;", "RAID");
 			end
 			
 			local player = CEPGP_distPlayer;

@@ -1047,6 +1047,11 @@
 				<Scripts>
 					<OnShow>
 						CEPGP_distributing_button:Show();
+						if CEPGP_isML() ~= 0 then
+							CEPGP_distribute_roll_award:Hide();
+						else
+							CEPGP_distribute_roll_award:Show();
+						end
 						CEPGP_frame:SetWidth(CEPGP_frame:GetWidth()+150);
 						
 						self:SetPoint("BOTTOMLEFT", 20, 0);

@@ -2255,6 +2255,7 @@ end
 
 function CEPGP_callItem(id, gp, buttons, timeout)
 	if not id then return; end
+	CEPGP_itemsTable = {};
 	id = tonumber(id); -- Must be in a numerical format
 	local name, link, _, _, _, _, _, _, _, tex, _, classID, subClassID = GetItemInfo(id);
 	local iString;

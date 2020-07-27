@@ -135,9 +135,12 @@ function CEPGP_IncAddonMsg(message, sender)
 		if args[2] == UnitName("player") then
 			CEPGP_respond:Hide();
 		end
-		local player = args2;
+		local player = args[2];
 		local response = tonumber(args[4]) or CEPGP_getResponse(args[4]);
 		local roll = args[5];
+		if sender ~= UnitName("player") then
+			CEPGP_Info.LootRespondants = CEPGP_Info.LootRespondants + 1;
+		end
 		if (response and (not tonumber(response)) or tonumber(response) > 6) or (CEPGP_show_passes and response == 6) or response < 6 then
 			CEPGP_itemsTable[args[2]] = {};
 			CEPGP_itemsTable[args[2]][3] = response;

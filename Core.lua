@@ -1,6 +1,6 @@
 --[[ Globals ]]--
 
-CEPGP_VERSION = "1.12.20.Alpha 3"
+CEPGP_VERSION = "1.12.20.Release"
 SLASH_CEPGP1 = "/CEPGP";
 SLASH_CEPGP2 = "/cep";
 CEPGP_VERSION_NOTIFIED = false;
@@ -81,7 +81,7 @@ CEPGP_PR_sort = true;
 
 CEPGP_Info = {
 	Version = 				"1.12.20",
-	Build = 				"Alpha 3",
+	Build = 				"Release",
 	Debug =					false,
 	Active = 				{false, false},	--	Active state, queried for current raid
 	SharingTraffic = 		false,
@@ -495,12 +495,12 @@ function CEPGP_RaidAssistLootClosed()
 	CEPGP_distribute_item_tex:SetBackdrop(nil);
 	_G["CEPGP_distribute_item_tex"]:SetScript('OnEnter', function() end);
 	_G["CEPGP_distribute_item_name_frame"]:SetScript('OnClick', function() end);
+	CEPGP_UpdateLootScrollBar();
 end
 
 function CEPGP_RaidAssistLootDist(link, gp, raidwide) --raidwide refers to whether or not the ML would like everyone in the raid to be able to see the distribution window
 	if ((UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and CEPGP_isML ~= 0) or raidwide then --Only returns true if the unit is raid ASSIST, not raid leader
 		ShowUIPanel(CEPGP_distributing_button);
-		CEPGP_itemsTable = {};
 		CEPGP_UpdateLootScrollBar();
 		local name, iString, _, _, _, _, _, _, slot, tex = GetItemInfo(CEPGP_DistID);
 		CEPGP_distSlot = slot;
