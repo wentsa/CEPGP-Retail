@@ -141,11 +141,7 @@
 					<AbsDimension x="125" y="22" />
 				</Size>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="CEPGP_frame">
-						<Offset>
-							<AbsDimension x="-10" y="-32.5" />
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-10" y="-32.5" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -9224,6 +9220,7 @@
 												end
 												
 												CEPGP_response_buttons[1][2] = value;
+												CEPGP.Loot.GUI.Buttons[1][2] = value;
 												CEPGP_print("Updated loot GUI button 1 text.");
 												CEPGP_loot_options_preview_1:SetText(value);
 											</OnEditFocusLost>
@@ -9262,6 +9259,7 @@
 													return;
 												end
 												CEPGP_response_buttons[1][3] = value;
+												CEPGP.Loot.GUI.Buttons[1][3] = value;
 												CEPGP_print("Updated GP discount for button 1.");
 											</OnEditFocusLost>
 										</Scripts>
@@ -9315,6 +9313,7 @@
 												end
 												
 												CEPGP_response_buttons[1][4] = value;
+												CEPGP.Loot.GUI.Buttons[1][4] = value;
 												CEPGP_print("Updated response 1 keyphrase.");
 												
 											</OnEditFocusLost>
@@ -9384,10 +9383,12 @@
 											<OnClick>
 												if self:GetChecked() then
 													CEPGP_response_buttons[2][1] = true;
+													CEPGP.Loot.GUI.Buttons[2][1] = true;
 													CEPGP_loot_options_preview_2:Show();
 													CEPGP_print("Loot GUI button 2 enabled.");
 												else
 													CEPGP_response_buttons[2][1] = false;
+													CEPGP.Loot.GUI.Buttons[2][1] = false;
 													CEPGP_loot_options_preview_2:Hide();
 													CEPGP_print("Loot GUI button 2 disabled.");
 												end
@@ -9426,6 +9427,7 @@
 												end
 												
 												CEPGP_response_buttons[2][2] = value;
+												CEPGP.Loot.GUI.Buttons[2][2] = value;
 												CEPGP_print("Updated loot GUI button 2 text.");
 												CEPGP_loot_options_preview_2:SetText(value);
 											</OnEditFocusLost>
@@ -9464,6 +9466,7 @@
 													return;
 												end
 												CEPGP_response_buttons[2][3] = value;
+												CEPGP.Loot.GUI.Buttons[2][3] = value;
 												CEPGP_print("Updated GP discount for button 2.");
 											</OnEditFocusLost>
 										</Scripts>
@@ -9517,6 +9520,7 @@
 												end
 												
 												CEPGP_response_buttons[2][4] = value;
+												CEPGP.Loot.GUI.Buttons[2][4] = value;
 												CEPGP_print("Updated response 2 keyphrase.");
 												
 											</OnEditFocusLost>
@@ -9586,10 +9590,12 @@
 											<OnClick>
 												if self:GetChecked() then
 													CEPGP_response_buttons[3][1] = true;
+													CEPGP.Loot.GUI.Buttons[3][1] = true;
 													CEPGP_loot_options_preview_3:Show();
 													CEPGP_print("Loot GUI button 3 enabled.");
 												else
 													CEPGP_response_buttons[3][1] = false;
+													CEPGP.Loot.GUI.Buttons[3][1] = false;
 													CEPGP_loot_options_preview_3:Hide();
 													CEPGP_print("Loot GUI button 3 disabled.");
 												end
@@ -9627,6 +9633,7 @@
 													return;
 												end
 												CEPGP_response_buttons[3][2] = value;
+												CEPGP.Loot.GUI.Buttons[3][2] = value;
 												CEPGP_print("Updated loot GUI button 3 text.");
 												CEPGP_loot_options_preview_3:SetText(value);
 											</OnEditFocusLost>
@@ -9665,6 +9672,7 @@
 													return;
 												end
 												CEPGP_response_buttons[3][3] = value;
+												CEPGP.Loot.GUI.Buttons[3][3] = value;
 												CEPGP_print("Updated GP discount for button 3.");
 											</OnEditFocusLost>
 											<OnShow>
@@ -9721,6 +9729,7 @@
 												end
 												
 												CEPGP_response_buttons[3][4] = value;
+												CEPGP.Loot.GUI.Buttons[3][4] = value;
 												CEPGP_print("Updated response 3 keyphrase.");
 												
 											</OnEditFocusLost>
@@ -9790,10 +9799,12 @@
 											<OnClick>
 												if self:GetChecked() then
 													CEPGP_response_buttons[4][1] = true;
+													CEPGP.Loot.GUI.Buttons[4][1] = true;
 													CEPGP_loot_options_preview_4:Show();
 													CEPGP_print("Loot GUI button 4 enabled.");
 												else
 													CEPGP_response_buttons[4][1] = false;
+													CEPGP.Loot.GUI.Buttons[4][1] = false;
 													CEPGP_loot_options_preview_4:Hide();
 													CEPGP_print("Loot GUI button 4 disabled.");
 												end
@@ -9831,6 +9842,7 @@
 													return;
 												end
 												CEPGP_response_buttons[4][2] = value;
+												CEPGP.Loot.GUI.Buttons[4][2] = value;
 												CEPGP_print("Updated loot GUI button 4 text.");
 												CEPGP_loot_options_preview_4:SetText(value);
 											</OnEditFocusLost>
@@ -9869,6 +9881,7 @@
 													return;
 												end
 												CEPGP_response_buttons[4][3] = value;
+												CEPGP.Loot.GUI.Buttons[4][3] = value;
 												CEPGP_print("Updated GP discount for button 4.");
 											</OnEditFocusLost>
 										</Scripts>
@@ -9922,6 +9935,7 @@
 												end
 												
 												CEPGP_response_buttons[4][4] = value;
+												CEPGP.Loot.GUI.Buttons[4][4] = value;
 												CEPGP_print("Updated response 4 keyphrase.");
 												
 											</OnEditFocusLost>

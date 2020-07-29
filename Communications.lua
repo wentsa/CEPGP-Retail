@@ -136,12 +136,12 @@ function CEPGP_IncAddonMsg(message, sender)
 			CEPGP_respond:Hide();
 		end
 		local player = args[2];
-		local response = tonumber(args[4]) or CEPGP_getResponse(args[4]);
+		local response = tonumber(args[4]) or CEPGP_getResponse(args[4]) or CEPGP_getResponseIndex(args[4]) or CEPGP_indexToLabel(args[4]);
 		local roll = args[5];
 		if sender ~= UnitName("player") then
 			CEPGP_Info.LootRespondants = CEPGP_Info.LootRespondants + 1;
 		end
-		if (response and (not tonumber(response)) or tonumber(response) > 6) or (CEPGP_show_passes and response == 6) or response < 6 then
+		if (CEPGP_show_passes and response == 6) or response ~= 6 then
 			CEPGP_itemsTable[args[2]] = {};
 			CEPGP_itemsTable[args[2]][3] = response;
 			if roll then
@@ -201,7 +201,7 @@ function CEPGP_IncAddonMsg(message, sender)
 		
 	elseif args[1] == "lootschema" then
 		for i = 2, #args, 2 do
-			CEPGP_Info.LootSchema[args[i]] = args[i+1];
+			CEPGP_Info.LootSchema[tonumber(args[i])] = args[i+1];
 		end
 		
 		--[[	IMPORTS		]]--

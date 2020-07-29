@@ -450,7 +450,6 @@ function CEPGP_initialise()
 			DEFAULT_CHAT_FRAME:AddMessage("|c00FFC100Classic EPGP Version: " .. CEPGP_Info.Version .. " " .. CEPGP_Info.Build .. " Loaded|r");
 			if CEPGP.ChangelogVersion ~= CEPGP_Info.Version then
 				CEPGP_print("A new version has been installed. The changelog can be viewed in CEPGP options or type /cep changelog.");
-				CEPGP_print("|c00FF0000Important Note!|r |c006969FFThis version contains changes to the way CEPGP communicates with other players. If you are experiencing issues, please ensure that other players are using the most recent version of CEPGP. You can check what version they are using by typing /cep version.");
 				CEPGP.ChangelogVersion = CEPGP_Info.Version;
 			end
 			
@@ -525,10 +524,13 @@ function CEPGP_initDropdown(frame, initFunction, displayMode, level, menuList)
 end
 
 function CEPGP_addResponse(player, response, roll)
+	if response and not tonumber(response) then
+		response = CEPGP_getResponseIndex(response);
+	end
 	CEPGP_itemsTable[player] = {};
 	CEPGP_itemsTable[player][3] = response;
 	
-	if CEPGP_getResponse(response) or (CEPGP.Loot.PassRolls and response == 6) or response < 6 then
+	if CEPGP_indexToLabel(response) or CEPGP_getResponse(response) or CEPGP_getResponseIndex(response) or (CEPGP.Loot.PassRolls and response == 6) or response < 6 then
 		CEPGP_itemsTable[player][4] = roll;
 	end
 	
@@ -539,6 +541,9 @@ function CEPGP_addResponse(player, response, roll)
 		CEPGP_SendAddonMsg(message, "RAID");
 	elseif CEPGP.Loot.RaidVisibility[1] and not CEPGP.Loot.DelayResponses then
 		CEPGP_messageGroup(message, "assists");
+		if player == UnitName("player") then
+			CEPGP_respond:Hide();
+		end
 	end
 	
 	if ((CEPGP_ntgetn(CEPGP_itemsTable) == CEPGP_GetNumOnlineGroupMembers()) or (CEPGP_Info.LootRespondants == CEPGP_GetNumOnlineGroupMembers())) and CEPGP.Loot.DelayResponses then
@@ -615,7 +620,7 @@ function CEPGP_indexToLabel(index)
 end
 
 function CEPGP_getResponse(keyword)
-	if not keyword then return false; end
+	if not keyword then return end
 	for index, v in ipairs(CEPGP.Loot.GUI.Buttons) do
 		if keyword == index then
 			return v[2];
@@ -626,6 +631,15 @@ function CEPGP_getResponse(keyword)
 			if string.lower(keyword) == string.lower(key) then
 				return label;
 			end
+		end
+	end
+end
+
+function CEPGP_getResponseIndex(keyword)
+	if not keyword then return; end
+	for index, v in ipairs(CEPGP.Loot.GUI.Buttons) do
+		if string.lower(keyword) == string.lower(v[4]) then
+			return index;
 		end
 	end
 end
@@ -1710,24 +1724,7 @@ function CEPGP_sortDistList(list)
 		end
 	end
 	for i = 1, #list do
-		if tonumber(list[i][11]) and tonumber(list[i][11]) <= 6 then
-			local index = tonumber(list[i][11]);
-			--if not temp[index] then temp[index] = {}; end
-			local entry = {
-				[1] = list[i][1],
-				[2] = list[i][2],
-				[3] = list[i][3],
-				[4] = list[i][4],
-				[5] = list[i][5],
-				[6] = list[i][6],
-				[7] = list[i][7],
-				[8] = list[i][8],
-				[9] = list[i][9],
-				[10] = list[i][10],
-				[12] = list[i][12]
-			}
-			table.insert(temp[index], entry);
-		elseif CEPGP_Info.LootSchema[list[i][11]] then
+		if CEPGP_Info.LootSchema[tonumber(list[i][11])] then
 			local entry = {
 				[1] = list[i][1],
 				[2] = list[i][2],
@@ -1743,7 +1740,7 @@ function CEPGP_sortDistList(list)
 				[12] = list[i][12]
 			};
 			--local index = getKeyIndex(list[i][11]);
-			local index = tonumber(list[i][11]+6);
+			local index = tonumber(list[i][11]);
 			table.insert(temp[index], entry);
 		end
 	end

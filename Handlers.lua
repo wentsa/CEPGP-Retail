@@ -10,7 +10,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 	if not response and (arg1 ~= "!info" and arg1 ~= "!infoclass" and arg1 ~= "!infoguild" and arg1 ~= "!inforaid") then
 		response = arg1;
 	end
-	local reason = CEPGP_response_buttons[response] and CEPGP_response_buttons[response][2] or CEPGP_Info.LootSchema[response];
+	local reason = CEPGP_response_buttons[response] and CEPGP_response_buttons[response][2] or CEPGP_Info.LootSchema[response] or CEPGP_getResponse(CEPGP_getResponseIndex(response));
 	local index = CEPGP_getIndex(arg2);
 
 	if event == "CHAT_MSG_WHISPER" and response then
@@ -44,7 +44,6 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 			CEPGP_print(arg2 .. " registered (" .. CEPGP_keyword .. ")");
 		end
 		local _, _, _, _, _, _, _, _, slot = GetItemInfo(CEPGP_DistID);
-		
 		if not slot and CEPGP_itemExists(CEPGP_DistID) then
 			local item = Item:CreateFromItemID(CEPGP_DistID);
 			item:ContinueOnItemLoad(function()
@@ -60,11 +59,11 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 					class = select(5, GetGuildRosterInfo(index));
 					inGuild = true; 
 				end
-				if CEPGP_getResponse(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then
+				if CEPGP_getResponse(arg1) or CEPGP_getResponseIndex(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then
 					CEPGP_SendAddonMsg(arg2..";distslot;"..CEPGP_distSlot, "RAID");
 				end
 				if inGuild and not CEPGP_suppress_announcements then
-					if (CEPGP_getResponse(arg1) or response < 5) and not CEPGP.Loot.DelayResponses then	-- 5 means they're not using the addon or they're using an outdated version that doesn't support responses
+					if (CEPGP_getResponse(arg1) or CEPGP_getResponseIndex(arg1) or response < 5) and not CEPGP.Loot.DelayResponses then	-- 5 means they're not using the addon or they're using an outdated version that doesn't support responses
 						if CEPGP.Loot.RollAnnounce then
 							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR) (Rolled " .. roll .. ")", CEPGP_lootChannel);
 						else
@@ -78,7 +77,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 							_, _, _, _, class = GetRaidRosterInfo(i);
 						end
 					end
-					if (CEPGP_getResponse(arg1) or response < 5) and not CEPGP.Loot.DelayResponses then
+					if (CEPGP_getResponse(arg1) or CEPGP_getResponseIndex(arg1) or response < 5) and not CEPGP.Loot.DelayResponses then
 						if CEPGP.Loot.RollAnnounce then
 							CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (Non-guild member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
 						else
@@ -86,7 +85,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 						end
 					end
 				end
-				if CEPGP_getResponse(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then --If you are the master looter
+				if CEPGP_getResponse(arg1) or CEPGP_getResponseIndex(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then --If you are the master looter
 					CEPGP_addResponse(arg2, response, roll);
 				end
 				CEPGP_UpdateLootScrollBar(true);
@@ -108,11 +107,11 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 						inGuild = true; 
 					end
 				end
-			if CEPGP_getResponse(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then
+			if CEPGP_getResponse(arg1) or CEPGP_getResponseIndex(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then
 				CEPGP_SendAddonMsg(arg2..";distslot;"..CEPGP_distSlot, "RAID");
 			end
 			if inGuild and not CEPGP_suppress_announcements then
-				if (CEPGP_getResponse(arg1) or response < 5) and not CEPGP.Loot.DelayResponses then
+				if (CEPGP_getResponse(arg1) or CEPGP_getResponseIndex(arg1) or response < 5) and not CEPGP.Loot.DelayResponses then
 					if CEPGP.Loot.RollAnnounce then
 						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (" .. math.floor((EP/GP)*100)/100 .. " PR) (Rolled " .. roll .. ")", CEPGP_lootChannel);
 					else
@@ -126,7 +125,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 						_, _, _, _, class = GetRaidRosterInfo(i);
 					end
 				end
-				if (CEPGP_getResponse(arg1) or response < 5) and not CEPGP.Loot.DelayResponses then
+				if (CEPGP_getResponse(arg1) or CEPGP_getResponseIndex(arg1) or response < 5) and not CEPGP.Loot.DelayResponses then
 					if CEPGP.Loot.RollAnnounce then
 						CEPGP_sendChatMessage(arg2 .. " (" .. class .. ") needs (" .. reason .. "). (Non-guild member) (Rolled " .. roll .. ")", CEPGP_lootChannel);
 					else
@@ -134,7 +133,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 					end
 				end
 			end
-			if CEPGP_getResponse(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then
+			if CEPGP_getResponse(arg1) or CEPGP_getResponseIndex(arg1) or (CEPGP_show_passes and response == 6) or response < 6 then
 				CEPGP_addResponse(arg2, response, roll);
 			end
 			CEPGP_UpdateLootScrollBar(true);
