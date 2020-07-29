@@ -4145,7 +4145,8 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_SendAddonMsg("LootRsp;1", "RAID");
+						CEPGP_Info.LootGUID = CEPGP_Info.LootGUID or "";	<!--	Useful for if the loot master doesn't have the latest version	-->
+						CEPGP_SendAddonMsg("LootRsp;1;" .. CEPGP_Info.LootGUID, "RAID");
 						CEPGP_respond:Hide();
 					</OnClick>
 				</Scripts>
@@ -4164,7 +4165,8 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_SendAddonMsg("LootRsp;2", "RAID");
+						CEPGP_Info.LootGUID = CEPGP_Info.LootGUID or "";
+						CEPGP_SendAddonMsg("LootRsp;2;" .. CEPGP_Info.LootGUID, "RAID");
 						CEPGP_respond:Hide();
 					</OnClick>
 				</Scripts>
@@ -4183,7 +4185,8 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_SendAddonMsg("LootRsp;3", "RAID");
+						CEPGP_Info.LootGUID = CEPGP_Info.LootGUID or "";
+						CEPGP_SendAddonMsg("LootRsp;3;" .. CEPGP_Info.LootGUID, "RAID");
 						CEPGP_respond:Hide();
 					</OnClick>
 				</Scripts>
@@ -4202,7 +4205,8 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						CEPGP_SendAddonMsg("LootRsp;4", "RAID");
+						CEPGP_Info.LootGUID = CEPGP_Info.LootGUID or "";
+						CEPGP_SendAddonMsg("LootRsp;4;" .. CEPGP_Info.LootGUID, "RAID");
 						CEPGP_respond:Hide();
 					</OnClick>
 				</Scripts>

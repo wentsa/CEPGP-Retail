@@ -117,6 +117,7 @@ CEPGP_Info = {
 		VersionSB = 		0,
 		ItemCall = 			time()
 	},
+	LootGUID = "",
 	LootRespondants = 0,
 	LootSchema = {},
 	ClassColours = {

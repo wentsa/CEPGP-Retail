@@ -20,6 +20,9 @@ function CEPGP_IncAddonMsg(message, sender)
 	
 	if args[1] == "CEPGP_setDistID" then
 		CEPGP_DistID = args[2];
+		
+	elseif args[1] == "CEPGP_setLootGUID" then
+		CEPGP_Info.LootGUID = args[2];
 	
 	elseif args[1] == UnitName("player") and args[2] == "distslot" then
 		--Recipient should see this
@@ -1150,6 +1153,18 @@ function CEPGP_SendAddonMsg(message, channel, player, logged)
 		end,
 		["IgnoreUpdates"] = function(state)
 			return CEPGP_Info.IgnoreUpdates == state;
+		end,
+		["LootRsp"] = function(GUID)
+			if #CEPGP_Info.LootGUID > 0 then
+				return GUID == CEPGP_Info.LootGUID;
+			elseif CEPGP_Info.LootGUID == "" then
+				return true;
+			else
+				return false;
+			end
+		end,
+		["CEPGP_setLootGUID"] = function(GUID)
+			return GUID == CEPGP_Info.LootGUID;
 		end
 	}
 	
@@ -1158,7 +1173,7 @@ function CEPGP_SendAddonMsg(message, channel, player, logged)
 		local args = CEPGP_split(message, ";");
 		if conditions[args[1]] then
 			local func = conditions[args[1]];
-			
+			if args[1] == "LootRsp" then args[2] = args[3]; end
 			if not func(args[2]) then
 				for i = 1, #CEPGP_Info.MessageStack do
 					if CEPGP_Info.MessageStack[i] == message then
@@ -1167,7 +1182,6 @@ function CEPGP_SendAddonMsg(message, channel, player, logged)
 					end
 				end
 			end
-			
 		end
 		
 		if channel == "GUILD" and IsInGuild() then

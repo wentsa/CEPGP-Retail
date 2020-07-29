@@ -1,6 +1,6 @@
 local L = CEPGP_Locale:GetLocale("CEPGP")
 
-function CEPGP_handleComms(event, arg1, arg2, response)
+function CEPGP_handleComms(event, arg1, arg2, response, lootGUID)
 	--	arg1 - message | arg2 - sender
 	if arg1 then
 		response = CEPGP_getLabelIndex(CEPGP_getResponse(arg1));
@@ -14,6 +14,7 @@ function CEPGP_handleComms(event, arg1, arg2, response)
 	local index = CEPGP_getIndex(arg2);
 
 	if event == "CHAT_MSG_WHISPER" and response then
+		if (lootGUID ~= CEPGP_Info.LootGUID and lootGUID ~= "") and not arg1 then return; end
 		local roll = math.ceil(math.random(1,100));
 		
 		if CEPGP.Loot.ResolveRolls then

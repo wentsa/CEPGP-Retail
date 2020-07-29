@@ -69,6 +69,7 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		local iString = CEPGP_getItemString(link);
 		local name, _, _, _, _, _, _, _, slot, tex = GetItemInfo(iString);
 		local id = CEPGP_getItemID(iString);
+		CEPGP_Info.LootGUID = id .. "-" .. GetTime();	--	Note: This is a custom GUID and is not the standard format provided by the client
 		for i = 1, 4 do
 			CEPGP_Info.LootSchema[i] = CEPGP_response_buttons[i][2];
 		end
@@ -116,6 +117,7 @@ function CEPGP_announce(link, x, slotNum, quantity)
 		CEPGP_distItemLink = link;
 		CEPGP_DistID = id;
 		CEPGP_SendAddonMsg("CEPGP_setDistID;" .. id, "RAID");
+		CEPGP_SendAddonMsg("CEPGP_setLootGUID;" .. CEPGP_Info.LootGUID, "RAID");
 		CEPGP_distSlot = slot;
 		gp = _G[CEPGP_mode..'itemGP'..x]:GetText();
 		CEPGP_lootSlot = slotNum;

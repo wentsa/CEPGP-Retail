@@ -2242,6 +2242,7 @@ function CEPGP_getTradeableItems()
 					local itemGUID;
 					if not isBound then
 						itemGUID = C_Item.GetItemGUID(location);
+						print(itemGUID);
 						table.insert(items, {[1] = itemID, [2] = itemGUID});
 					end
 				end					
