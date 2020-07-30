@@ -612,11 +612,7 @@ function CEPGP_getDiscount(label)
 end
 
 function CEPGP_indexToLabel(index)
-	if CEPGP.Loot.GUI.Buttons[index] then
-		return CEPGP.Loot.GUI.Buttons[index][2];
-	else
-		return CEPGP_Info.LootSchema[index];
-	end
+	return CEPGP_Info.LootSchema[index];
 end
 
 function CEPGP_getResponse(keyword)
