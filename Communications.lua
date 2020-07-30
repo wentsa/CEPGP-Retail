@@ -804,7 +804,7 @@ function CEPGP_IncAddonMsg(message, sender)
 		
 	elseif strfind(message, "MainSpec") or args[1] == "LootRsp" then
 		local response = args[2];
-		local GUID = args[3];
+		local GUID = args[3] or "";
 		CEPGP_handleComms("CHAT_MSG_WHISPER", nil, sender, response, GUID);
 	
 	elseif args[1] == "CEPGP_TRAFFICSyncStart" and sender ~= UnitName("player") then
@@ -1183,7 +1183,6 @@ function CEPGP_SendAddonMsg(message, channel, player, logged)
 				end
 			end
 		end
-		
 		if channel == "GUILD" and IsInGuild() then
 			sent = C_ChatInfo.SendAddonMessage("CEPGP", message, "GUILD");
 		elseif (channel == "RAID" or not channel) and IsInRaid() then --Player is in a raid group
