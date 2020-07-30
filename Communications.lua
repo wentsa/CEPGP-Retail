@@ -135,20 +135,20 @@ function CEPGP_IncAddonMsg(message, sender)
 		
 		
 	elseif args[1] == "!need" then
-		if args[2] == UnitName("player") then
+		local player = args[2];
+		if player == UnitName("player") then
 			CEPGP_respond:Hide();
 		end
-		local player = args[2];
 		local response = tonumber(args[4]) or CEPGP_getResponse(args[4]) or CEPGP_getResponseIndex(args[4]) or CEPGP_indexToLabel(args[4]);
 		local roll = args[5];
 		if sender ~= UnitName("player") then
 			CEPGP_Info.LootRespondants = CEPGP_Info.LootRespondants + 1;
 		end
-		if (CEPGP_show_passes and response == 6) or response ~= 6 then
-			CEPGP_itemsTable[args[2]] = {};
-			CEPGP_itemsTable[args[2]][3] = response;
+		if sender ~= UnitName("player") and ((CEPGP_show_passes and response == 6) or response ~= 6) then
+			CEPGP_itemsTable[player] = {};
+			CEPGP_itemsTable[player][3] = response;
 			if roll then
-				CEPGP_itemsTable[args[2]][4] = tonumber(roll);
+				CEPGP_itemsTable[player][4] = tonumber(roll);
 			end
 			CEPGP_UpdateLootScrollBar(sort);
 		end
