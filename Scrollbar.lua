@@ -408,10 +408,10 @@ function CEPGP_UpdateRaidScrollBar()
 		end
 	end
 	for i = 1, CEPGP_ntgetn(tempTable) do
-		if CEPGP_Info.LastRun.RaidSB ~= call then
+		if CEPGP_Info.LastRun.RaidSB ~= call or #tempTable ~= #CEPGP_raidRoster then
 			return;
 		end
-		if #tempTable ~= #CEPGP_raidRoster then return; end
+		
 		if not _G["RaidButton" .. i] then
 			local frame = CreateFrame('Button', "RaidButton" .. i, _G["CEPGP_raid_scrollframe_container"], "RaidButtonTemplate");
 			if i > 1 then
