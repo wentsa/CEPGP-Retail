@@ -2227,7 +2227,17 @@ function CEPGP_callItem(id, gp, buttons, timeout)
 		CEPGP_respond_timeout_string:Hide();
 		CEPGP_distribute_time:Hide();
 	end
-	
+
+	local playerName = UnitName("player")
+	local prChangeText = ""
+	if CEPGP_roster[playerName] then
+		local index = CEPGP_getIndex(playerName);
+		local EP, GP = CEPGP_getEPGP(playerName, index);
+		local actualPR = math.floor((EP/GP)*100)/100
+		local potentialPR = math.floor((EP/(GP+gp))*100)/100
+		prChangeText = "PR: " .. actualPR .. " -> " .. potentialPR;
+	end
+
 	if not link and CEPGP_itemExists(id) then
 		local item = Item:CreateFromItemID(id);
 		item:ContinueOnItemLoad(function()
@@ -2251,6 +2261,7 @@ function CEPGP_callItem(id, gp, buttons, timeout)
 				_G["CEPGP_respond_item_name_frame"]:SetScript('OnClick', function() SetItemRef(iString, name); end);
 				_G["CEPGP_respond_item_name"]:SetText(link);
 				_G["CEPGP_respond_gp_value"]:SetText(gp);
+				_G["CEPGP_respong_gp_change"]:SetText(prChangeText);
 				for i = 1, 4 do
 					if buttons[i] ~= "" and buttons[i] then
 						_G["CEPGP_respond_"..i]:Show();
@@ -2280,6 +2291,7 @@ function CEPGP_callItem(id, gp, buttons, timeout)
 		_G["CEPGP_respond_item_name_frame"]:SetScript('OnClick', function() SetItemRef(iString, name); end);
 		_G["CEPGP_respond_item_name"]:SetText(link);
 		_G["CEPGP_respond_gp_value"]:SetText(gp);
+		_G["CEPGP_respond_gp_change"]:SetText(prChangeText);
 		for i = 1, 4 do
 			if buttons[i] ~= "" and buttons[i] then
 				_G["CEPGP_respond_"..i]:Show();

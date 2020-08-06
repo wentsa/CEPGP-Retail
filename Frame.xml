@@ -4099,6 +4099,16 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString name="CEPGP_respond_gp_change" inherits="GameFontNormalSmall" text="0">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="CEPGP_respond_gp_value">
+							<Offset>
+								<AbsDimension x="0" y="-12.5" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
 				<FontString name="CEPGP_respond_timeout_string" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
